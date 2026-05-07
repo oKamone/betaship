@@ -809,12 +809,7 @@ function track(tool) {
 }
 
 // ─── FEEDBACK MODAL ───
-// Google Form設定（フォーム作成後にここを更新する）
-// エントリーIDはGoogle Formを作成し、プレビューページのソースから取得してください
-const FB_FORM_URL = ''; // TODO: Google FormのformResponse URLを入れる
-const FB_ENTRY_TOOL    = 'entry.000000001'; // TODO: 「試したツール」のentry ID
-const FB_ENTRY_COMMENT = 'entry.000000002'; // TODO: 「一言感想」のentry ID
-const FB_ENTRY_NOTIFY  = 'entry.000000003'; // TODO: 「通知」のentry ID
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyXPOKvSMPFqnEed3E2mYMUwcYfM_l_SgnL9kKU_lYqBnzpFIilTwAAmjzGkdjBMc-y/exec';
 
 function openFeedback(toolName) {
   // ツール名が指定されていれば自動選択
@@ -857,14 +852,10 @@ function submitFeedback() {
   log.push({ tool, comment, notify, at: new Date().toISOString() });
   localStorage.setItem('bs_feedback', JSON.stringify(log));
 
-  // Google Formに送信（URLが設定されている場合のみ）
-  if (FB_FORM_URL) {
-    const body = new URLSearchParams();
-    body.append(FB_ENTRY_TOOL, tool);
-    body.append(FB_ENTRY_COMMENT, comment);
-    body.append(FB_ENTRY_NOTIFY, notify);
-    fetch(FB_FORM_URL, { method: 'POST', mode: 'no-cors', body }).catch(() => {});
-  }
+  fetch(GAS_URL, {
+    method: 'POST', mode: 'no-cors',
+    body: JSON.stringify({ tool, comment, notify })
+  }).catch(() => {});
 
   // サンキュー画面に切り替え
   document.getElementById('fb-form').style.display = 'none';
