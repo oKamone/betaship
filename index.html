@@ -866,13 +866,6 @@ function submitFeedback() {
     fetch(FB_FORM_URL, { method: 'POST', mode: 'no-cors', body }).catch(() => {});
   }
 
-  // mailtoフォールバック（Google Form未設定時のみ動作）
-  if (!FB_FORM_URL) {
-    const subject = encodeURIComponent(`[Betaship感想] ${tool}`);
-    const body2 = encodeURIComponent(`ツール: ${tool}\n感想: ${comment}\n通知: ${notify}`);
-    window.open(`mailto:ha7ta0imoz_3_o1021@yahoo.co.jp?subject=${subject}&body=${body2}`, '_blank');
-  }
-
   // サンキュー画面に切り替え
   document.getElementById('fb-form').style.display = 'none';
   document.getElementById('fb-thanks').style.display = 'block';
