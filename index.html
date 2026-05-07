@@ -7,6 +7,14 @@
   <meta name="description" content="A collection of AI-built experiments. Some rough. All real. Built by one person.">
   <meta property="og:title" content="Betaship — Ship what you built.">
   <meta property="og:description" content="AI-built tools that almost didn't ship. Free to try.">
+  <!-- Google Analytics: GA_MEASUREMENT_ID を自分のIDに差し替える -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'GA_MEASUREMENT_ID');
+  </script> -->
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -284,7 +292,7 @@
       <div class="card-tags"><span class="tag">AI mentor</span><span class="tag">self-growth</span><span class="tag">chat</span></div>
       <div class="card-footer">
         <span class="card-price">Free · Pro ¥680/mo</span>
-        <a href="https://moshimo.onrender.com" target="_blank" class="btn-try live">Try it →</a>
+        <a href="https://moshimo.onrender.com" target="_blank" class="btn-try live" onclick="track('moshimo')">Try it →</a>
       </div>
     </div>
 
@@ -299,7 +307,7 @@
       <div class="card-tags"><span class="tag">music</span><span class="tag">ambient</span><span class="tag">mood</span></div>
       <div class="card-footer">
         <span class="card-price">Free</span>
-        <a href="https://reverie-music.vercel.app" target="_blank" class="btn-try live">Try it →</a>
+        <a href="https://reverie-music.vercel.app" target="_blank" class="btn-try live" onclick="track('reverie')">Try it →</a>
       </div>
     </div>
 
@@ -314,7 +322,7 @@
       <div class="card-tags"><span class="tag">CSS ambient</span><span class="tag">browser</span><span class="tag">aesthetics</span></div>
       <div class="card-footer">
         <span class="card-price">Free · AI $9 one-time</span>
-        <a href="https://wearld.vercel.app" target="_blank" class="btn-try live">Try it →</a>
+        <a href="https://wearld.vercel.app" target="_blank" class="btn-try live" onclick="track('wearld')">Try it →</a>
       </div>
     </div>
 
@@ -430,8 +438,22 @@
   </div>
 </section>
 
+<script>
+function track(tool) {
+  // GA4 が設定されていればイベントを送る
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'click_try', { tool: tool });
+  }
+  // localStorage にも簡易記録（Analytics なしでも手動確認可能）
+  const key = 'bs_clicks';
+  const log = JSON.parse(localStorage.getItem(key) || '[]');
+  log.push({ tool, at: new Date().toISOString() });
+  localStorage.setItem(key, JSON.stringify(log));
+}
+</script>
+
 <footer>
-  <p>Built on <strong>Betaship</strong> · "Ship what you built." · Made with AI · 2026</p>
+  <p>Built on <strong>Betaship</strong> · "Ship what you built." · Made with AI · 2026 · <a href="https://twitter.com/messages/compose?recipient_id=oKamone" target="_blank" style="color:var(--accent);text-decoration:none;">DM for feedback</a></p>
 </footer>
 
 </body>
