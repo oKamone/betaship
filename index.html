@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Betaship — Ship what you built.</title>
+  <meta name="description" content="A collection of AI-built experiments. Some rough. All real. Built by one person.">
+  <meta property="og:title" content="Betaship — Ship what you built.">
+  <meta property="og:description" content="AI-built tools that almost didn't ship. Free to try.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0c0c0e;
+      --surface: #141416;
+      --border: #222226;
+      --text: #e8e8ec;
+      --muted: #666672;
+      --accent: #f0a500;
+      --accent-dim: #f0a50018;
+      --green: #22c55e;
+      --amber: #f59e0b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      position: sticky;
+      top: 0;
+      background: rgba(12,12,14,0.92);
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: -0.3px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .logo-icon {
+      width: 28px; height: 28px;
+      background: var(--accent);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .logo-beta { color: var(--accent); }
+
+    .btn-support {
+      background: var(--accent); color: #000;
+      font-weight: 700; font-size: 13px;
+      padding: 7px 16px; border-radius: 8px;
+      border: none; cursor: pointer; text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .btn-support:hover { opacity: 0.85; }
+
+    .credits-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #f0a50014; color: var(--accent);
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 99px;
+      border: 1px solid #f0a50030;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .price-highlight {
+      font-size: 28px; font-weight: 800; letter-spacing: -1px;
+      margin-bottom: 4px;
+    }
+    .price-note { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+    .credit-list { list-style: none; display: flex; flex-direction: column; gap: 7px; margin-bottom: 22px; }
+    .credit-list li { font-size: 13px; color: var(--muted); display: flex; gap: 8px; }
+    .credit-list li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+    .btn-stripe {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: #000;
+      font-size: 14px; font-weight: 800;
+      padding: 12px 28px; border-radius: 10px;
+      text-decoration: none; transition: opacity 0.15s; width: 100%; justify-content: center;
+    }
+    .btn-stripe:hover { opacity: 0.88; }
+
+    /* HERO */
+    .hero {
+      max-width: 720px; margin: 64px auto 0;
+      padding: 0 24px 56px; text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent-dim); color: var(--accent);
+      font-size: 12px; font-weight: 600;
+      padding: 4px 12px; border-radius: 99px;
+      border: 1px solid #f0a50030;
+      margin-bottom: 24px; letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .hero h1 {
+      font-size: clamp(30px, 5.5vw, 50px);
+      font-weight: 800; letter-spacing: -1.5px; line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      font-size: 17px; color: var(--muted);
+      max-width: 500px; margin: 0 auto 32px; line-height: 1.7;
+    }
+    .hero-meta {
+      display: flex; justify-content: center; gap: 28px;
+      color: var(--muted); font-size: 13px; flex-wrap: wrap;
+    }
+
+    /* PRODUCTS */
+    .products-section { max-width: 1080px; margin: 0 auto; padding: 0 24px 80px; }
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-title { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 14px; }
+
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 22px;
+      display: flex; flex-direction: column; gap: 12px;
+      transition: border-color 0.15s, transform 0.15s;
+      position: relative; overflow: hidden;
+    }
+    .product-card:hover { border-color: #2e2e34; transform: translateY(-2px); }
+    .product-card.dimmed { opacity: 0.7; }
+    .product-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--card-accent, var(--accent)), transparent);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .product-card:hover::before { opacity: 1; }
+
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .card-icon { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+
+    .card-status {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 600;
+      padding: 3px 9px; border-radius: 99px; letter-spacing: 0.3px;
+    }
+    .status-live { background: #22c55e14; color: var(--green); border: 1px solid #22c55e28; }
+    .status-beta { background: #f59e0b14; color: var(--amber); border: 1px solid #f59e0b28; }
+    .status-soon { background: #66667220; color: var(--muted); border: 1px solid #66667230; }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    .card-name { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+    .card-desc { font-size: 13px; color: var(--muted); line-height: 1.6; flex: 1; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .tag { font-size: 11px; color: var(--muted); background: #18181c; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); }
+
+    .card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 4px; }
+    .card-price { font-size: 12px; color: var(--muted); }
+
+    .btn-try {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 600; padding: 7px 14px;
+      border-radius: 7px; text-decoration: none; transition: all 0.15s; cursor: pointer; border: none;
+    }
+    .btn-try.live { background: var(--accent-dim); border: 1px solid #f0a50030; color: var(--accent); }
+    .btn-try.live:hover { background: #f0a50028; }
+    .btn-try.soon { background: #18181c; border: 1px solid var(--border); color: var(--muted); cursor: default; }
+
+    /* CREATOR */
+    .creator-section { max-width: 720px; margin: 0 auto; padding: 0 24px 80px; }
+    .creator-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px;
+      display: flex; align-items: flex-start; gap: 24px;
+    }
+    .creator-avatar {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #d08000);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0;
+    }
+    .creator-info h2 { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+    .creator-info p { color: var(--muted); font-size: 14px; line-height: 1.65; margin-bottom: 18px; }
+    .support-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-coffee {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent); color: #000;
+      font-size: 13px; font-weight: 700;
+      padding: 9px 20px; border-radius: 8px;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .btn-coffee:hover { opacity: 0.85; }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent; color: var(--text);
+      font-size: 13px; font-weight: 600;
+      padding: 9px 18px; border-radius: 8px;
+      border: 1px solid var(--border); text-decoration: none;
+      transition: border-color 0.15s;
+    }
+    .btn-ghost:hover { border-color: #555; }
+
+    /* WHAT IS */
+    .what-section { max-width: 720px; margin: 0 auto; padding: 0 24px 80px; }
+    .what-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px;
+    }
+    .what-card h3 { font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+    .what-card p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .what-card p + p { margin-top: 12px; }
+    .what-card strong { color: var(--text); }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 24px; text-align: center;
+      color: var(--muted); font-size: 12px;
+    }
+    footer strong { color: var(--accent); }
+
+    @media (max-width: 640px) {
+      .products-grid { grid-template-columns: 1fr; }
+      .creator-card { flex-direction: column; }
+      .hero h1 { font-size: 30px; }
+      .hero-meta { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">
+    <div class="logo-icon">⚡</div>
+    <span><span class="logo-beta">Beta</span>ship</span>
+  </a>
+  <a href="#credits" class="btn-support">⚡ Get Credits</a>
+</header>
+
+<section class="hero">
+  <div class="hero-badge">✦ Ship what you built. Get paid for it.</div>
+  <h1>Tools that almost<br><span>didn't ship.</span></h1>
+  <p>AI-built tools with monetization built in. Creators bring the idea. Betaship handles billing and API costs. Everyone ships without the financial risk.</p>
+  <div class="hero-meta">
+    <span>⚡ 8 tools</span>
+    <span>🌍 Global</span>
+    <span>🤖 AI-built</span>
+    <span>💳 Credit-based</span>
+  </div>
+</section>
+
+<section class="products-section">
+  <div class="section-header">
+    <span class="section-title">All products</span>
+    <span style="font-size:13px;color:var(--muted);">3 live · 5 coming soon</span>
+  </div>
+  <div class="products-grid">
+
+    <!-- Moshimo — LIVE -->
+    <div class="product-card" style="--card-accent:#22c55e;">
+      <div class="card-top">
+        <div class="card-icon" style="background:#22c55e14;">🧠</div>
+        <span class="card-status status-live"><span class="status-dot"></span>Live</span>
+      </div>
+      <div class="card-name">Moshimo</div>
+      <div class="card-desc">Install an AI mentor into your thinking. Asks questions, finds your patterns, generates a personal protocol.</div>
+      <div class="card-tags"><span class="tag">AI mentor</span><span class="tag">self-growth</span><span class="tag">chat</span></div>
+      <div class="card-footer">
+        <span class="card-price">Free · Pro ¥680/mo</span>
+        <a href="https://moshimo.onrender.com" target="_blank" class="btn-try live">Try it →</a>
+      </div>
+    </div>
+
+    <!-- Reverie — LIVE -->
+    <div class="product-card" style="--card-accent:#818cf8;">
+      <div class="card-top">
+        <div class="card-icon" style="background:#818cf814;">🎵</div>
+        <span class="card-status status-live"><span class="status-dot"></span>Live</span>
+      </div>
+      <div class="card-name">Reverie</div>
+      <div class="card-desc">Describe your moment — place, weather, vibe — and get the perfect BGM from games, anime, and film.</div>
+      <div class="card-tags"><span class="tag">music</span><span class="tag">ambient</span><span class="tag">mood</span></div>
+      <div class="card-footer">
+        <span class="card-price">Free</span>
+        <a href="https://reverie-music.vercel.app" target="_blank" class="btn-try live">Try it →</a>
+      </div>
+    </div>
+
+    <!-- Wearld — LIVE (launch imminent) -->
+    <div class="product-card" style="--card-accent:#c084fc;">
+      <div class="card-top">
+        <div class="card-icon" style="background:#c084fc14;">🌌</div>
+        <span class="card-status status-beta"><span class="status-dot"></span>Beta</span>
+      </div>
+      <div class="card-name">Wearld</div>
+      <div class="card-desc">Transform any website into another world. 12 presets: deep sea, ruins VHS, witch's notebook, noir, and more.</div>
+      <div class="card-tags"><span class="tag">CSS ambient</span><span class="tag">browser</span><span class="tag">aesthetics</span></div>
+      <div class="card-footer">
+        <span class="card-price">Free · AI $9 one-time</span>
+        <a href="https://wearld.vercel.app" target="_blank" class="btn-try live">Try it →</a>
+      </div>
+    </div>
+
+    <!-- Gait — Coming soon -->
+    <div class="product-card dimmed" style="--card-accent:#34d399;">
+      <div class="card-top">
+        <div class="card-icon" style="background:#34d39914;">🎧</div>
+        <span class="card-status status-soon">Coming soon</span>
+      </div>
+      <div class="card-name">Gait</div>
+      <div class="card-desc">Break out of hyperfocus. Syncs music to your walking BPM and gently pulls your mind back. PWA, works offline.</div>
+      <div class="card-tags"><span class="tag">mindfulness</span><span class="tag">BPM</span><span class="tag">ADHD</span></div>
+      <div class="card-footer">
+        <span class="card-price">Freemium</span>
+        <span class="btn-try soon">In dev</span>
+      </div>
+    </div>
+
+    <!-- Send Nudge — Coming soon -->
+    <div class="product-card dimmed" style="--card-accent:#fb923c;">
+      <div class="card-top">
+        <div class="card-icon" style="background:#fb923c14;">💬</div>
+        <span class="card-status status-soon">Coming soon</span>
+      </div>
+      <div class="card-name">Send Nudge</div>
+      <div class="card-desc">Before you hit send — check it. AI diagnoses the emotional tone of your message and helps you communicate better.</div>
+      <div class="card-tags"><span class="tag">communication</span><span class="tag">emotion AI</span></div>
+      <div class="card-footer">
+        <span class="card-price">Free</span>
+        <span class="btn-try soon">In dev</span>
+      </div>
+    </div>
+
+    <!-- Brain Switch — Coming soon -->
+    <div class="product-card dimmed" style="--card-accent:#60a5fa;">
+      <div class="card-top">
+        <div class="card-icon" style="background:#60a5fa14;">🔀</div>
+        <span class="card-status status-soon">Coming soon</span>
+      </div>
+      <div class="card-name">Brain Switch</div>
+      <div class="card-desc">For multi-mode thinkers. Log your mental states, let AI find patterns, get a switching protocol built for you.</div>
+      <div class="card-tags"><span class="tag">productivity</span><span class="tag">AI patterns</span></div>
+      <div class="card-footer">
+        <span class="card-price">Free</span>
+        <span class="btn-try soon">In dev</span>
+      </div>
+    </div>
+
+    <!-- Qliq — Coming soon -->
+    <div class="product-card dimmed" style="--card-accent:#f472b6;">
+      <div class="card-top">
+        <div class="card-icon" style="background:#f472b614;">📋</div>
+        <span class="card-status status-soon">Coming soon</span>
+      </div>
+      <div class="card-name">Qliq</div>
+      <div class="card-desc">Batch copy and clipboard history for Chrome. Copy multiple things at once. Instant to install.</div>
+      <div class="card-tags"><span class="tag">clipboard</span><span class="tag">Chrome extension</span></div>
+      <div class="card-footer">
+        <span class="card-price">Free</span>
+        <span class="btn-try soon">In dev</span>
+      </div>
+    </div>
+
+    <!-- Saki — Coming soon -->
+    <div class="product-card dimmed" style="--card-accent:#f9a8d4;">
+      <div class="card-top">
+        <div class="card-icon" style="background:#f9a8d414;">✨</div>
+        <span class="card-status status-soon">Coming soon</span>
+      </div>
+      <div class="card-name">Saki</div>
+      <div class="card-desc">An AI character who listens. Has a voice, a personality, and a way of making you feel heard — not just answered.</div>
+      <div class="card-tags"><span class="tag">AI character</span><span class="tag">voice</span></div>
+      <div class="card-footer">
+        <span class="card-price">Free</span>
+        <span class="btn-try soon">In dev</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CREDITS -->
+<section class="creator-section" id="credits">
+  <div class="creator-card">
+    <div class="creator-avatar">⚡</div>
+    <div class="creator-info">
+      <div class="credits-badge">Early Access</div>
+      <h2>Use AI tools without worrying about the bill.</h2>
+      <p>Betaship covers the API costs. You buy credits, spend them across any tool on the platform. Creators get paid. You get access. No subscriptions, no per-tool accounts.</p>
+      <div class="price-highlight">$5 <span style="font-size:16px;font-weight:400;color:var(--muted)">= 100 credits</span></div>
+      <div class="price-note">~100 AI interactions across all tools · Early access pricing</div>
+      <ul class="credit-list">
+        <li>Works across all tools — Moshimo, Reverie, Wearld and more</li>
+        <li>Credits never expire</li>
+        <li>Early supporters get bonus credits when full platform launches</li>
+      </ul>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <span style="display:inline-flex;align-items:center;gap:8px;background:#18181c;border:1px solid var(--border);color:var(--muted);font-size:14px;font-weight:700;padding:12px 28px;border-radius:10px;cursor:default;">⚡ Buy Credits — Coming soon</span>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;">Credit system launching soon. Try the tools above for free in the meantime.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT IS BETASHIP -->
+<section class="what-section">
+  <div class="what-card">
+    <h3>What is Betaship?</h3>
+    <p>Most AI-built tools never make it out. The bigger reason? Every time someone uses them, the creator pays for it. API costs pile up. Enthusiasm dies. The tool stays private.</p>
+    <p><strong>Betaship is where you ship with monetization already built in.</strong> You bring the idea and the code. Betaship handles the billing, the API costs, and the revenue split. Creators stop losing money. Users get real tools, not prototypes.</p>
+    <p>Right now it's one creator — all 8 tools above are mine. But the infrastructure being built underneath is designed for more. <strong>If you've built something and want to ship it without the financial risk, get in touch.</strong></p>
+    <p style="margin-top:16px;font-size:12px;color:#555;">"Ship what you built. Get paid for it." — Betaship is in early validation. More creators coming once the model is proven.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Built on <strong>Betaship</strong> · "Ship what you built." · Made with AI · 2026</p>
+</footer>
+
+</body>
+</html>

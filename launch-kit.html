@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Betaship — Launch Kit</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0c0c0e;
+      --surface: #141416;
+      --border: #222226;
+      --text: #e8e8ec;
+      --muted: #888896;
+      --accent: #f0a500;
+      --green: #22c55e;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      padding: 40px 24px;
+      max-width: 740px;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 48px;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    .logo span { color: var(--muted); font-weight: 400; }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    section {
+      margin-bottom: 40px;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .copy-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .copy-btn.copied {
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .post-text {
+      font-size: 14px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      color: var(--text);
+    }
+    .char-count {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .char-count .num {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .char-count .limit {
+      color: var(--green);
+    }
+    .char-count .overlimit {
+      color: #ef4444;
+    }
+    .tip-box {
+      background: #f0a50010;
+      border: 1px solid #f0a50030;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 16px;
+    }
+    .tip-box strong {
+      color: var(--accent);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .todo-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .todo-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+    }
+    .todo-num {
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      font-size: 11px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .todo-text { color: var(--text); }
+    .todo-text .hint { color: var(--muted); font-size: 12px; }
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Betaship <span>/ Launch Kit</span></div>
+  <h1>シェア用テキスト一覧</h1>
+  <p class="subtitle">コピーして貼り付けるだけ。URL・Ko-fi リンクは自分のものに差し替えてください。</p>
+</header>
+
+<!-- 事前チェックリスト -->
+<section>
+  <div class="section-label">事前チェックリスト</div>
+  <div class="card">
+    <ul class="todo-list">
+      <li class="todo-item">
+        <span class="todo-num">1</span>
+        <div class="todo-text">
+          GitHub Pages にデプロイ済み
+          <div class="hint">→ DEPLOY.md 参照。URL: https://[your-username].github.io/betaship/</div>
+        </div>
+      </li>
+      <li class="todo-item">
+        <span class="todo-num">2</span>
+        <div class="todo-text">
+          Ko-fi アカウント作成済み
+          <div class="hint">→ index.html の Ko-fi リンクを差し替えてから公開する</div>
+        </div>
+      </li>
+      <li class="todo-item">
+        <span class="todo-num">3</span>
+        <div class="todo-text">
+          Moshimo / Reverie / Wearld の各リンクが開くことを確認
+          <div class="hint">→ moshimo.onrender.com / reverie-music.vercel.app / wearld.vercel.app</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- X (Twitter) 日本語版 -->
+<section>
+  <div class="section-label">X (Twitter) — 日本語</div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">投稿 A（ストーリー型）</span>
+      <button class="copy-btn" onclick="copyText(this, 'tweet-ja-a')">コピー</button>
+    </div>
+    <pre class="post-text" id="tweet-ja-a">作ったものを出し続けてたら、8つになってた。
+
+メンターAI / 音楽推薦 / CSS変換 / 歩行BPM / 送信前診断 / 脳モード切替 / AIキャラ / Clickバッチコピー
+
+全部無料で試せます。気に入ったらコーヒー1杯分でも。
+
+→ https://[your-username].github.io/betaship/
+
+#IndieHacker #個人開発 #AI</pre>
+    <div class="char-count">文字数: <span class="num" id="count-ja-a">0</span> / <span class="limit">280（目安）</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">投稿 B（シンプル型）</span>
+      <button class="copy-btn" onclick="copyText(this, 'tweet-ja-b')">コピー</button>
+    </div>
+    <pre class="post-text" id="tweet-ja-b">自分で作ったAIツールをまとめたページを公開しました。
+
+・Moshimo — メンターAI
+・Reverie — 音楽推薦
+・Wearld — CSS変換
+・Gait — 歩行BPM（開発中）
+
+全部無料で試せます。
+
+Betaship → https://[your-username].github.io/betaship/</pre>
+    <div class="char-count">文字数: <span class="num" id="count-ja-b">0</span> / <span class="limit">280（目安）</span></div>
+  </div>
+
+  <div class="tip-box">
+    <strong>投稿のコツ</strong>
+    画像スクリーンショットを一緒に添付すると反応率が上がる。index.html を開いてスクショを撮って添付する。
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- X (Twitter) 英語版 -->
+<section>
+  <div class="section-label">X (Twitter) — English</div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Post A (story type)</span>
+      <button class="copy-btn" onclick="copyText(this, 'tweet-en-a')">Copy</button>
+    </div>
+    <pre class="post-text" id="tweet-en-a">I kept shipping. Now there are 8 of them.
+
+A mentor AI, music recommender, CSS transformer, walking BPM app, message checker, focus switcher, AI character, and a browser extension.
+
+All free to try. Pay what you want if you love one.
+
+→ https://[your-username].github.io/betaship/
+
+#buildinpublic #indiedev #AI</pre>
+    <div class="char-count">Chars: <span class="num" id="count-en-a">0</span> / <span class="limit">280</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Post B (simple)</span>
+      <button class="copy-btn" onclick="copyText(this, 'tweet-en-b')">Copy</button>
+    </div>
+    <pre class="post-text" id="tweet-en-b">Launched Betaship — my collection of AI-built experiments.
+
+Ship what you built.
+
+→ https://[your-username].github.io/betaship/
+
+#buildinpublic #sideproject</pre>
+    <div class="char-count">Chars: <span class="num" id="count-en-b">0</span> / <span class="limit">280</span></div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- Reddit -->
+<section>
+  <div class="section-label">Reddit — r/SideProject / r/artificial</div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">r/SideProject 投稿</span>
+      <button class="copy-btn" onclick="copyText(this, 'reddit-side')">コピー</button>
+    </div>
+    <pre class="post-text" id="reddit-side">Title: I've been building AI tools for months. Here's all 8 of them in one place.
+
+---
+
+I shipped 8 AI-powered web apps over the past months. Instead of letting them sit in different tabs, I put them all in one place.
+
+**Live now:**
+- **Moshimo** — An AI mentor that listens and reflects back what matters (moshimo.onrender.com)
+- **Reverie** — Music recommendations based on your current scene, weather, and mood (reverie-music.vercel.app)
+- **Wearld** — Transform any website's CSS with AI presets (wearld.vercel.app)
+
+**Coming soon (in dev):**
+- Gait — Walking BPM soundscapes for ADHD hyperfocus reset
+- Send Nudge — Check a message before you send it
+- Brain Switch — Mode switching for hyper-focused workers
+- Qliq — Chrome extension for batch clipboard
+- Saki — An AI character you can summon
+
+Everything is free to try. Pay what you want if something clicks.
+
+→ https://[your-username].github.io/betaship/
+
+Happy to hear what resonates or what's confusing.</pre>
+    <div class="char-count">文字数: <span class="num" id="count-reddit-side">0</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">r/artificial 投稿（AI寄り）</span>
+      <button class="copy-btn" onclick="copyText(this, 'reddit-ai')">コピー</button>
+    </div>
+    <pre class="post-text" id="reddit-ai">Title: I built 8 AI web apps solo — here's what I learned shipping each one
+
+---
+
+Over the past months I've been building AI-powered tools solo, using Claude API / Spotify API / Supabase / Stripe. Instead of waiting until they're "perfect," I shipped them.
+
+Here's the collection: https://[your-username].github.io/betaship/
+
+The ones live now:
+- **Moshimo** — mentor AI that reflects back patterns in your conversations
+- **Reverie** — music finder based on where you are + weather + time of day (Claude → Spotify search)
+- **Wearld** — AI CSS transformer with aesthetic presets (Claude Haiku)
+
+Key lessons from shipping:
+1. "Ship what you built" beats waiting for polish
+2. Pay-what-you-want reveals who actually values what
+3. Claude Haiku is fast enough for real-time UX if prompt is tight
+
+Open to feedback on any of them.</pre>
+    <div class="char-count">文字数: <span class="num" id="count-reddit-ai">0</span></div>
+  </div>
+
+  <div class="tip-box">
+    <strong>Reddit 投稿のコツ</strong>
+    r/SideProject は Show HN 的な「作ったよ」投稿に寛容。タイトルは "I built X — here's Y" 形式が最も通りやすい。
+    スパム扱いされないよう、投稿後は必ずコメントへの返信を24時間内に行う。
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ProductHunt -->
+<section>
+  <div class="section-label">Product Hunt（準備用メモ）</div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Tagline & Description</span>
+      <button class="copy-btn" onclick="copyText(this, 'ph-text')">コピー</button>
+    </div>
+    <pre class="post-text" id="ph-text">Tagline:
+Ship what you built. A collection of AI experiments by one person.
+
+Short description:
+Betaship is a curated collection of AI-powered web tools built by a solo developer. All free to try, pay-what-you-want if you love one. New tools added as they ship.
+
+First makers comment (paste this as your maker comment after launch):
+Hey PH 👋 I'm the solo dev behind Betaship.
+
+I've been building AI tools for months — a mentor chatbot, a music recommender, a CSS transformer, and more. Instead of waiting until each is "finished," I put them all in one place.
+
+3 are live now, 5 more coming. Everything is free to try.
+
+Would love to know: which tool sounds most interesting to you?</pre>
+  </div>
+  <div class="tip-box">
+    <strong>ProductHunt のタイミング</strong>
+    GitHub Pages で最低10クリック/週 を確認してから PH に出す。SPEC.md の Phase 1 移行条件を先に満たす。
+  </div>
+</section>
+
+<script>
+  function copyText(btn, id) {
+    const text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ コピー済み';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = btn.textContent.includes('Copy') ? 'Copy' : 'コピー';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  // 文字数カウント
+  const countMap = {
+    'count-ja-a': 'tweet-ja-a',
+    'count-ja-b': 'tweet-ja-b',
+    'count-en-a': 'tweet-en-a',
+    'count-en-b': 'tweet-en-b',
+    'count-reddit-side': 'reddit-side',
+    'count-reddit-ai': 'reddit-ai',
+  };
+
+  Object.entries(countMap).forEach(([countId, textId]) => {
+    const text = document.getElementById(textId)?.textContent || '';
+    const span = document.getElementById(countId);
+    if (span) span.textContent = text.length;
+  });
+
+  // コピーボタンのラベル修正（英語ボタン）
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const isEn = this.textContent.trim() === 'Copy' || this.textContent.trim() === '✓ Copied';
+      if (isEn) {
+        setTimeout(() => { this.textContent = 'Copy'; }, 2000);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
