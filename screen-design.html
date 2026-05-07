@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Betaship — 画面設計書</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0e;
+      --surface: #111116;
+      --surface2: #16161e;
+      --border: #1e1e28;
+      --text: #e4e4f0;
+      --muted: #6060a0;
+      --accent: #f0a500;
+      --green: #22c55e;
+      --blue: #3b82f6;
+      --purple: #a78bfa;
+      --red: #ef4444;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    .doc-header {
+      background: linear-gradient(135deg, #111116, #0a0a14);
+      border-bottom: 1px solid var(--border);
+      padding: 40px 48px;
+    }
+    .doc-header h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .doc-header h1 span { color: var(--accent); }
+    .doc-meta { display: flex; gap: 24px; margin-top: 16px; flex-wrap: wrap; }
+    .meta-pill {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 4px;
+    }
+    .pill-built { background: #22c55e18; color: var(--green); border: 1px solid #22c55e30; }
+    .pill-p1 { background: #f0a50018; color: var(--accent); border: 1px solid #f0a50030; }
+    .pill-p2 { background: #a78bfa18; color: var(--purple); border: 1px solid #a78bfa30; }
+
+    /* ── LAYOUT ── */
+    .doc-body { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 240px; flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    .sidebar-section { margin-bottom: 24px; }
+    .sidebar-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+      padding: 0 8px;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 8px; border-radius: 6px; cursor: pointer;
+      font-size: 13px; text-decoration: none; color: var(--text);
+      transition: background 0.1s;
+    }
+    .sidebar-item:hover { background: var(--surface2); }
+    .sidebar-item.active { background: #f0a50014; color: var(--accent); }
+    .s-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .s-dot.built { background: var(--green); }
+    .s-dot.p1 { background: var(--accent); }
+    .s-dot.p2 { background: var(--purple); }
+
+    .main { flex: 1; padding: 48px; max-width: 1100px; }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow-section { margin-bottom: 64px; }
+    .section-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 20px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .flow-diagram {
+      display: flex; flex-direction: column; gap: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px; overflow-x: auto;
+    }
+    .flow-row { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; }
+    .flow-row + .flow-row { margin-top: 20px; }
+    .flow-node {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      min-width: 100px;
+    }
+    .flow-box {
+      padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+      text-align: center; white-space: nowrap;
+      border: 1px solid transparent;
+    }
+    .flow-box.built { background: #22c55e14; border-color: #22c55e30; color: var(--green); }
+    .flow-box.p1 { background: #f0a50014; border-color: #f0a50030; color: var(--accent); }
+    .flow-box.p2 { background: #a78bfa14; border-color: #a78bfa30; color: var(--purple); }
+    .flow-box.external { background: #3b82f614; border-color: #3b82f630; color: var(--blue); }
+    .flow-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; }
+    .flow-arrow { font-size: 16px; color: var(--border); margin: 0 8px; padding-bottom: 16px; }
+    .flow-arrow.down { transform: rotate(90deg); }
+
+    /* ── SCREEN CARD ── */
+    .screen-section { margin-bottom: 64px; }
+    .screen-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden; margin-bottom: 24px;
+    }
+    .screen-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+      gap: 16px; flex-wrap: wrap;
+    }
+    .screen-id { font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 4px; letter-spacing: 0.08em; }
+    .screen-name { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
+    .screen-url { font-size: 12px; color: var(--muted); font-family: monospace; margin-top: 4px; }
+    .phase-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 4px; flex-shrink: 0;
+    }
+    .phase-badge.built { background: #22c55e18; color: var(--green); border: 1px solid #22c55e30; }
+    .phase-badge.p1 { background: #f0a50018; color: var(--accent); border: 1px solid #f0a50030; }
+    .phase-badge.p2 { background: #a78bfa18; color: var(--purple); border: 1px solid #a78bfa30; }
+
+    .screen-body { display: flex; gap: 0; }
+    .screen-mockup {
+      width: 360px; flex-shrink: 0;
+      background: #0a0a0e; border-right: 1px solid var(--border);
+      padding: 0; min-height: 280px; position: relative; overflow: hidden;
+    }
+    .screen-spec { flex: 1; padding: 20px 24px; }
+    .spec-section { margin-bottom: 20px; }
+    .spec-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+    }
+    .spec-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .spec-list li {
+      font-size: 13px; color: var(--text);
+      display: flex; gap: 8px; align-items: flex-start;
+    }
+    .spec-list li::before { content: '·'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+    .spec-list li.muted::before { color: var(--muted); }
+    .spec-list li.muted { color: var(--muted); }
+    .cta-flow {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .cta-chip {
+      font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px;
+    }
+    .cta-chip.primary { background: #f0a50018; color: var(--accent); border: 1px solid #f0a50030; }
+    .cta-chip.secondary { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+    .cta-chip.danger { background: #ef444418; color: var(--red); border: 1px solid #ef444430; }
+    .arrow-sm { color: var(--muted); font-size: 12px; }
+
+    /* ── MOCKUP STYLES ── */
+    .mock { font-family: -apple-system, sans-serif; }
+    .mock-nav {
+      background: rgba(12,12,14,0.95); border-bottom: 1px solid #222;
+      padding: 0 16px; height: 44px; display: flex; align-items: center;
+      justify-content: space-between; font-size: 13px; font-weight: 700;
+    }
+    .mock-logo { color: var(--accent); }
+    .mock-btn { background: var(--accent); color: #000; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 5px; }
+    .mock-hero { padding: 20px 16px 16px; text-align: center; }
+    .mock-badge { display: inline-block; background: #f0a50014; color: var(--accent); font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 99px; border: 1px solid #f0a50030; margin-bottom: 8px; }
+    .mock-h1 { font-size: 18px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; letter-spacing: -0.5px; }
+    .mock-sub { font-size: 10px; color: var(--muted); margin-bottom: 12px; }
+    .mock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 0 16px 16px; }
+    .mock-card { background: #141416; border: 1px solid #222; border-radius: 8px; padding: 10px; }
+    .mock-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .mock-icon { font-size: 14px; }
+    .mock-live { font-size: 8px; font-weight: 700; color: var(--green); background: #22c55e14; padding: 2px 5px; border-radius: 99px; }
+    .mock-soon { font-size: 8px; color: var(--muted); }
+    .mock-card-name { font-size: 11px; font-weight: 700; margin-bottom: 2px; }
+    .mock-card-desc { font-size: 9px; color: var(--muted); line-height: 1.4; }
+    .mock-divider { height: 1px; background: #222; margin: 0 16px 16px; }
+    .mock-credit-box { margin: 0 16px 16px; background: #141416; border: 1px solid #222; border-radius: 8px; padding: 12px; }
+    .mock-credit-title { font-size: 10px; font-weight: 700; margin-bottom: 4px; }
+    .mock-credit-price { font-size: 16px; font-weight: 800; color: var(--accent); }
+    .mock-credit-sub { font-size: 9px; color: var(--muted); }
+    .mock-credit-btn { display: block; margin-top: 8px; background: #1e1e1e; border: 1px solid #333; color: var(--muted); font-size: 9px; font-weight: 700; padding: 5px; border-radius: 5px; text-align: center; }
+
+    /* detail screen mock */
+    .mock-detail-hero { padding: 16px; }
+    .mock-detail-back { font-size: 9px; color: var(--accent); margin-bottom: 8px; }
+    .mock-detail-icon { font-size: 28px; margin-bottom: 6px; }
+    .mock-detail-name { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+    .mock-detail-desc { font-size: 9px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+    .mock-detail-cost { background: #f0a50014; border: 1px solid #f0a50030; border-radius: 6px; padding: 8px 10px; margin-bottom: 10px; font-size: 10px; }
+    .mock-detail-cost strong { color: var(--accent); }
+    .mock-detail-btn { background: var(--accent); color: #000; font-size: 10px; font-weight: 800; padding: 8px; border-radius: 6px; text-align: center; }
+    .mock-detail-btn-free { background: #1e1e1e; border: 1px solid #333; color: var(--muted); font-size: 10px; font-weight: 700; padding: 8px; border-radius: 6px; text-align: center; margin-top: 4px; }
+
+    /* credits mock */
+    .mock-credit-page { padding: 16px; }
+    .mock-credit-page-title { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+    .mock-credit-page-sub { font-size: 9px; color: var(--muted); margin-bottom: 12px; }
+    .mock-pack { background: #141416; border: 1px solid #222; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .mock-pack.featured { border-color: #f0a50040; }
+    .mock-pack-name { font-size: 11px; font-weight: 700; }
+    .mock-pack-credits { font-size: 9px; color: var(--muted); }
+    .mock-pack-price { font-size: 13px; font-weight: 800; color: var(--accent); }
+    .mock-stripe-btn { background: var(--accent); color: #000; font-size: 10px; font-weight: 800; padding: 8px; border-radius: 6px; text-align: center; margin-top: 8px; }
+
+    /* dashboard mock */
+    .mock-dash { padding: 16px; }
+    .mock-balance { background: linear-gradient(135deg, #1a1408, #141416); border: 1px solid #f0a50030; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+    .mock-balance-label { font-size: 9px; color: var(--muted); }
+    .mock-balance-num { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1; margin: 2px 0; }
+    .mock-balance-sub { font-size: 9px; color: var(--muted); }
+    .mock-history-label { font-size: 9px; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .mock-history-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1a1a1a; font-size: 10px; }
+    .mock-history-tool { color: var(--text); }
+    .mock-history-cost { color: var(--red); }
+
+    /* creator submit mock */
+    .mock-form { padding: 16px; }
+    .mock-form-title { font-size: 14px; font-weight: 800; margin-bottom: 12px; }
+    .mock-field { margin-bottom: 8px; }
+    .mock-field-label { font-size: 9px; color: var(--muted); margin-bottom: 3px; }
+    .mock-field-input { background: #141416; border: 1px solid #222; border-radius: 5px; padding: 6px 8px; font-size: 10px; color: var(--muted); width: 100%; }
+    .mock-form-btn { background: var(--accent); color: #000; font-size: 10px; font-weight: 800; padding: 8px; border-radius: 6px; text-align: center; margin-top: 8px; }
+
+    /* creator dash mock */
+    .mock-cdash { padding: 16px; }
+    .mock-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+    .mock-stat { background: #141416; border: 1px solid #222; border-radius: 6px; padding: 8px; }
+    .mock-stat-label { font-size: 9px; color: var(--muted); }
+    .mock-stat-num { font-size: 16px; font-weight: 800; color: var(--green); }
+    .mock-payout { background: #22c55e14; border: 1px solid #22c55e30; border-radius: 6px; padding: 8px; font-size: 10px; }
+    .mock-payout strong { color: var(--green); }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .screen-body { flex-direction: column; }
+      .screen-mockup { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      .main { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="doc-header">
+  <h1><span>Betaship</span> — 画面設計書</h1>
+  <p style="color:var(--muted);font-size:13px;margin-top:4px;">プラットフォーム全画面の仕様・フロー・フェーズ定義</p>
+  <div class="doc-meta">
+    <span class="meta-pill pill-built">● Built — 実装済み</span>
+    <span class="meta-pill pill-p1">● Phase 1 — クレジット実証後</span>
+    <span class="meta-pill pill-p2">● Phase 2 — 外部クリエイター解放後</span>
+    <span style="font-size:11px;color:var(--muted);margin-left:8px;">updated: 2026-05-07</span>
+  </div>
+</div>
+
+<div class="doc-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">フロー</div>
+      <a href="#flow" class="sidebar-item">画面遷移図</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">ユーザー向け</div>
+      <a href="#s01" class="sidebar-item"><span class="s-dot built"></span>S01 プロダクト一覧 LP</a>
+      <a href="#s02" class="sidebar-item"><span class="s-dot p1"></span>S02 プロダクト詳細</a>
+      <a href="#s03" class="sidebar-item"><span class="s-dot p1"></span>S03 クレジット購入</a>
+      <a href="#s04" class="sidebar-item"><span class="s-dot p1"></span>S04 ユーザーダッシュボード</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">クリエイター向け</div>
+      <a href="#s05" class="sidebar-item"><span class="s-dot p2"></span>S05 ツール申請フォーム</a>
+      <a href="#s06" class="sidebar-item"><span class="s-dot p2"></span>S06 クリエイターダッシュボード</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">共通</div>
+      <a href="#s07" class="sidebar-item"><span class="s-dot built"></span>S07 Betaship バナー（各ツール）</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- FLOW DIAGRAM -->
+    <div id="flow" class="flow-section">
+      <div class="section-title">画面遷移図</div>
+      <div class="flow-diagram">
+
+        <!-- Row 1: User entry -->
+        <div class="flow-row">
+          <div class="flow-node">
+            <div class="flow-box built">S01 LP</div>
+            <div class="flow-badge">● Built</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">
+            <div class="flow-box p1">S02 詳細</div>
+            <div class="flow-badge">Phase 1</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">
+            <div class="flow-box external">ツール（外部）</div>
+            <div class="flow-badge">外部サイト</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">
+            <div class="flow-box built">S07 バナー</div>
+            <div class="flow-badge">● Built</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">
+            <div class="flow-box built">S01 LP</div>
+            <div class="flow-badge">帰還</div>
+          </div>
+        </div>
+
+        <div style="height:16px;"></div>
+
+        <!-- Row 2: Credits flow -->
+        <div class="flow-row">
+          <div class="flow-node">
+            <div class="flow-box built">S01 LP</div>
+            <div class="flow-badge">● Built</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">
+            <div class="flow-box p1">S03 クレジット購入</div>
+            <div class="flow-badge">Phase 1</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">
+            <div class="flow-box p1">Stripe Checkout</div>
+            <div class="flow-badge">外部</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">
+            <div class="flow-box p1">S04 ダッシュボード</div>
+            <div class="flow-badge">Phase 1</div>
+          </div>
+        </div>
+
+        <div style="height:16px;"></div>
+
+        <!-- Row 3: Creator flow -->
+        <div class="flow-row">
+          <div class="flow-node">
+            <div class="flow-box built">S01 LP</div>
+            <div class="flow-badge">● Built</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">
+            <div class="flow-box p2">S05 申請フォーム</div>
+            <div class="flow-badge">Phase 2</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">
+            <div class="flow-box p2">審査（手動）</div>
+            <div class="flow-badge">Phase 2</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">
+            <div class="flow-box p2">S06 クリエイターDB</div>
+            <div class="flow-badge">Phase 2</div>
+          </div>
+        </div>
+
+        <div style="height:20px;border-top:1px solid var(--border);margin-top:8px;padding-top:16px;display:flex;gap:24px;align-items:center;font-size:11px;color:var(--muted);">
+          <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:2px;background:#22c55e18;border:1px solid #22c55e30;display:inline-block;"></span>実装済み</span>
+          <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:2px;background:#f0a50018;border:1px solid #f0a50030;display:inline-block;"></span>Phase 1</span>
+          <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:2px;background:#a78bfa18;border:1px solid #a78bfa30;display:inline-block;"></span>Phase 2</span>
+          <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:2px;background:#3b82f618;border:1px solid #3b82f630;display:inline-block;"></span>外部</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ S01 ═══ -->
+    <div id="s01" class="screen-section">
+      <div class="section-title">ユーザー向け画面</div>
+      <div class="screen-card">
+        <div class="screen-header">
+          <div>
+            <div class="screen-id">S01</div>
+            <div class="screen-name">プロダクト一覧 LP</div>
+            <div class="screen-url">okamone.github.io/betaship/</div>
+          </div>
+          <span class="phase-badge built">● Built · 公開済み</span>
+        </div>
+        <div class="screen-body">
+          <div class="screen-mockup mock">
+            <div class="mock-nav">
+              <span class="mock-logo">⚡ Betaship</span>
+              <span class="mock-btn">Get Credits</span>
+            </div>
+            <div class="mock-hero">
+              <div class="mock-badge">Ship what you built. Get paid for it.</div>
+              <div class="mock-h1">Tools that almost<br>didn't ship.</div>
+              <div class="mock-sub">AI-built tools with monetization built in.</div>
+            </div>
+            <div class="mock-grid">
+              <div class="mock-card">
+                <div class="mock-card-top"><span class="mock-icon">🧠</span><span class="mock-live">Live</span></div>
+                <div class="mock-card-name">Moshimo</div>
+                <div class="mock-card-desc">AI mentor that listens</div>
+              </div>
+              <div class="mock-card">
+                <div class="mock-card-top"><span class="mock-icon">🎵</span><span class="mock-live">Live</span></div>
+                <div class="mock-card-name">Reverie</div>
+                <div class="mock-card-desc">Music for your moment</div>
+              </div>
+              <div class="mock-card">
+                <div class="mock-card-top"><span class="mock-icon">🌌</span><span class="mock-soon">Beta</span></div>
+                <div class="mock-card-name">Wearld</div>
+                <div class="mock-card-desc">CSS world transformer</div>
+              </div>
+              <div class="mock-card" style="opacity:0.5">
+                <div class="mock-card-top"><span class="mock-icon">🎧</span><span class="mock-soon" style="font-size:8px">Soon</span></div>
+                <div class="mock-card-name">Gait</div>
+                <div class="mock-card-desc">Walking BPM reset</div>
+              </div>
+            </div>
+            <div class="mock-divider"></div>
+            <div class="mock-credit-box">
+              <div class="mock-credit-title">⚡ Early Access</div>
+              <div class="mock-credit-price">$5 <span style="font-size:10px;color:var(--muted);font-weight:400">= 100 credits</span></div>
+              <div class="mock-credit-sub">All tools · Credits never expire</div>
+              <div class="mock-credit-btn">⚡ Buy Credits — Coming soon</div>
+            </div>
+          </div>
+          <div class="screen-spec">
+            <div class="spec-section">
+              <div class="spec-label">構成要素</div>
+              <ul class="spec-list">
+                <li>Sticky ナビ（ロゴ・Get Credits ボタン）</li>
+                <li>Hero（タグライン・サブコピー・メタ情報）</li>
+                <li>プロダクトグリッド（Live/Beta/Coming soon バッジ）</li>
+                <li>クレジット購入セクション（Coming soon 状態）</li>
+                <li>What is Betaship？説明</li>
+                <li>フッター（DM for feedback リンク）</li>
+              </ul>
+            </div>
+            <div class="spec-section">
+              <div class="spec-label">主要CTA</div>
+              <div class="cta-flow">
+                <span class="cta-chip primary">Try it →</span>
+                <span class="arrow-sm">→</span>
+                <span class="cta-chip secondary">外部ツールへ遷移</span>
+              </div>
+              <div class="cta-flow" style="margin-top:6px;">
+                <span class="cta-chip secondary">⚡ Buy Credits（Coming soon）</span>
+              </div>
+            </div>
+            <div class="spec-section">
+              <div class="spec-label">計測</div>
+              <ul class="spec-list">
+                <li>Try it → クリック → localStorage + GA4 イベント</li>
+                <li>目標：週10クリック / 1件支払い / 1件DM</li>
+              </ul>
+            </div>
+            <div class="spec-section">
+              <div class="spec-label">Phase 1 での変更点</div>
+              <ul class="spec-list">
+                <li class="muted">プロダクト詳細ページへのリンク追加</li>
+                <li class="muted">クレジット購入ボタンを有効化</li>
+                <li class="muted">ログイン後は残クレジット数を表示</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S02 -->
+      <div id="s02" class="screen-card">
+        <div class="screen-header">
+          <div>
+            <div class="screen-id">S02</div>
+            <div class="screen-name">プロダクト詳細</div>
+            <div class="screen-url">okamone.github.io/betaship/tools/moshimo</div>
+          </div>
+          <span class="phase-badge p1">Phase 1</span>
+        </div>
+        <div class="screen-body">
+          <div class="screen-mockup mock">
+            <div class="mock-nav">
+              <span style="font-size:11px;color:var(--accent);">← Betaship</span>
+              <span class="mock-btn">74 credits</span>
+            </div>
+            <div class="mock-detail-hero">
+              <div class="mock-detail-back">← Back to Betaship</div>
+              <div class="mock-detail-icon">🧠</div>
+              <div class="mock-detail-name">Moshimo</div>
+              <div class="mock-live" style="display:inline-block;margin-bottom:8px;">Live</div>
+              <div class="mock-detail-desc">Install an AI mentor into your thinking. Asks questions, finds your patterns, generates a personal protocol for growth.</div>
+              <div class="mock-detail-cost">
+                <strong>5 credits / session</strong> · ~30–60分のセッション
+              </div>
+              <div class="mock-detail-btn">⚡ Use 5 credits — Start session</div>
+              <div class="mock-detail-btn-free">Try for free (limited)</div>
+            </div>
+          </div>
+          <div class="screen-spec">
+            <div class="spec-section">
+              <div class="spec-label">構成要素</div>
+              <ul class="spec-list">
+                <li>← Back ナビ</li>
+                <li>ツールアイコン・名前・ステータスバッジ</li>
+                <li>説明文（長め）・スクリーンショット</li>
+                <li>クレジットコスト表示（例：5 credits / session）</li>
+                <li>主CTA：「Use X credits」（ログイン済み・残あり）</li>
+                <li>副CTA：「Try for free」（無料枠 or 未購入ユーザー）</li>
+                <li>レビュー・使用数（Phase 2）</li>
+              </ul>
+            </div>
+            <div class="spec-section">
+              <div class="spec-label">主要CTA</div>
+              <div class="cta-flow">
+                <span class="cta-chip primary">Use X credits</span>
+                <span class="arrow-sm">→</span>
+                <span class="cta-chip secondary">外部ツールへ</span>
+              </div>
+              <div class="cta-flow" style="margin-top:6px;">
+                <span class="cta-chip secondary">Try for free</span>
+                <span class="arrow-sm">→</span>
+                <span class="cta-chip secondary">外部ツールへ（無料枠）</span>
+              </div>
+            </div>
+            <div class="spec-section">
+              <div class="spec-label">条件分岐</div>
+              <ul class="spec-list">
+                <li>未ログイン → 「Try for free / Buy credits」</li>
+                <li>ログイン・残あり → 「Use X credits」有効</li>
+                <li>ログイン・残なし → 「Buy credits first」</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S03 -->
+    <div id="s03" class="screen-section">
+      <div class="screen-card">
+        <div class="screen-header">
+          <div>
+            <div class="screen-id">S03</div>
+            <div class="screen-name">クレジット購入</div>
+            <div class="screen-url">okamone.github.io/betaship/credits</div>
+          </div>
+          <span class="phase-badge p1">Phase 1</span>
+        </div>
+        <div class="screen-body">
+          <div class="screen-mockup mock">
+            <div class="mock-nav">
+              <span style="font-size:11px;color:var(--accent);">← Back</span>
+              <span class="mock-logo">⚡ Betaship</span>
+            </div>
+            <div class="mock-credit-page">
+              <div class="mock-credit-page-title">⚡ Credits を買う</div>
+              <div class="mock-credit-page-sub">全ツールで使えます · 有効期限なし</div>
+              <div class="mock-pack">
+                <div><div class="mock-pack-name">Starter</div><div class="mock-pack-credits">50 credits</div></div>
+                <div class="mock-pack-price">$3</div>
+              </div>
+              <div class="mock-pack featured">
+                <div><div class="mock-pack-name">⭐ Standard</div><div class="mock-pack-credits">100 credits · 人気</div></div>
+                <div class="mock-pack-price">$5</div>
+              </div>
+              <div class="mock-pack">
+                <div><div class="mock-pack-name">Power</div><div class="mock-pack-credits">300 credits</div></div>
+                <div class="mock-pack-price">$12</div>
+              </div>
+              <div class="mock-stripe-btn">💳 Stripe で購入</div>
+              <div style="font-size:9px;color:var(--muted);margin-top:8px;text-align:center;">Stripe 決済 · 返金対応</div>
+            </div>
+          </div>
+          <div class="screen-spec">
+            <div class="spec-section">
+              <div class="spec-label">構成要素</div>
+              <ul class="spec-list">
+                <li>クレジットパック選択（3段階：Starter / Standard / Power）</li>
+                <li>各パックの内容・価格・1クレジット単価</li>
+                <li>「Stripe で購入」→ Stripe Checkout に遷移</li>
+                <li>購入後：ダッシュボードへリダイレクト（クレジット付与確認）</li>
+              </ul>
+            </div>
+            <div class="spec-section">
+              <div class="spec-label">クレジット単価設計（案）</div>
+              <ul class="spec-list">
+                <li>Starter: $3 = 50cr → $0.06/cr</li>
+                <li>Standard: $5 = 100cr → $0.05/cr（推奨）</li>
+                <li>Power: $12 = 300cr → $0.04/cr</li>
+              </ul>
+            </div>
+            <div class="spec-section">
+              <div class="spec-label">技術</div>
+              <ul class="spec-list">
+                <li>Stripe Payment Link × 3（パックごと）</li>
+                <li>購入完了 → Webhook → Supabase credits テーブル更新</li>
+                <li>クレジット残高：Supabase RLS でユーザーごとに管理</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S04 -->
+      <div id="s04" class="screen-card">
+        <div class="screen-header">
+          <div>
+            <div class="screen-id">S04</div>
+            <div class="screen-name">ユーザーダッシュボード</div>
+            <div class="screen-url">okamone.github.io/betaship/dashboard</div>
+          </div>
+          <span class="phase-badge p1">Phase 1</span>
+        </div>
+        <div class="screen-body">
+          <div class="screen-mockup mock">
+            <div class="mock-nav">
+              <span class="mock-logo">⚡ Betaship</span>
+              <span style="font-size:11px;color:var(--muted);">ログアウト</span>
+            </div>
+            <div class="mock-dash">
+              <div class="mock-balance">
+                <div class="mock-balance-label">残クレジット</div>
+                <div class="mock-balance-num">74</div>
+                <div class="mock-balance-sub">credits · 有効期限なし</div>
+              </div>
+              <div class="mock-history-label">使用履歴</div>
+              <div class="mock-history-item">
+                <span class="mock-history-tool">🧠 Moshimo — session</span>
+                <span class="mock-history-cost">-5 cr</span>
+              </div>
+              <div class="mock-history-item">
+                <span class="mock-history-tool">🎵 Reverie — recommend</span>
+                <span class="mock-history-cost">-2 cr</span>
+              </div>
+              <div class="mock-history-item">
+                <span class="mock-history-tool">🌌 Wearld — transform</span>
+                <span class="mock-history-cost">-3 cr</span>
+              </div>
+              <div style="margin-top:12px;">
+                <div class="mock-stripe-btn" style="background:#1e1e1e;border:1px solid #333;color:var(--muted);">⚡ クレジットを追加する</div>
+              </div>
+            </div>
+          </div>
+          <div class="screen-spec">
+            <div class="spec-section">
+              <div class="spec-label">構成要素</div>
+              <ul class="spec-list">
+                <li>残クレジット（大きく表示）</li>
+                <li>使用履歴（ツール名・消費量・日時）</li>
+                <li>クレジット追加ボタン（S03へ）</li>
+                <li>試したツール一覧（回遊促進）</li>
+              </ul>
+            </div>
+            <div class="spec-section">
+              <div class="spec-label">認証方式（案）</div>
+              <ul class="spec-list">
+                <li>Magic Link（メールのみ・パスワードなし）</li>
+                <li>Supabase Auth を使用</li>
+                <li>購入時に自動アカウント作成</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S05 -->
+    <div id="s05" class="screen-section">
+      <div class="section-title">クリエイター向け画面</div>
+      <div class="screen-card">
+        <div class="screen-header">
+          <div>
+            <div class="screen-id">S05</div>
+            <div class="screen-name">ツール申請フォーム</div>
+            <div class="screen-url">okamone.github.io/betaship/submit</div>
+          </div>
+          <span class="phase-badge p2">Phase 2</span>
+        </div>
+        <div class="screen-body">
+          <div class="screen-mockup mock">
+            <div class="mock-nav">
+              <span style="font-size:11px;color:var(--accent);">← Betaship</span>
+              <span class="mock-logo" style="font-size:12px;">クリエイター申請</span>
+            </div>
+            <div class="mock-form">
+              <div class="mock-form-title">ツールを出す</div>
+              <div class="mock-field">
+                <div class="mock-field-label">ツール名 *</div>
+                <div class="mock-field-input">例：Moshimo</div>
+              </div>
+              <div class="mock-field">
+                <div class="mock-field-label">一行説明 *</div>
+                <div class="mock-field-input">例：AI mentor for self-growth</div>
+              </div>
+              <div class="mock-field">
+                <div class="mock-field-label">ツールの URL *</div>
+                <div class="mock-field-input">https://yourtool.app</div>
+              </div>
+              <div class="mock-field">
+                <div class="mock-field-label">使用 API（複数可）</div>
+                <div class="mock-field-input">Anthropic / OpenAI / Spotify...</div>
+              </div>
+              <div class="mock-field">
+                <div class="mock-field-label">1回の使用コスト目安（API円換算）</div>
+                <div class="mock-field-input">例：$0.01 / session</div>
+              </div>
+              <div class="mock-form-btn">申請する</div>
+            </div>
+          </div>
+          <div class="screen-spec">
+            <div class="spec-section">
+              <div class="spec-label">フォーム項目</div>
+              <ul class="spec-list">
+                <li>ツール名・説明・URL（必須）</li>
+                <li>使用 API の種類（Anthropic / OpenAI / Spotify / other）</li>
+                <li>1回の使用コスト目安（API換算）→ クレジット設定の参考に</li>
+                <li>クリエイターの連絡先（メール）</li>
+                <li>Stripe Connect 連携（申請後に別途案内）</li>
+              </ul>
+            </div>
+            <div class="spec-section">
+              <div class="spec-label">審査フロー</div>
+              <ul class="spec-list">
+                <li>申請 → 手動確認（Betaship 運営）</li>
+                <li>承認 → LP にカード追加・Stripe Connect 設定案内</li>
+                <li>却下 → 理由をメールで返信</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S06 -->
+      <div id="s06" class="screen-card">
+        <div class="screen-header">
+          <div>
+            <div class="screen-id">S06</div>
+            <div class="screen-name">クリエイターダッシュボード</div>
+            <div class="screen-url">okamone.github.io/betaship/creator</div>
+          </div>
+          <span class="phase-badge p2">Phase 2</span>
+        </div>
+        <div class="screen-body">
+          <div class="screen-mockup mock">
+            <div class="mock-nav">
+              <span class="mock-logo">⚡ Betaship</span>
+              <span style="font-size:11px;color:var(--muted);">Creator</span>
+            </div>
+            <div class="mock-cdash">
+              <div style="font-size:11px;font-weight:700;margin-bottom:10px;">🧠 Moshimo — 今月</div>
+              <div class="mock-stat-row">
+                <div class="mock-stat">
+                  <div class="mock-stat-label">使用セッション数</div>
+                  <div class="mock-stat-num">142</div>
+                </div>
+                <div class="mock-stat">
+                  <div class="mock-stat-label">消費クレジット</div>
+                  <div class="mock-stat-num">710</div>
+                </div>
+              </div>
+              <div class="mock-payout">
+                今月の収益：<strong>$17.75</strong>（50%シェア）<br>
+                <span style="font-size:9px;color:var(--muted);">月末に Stripe Connect で自動振込</span>
+              </div>
+              <div style="margin-top:10px;font-size:9px;color:var(--muted);">
+                APIコスト（Betaship負担）：$17.75<br>
+                粗利率：50%
+              </div>
+            </div>
+          </div>
+          <div class="screen-spec">
+            <div class="spec-section">
+              <div class="spec-label">構成要素</div>
+              <ul class="spec-list">
+                <li>ツールごとの使用数・消費クレジット</li>
+                <li>収益（Betaship 50% / クリエイター 50%）</li>
+                <li>月次振込予定額（Stripe Connect）</li>
+                <li>APIコスト内訳（Betaship が負担した額）</li>
+                <li>ツールの編集・URLの更新</li>
+              </ul>
+            </div>
+            <div class="spec-section">
+              <div class="spec-label">収益計算ロジック</div>
+              <ul class="spec-list">
+                <li>クレジット収益 = 消費クレジット × $0.05</li>
+                <li>APIコスト = usage_logs.api_cost_usd 集計</li>
+                <li>クリエイター取り分 = (収益 - APIコスト) × 50%</li>
+                <li>月次バッチで Stripe Connect transfer</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S07 -->
+    <div id="s07" class="screen-section">
+      <div class="section-title">共通コンポーネント</div>
+      <div class="screen-card">
+        <div class="screen-header">
+          <div>
+            <div class="screen-id">S07</div>
+            <div class="screen-name">Betaship バナー（各ツールに埋め込み）</div>
+            <div class="screen-url">各ツールの &lt;body&gt; 直後に挿入</div>
+          </div>
+          <span class="phase-badge built">● Built（Moshimo・Reverie）</span>
+        </div>
+        <div class="screen-body">
+          <div class="screen-mockup mock" style="min-height:120px;display:flex;flex-direction:column;justify-content:flex-end;">
+            <div style="flex:1;background:repeating-linear-gradient(45deg,#0a0a0e,#0a0a0e 10px,#0d0d14 10px,#0d0d14 20px);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;">← ツールのコンテンツ →</div>
+            <div style="background:#0c0c0e;border-top:1px solid #222;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;font-size:11px;">
+              <span style="color:#f0a500;font-weight:700;">⚡ Betaship <span style="color:#666;font-weight:400;">— more AI tools</span></span>
+              <span style="color:#444;cursor:pointer;">×</span>
+            </div>
+          </div>
+          <div class="screen-spec">
+            <div class="spec-section">
+              <div class="spec-label">仕様</div>
+              <ul class="spec-list">
+                <li>画面下部に固定（position: fixed; bottom: 0）</li>
+                <li>左：「⚡ Betaship — more AI tools」→ LP にリンク</li>
+                <li>右：× で閉じられる</li>
+                <li>コードは &lt;body&gt; 直後の div 1つで完結</li>
+              </ul>
+            </div>
+            <div class="spec-section">
+              <div class="spec-label">追加済みツール</div>
+              <ul class="spec-list">
+                <li>Moshimo（ui.html）✓ 要 Render 再デプロイ</li>
+                <li>Reverie（index.html）✓ 要 Vercel 再デプロイ</li>
+                <li class="muted">Wearld → Next.js layout.tsx に追加予定</li>
+              </ul>
+            </div>
+            <div class="spec-section">
+              <div class="spec-label">Phase 1 での拡張</div>
+              <ul class="spec-list">
+                <li class="muted">ログイン済みなら残クレジット数を表示</li>
+                <li class="muted">「74 credits remaining」→ クリックでダッシュボードへ</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>
