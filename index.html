@@ -346,6 +346,73 @@
     @media (min-width: 701px) and (max-width: 1024px) {
       .tools-grid { grid-template-columns: repeat(2, 1fr); }
     }
+  /* ─── FEEDBACK MODAL ─── */
+  .fb-modal-bg {
+    display: none; position: fixed; inset: 0; z-index: 600;
+    background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 16px;
+  }
+  .fb-modal-bg.open { display: flex; }
+  .fb-modal {
+    background: #16161e; border: 1px solid #2a2a3e;
+    border-radius: 16px; padding: 28px 24px;
+    width: min(460px, 100%); max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+  }
+  .fb-modal-header { margin-bottom: 20px; }
+  .fb-modal-title { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+  .fb-modal-sub { font-size: 13px; color: var(--muted2); line-height: 1.6; }
+  .fb-q { margin-bottom: 18px; }
+  .fb-q-label { font-size: 12px; font-weight: 700; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; display: block; }
+  .fb-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .fb-chip-radio { display: none; }
+  .fb-chip-label {
+    font-size: 13px; padding: 6px 14px;
+    border: 1px solid #2a2a3e; border-radius: 99px;
+    cursor: pointer; transition: all 0.12s; color: var(--muted2);
+    user-select: none;
+  }
+  .fb-chip-radio:checked + .fb-chip-label {
+    background: var(--accent); border-color: var(--accent);
+    color: #000; font-weight: 700;
+  }
+  .fb-chip-label:hover { border-color: var(--accent); color: var(--accent); }
+  .fb-textarea {
+    width: 100%; background: #0e0e12; border: 1px solid #2a2a3e;
+    border-radius: 10px; padding: 12px 14px; color: var(--text);
+    font-size: 13px; resize: vertical; min-height: 80px;
+    font-family: inherit; line-height: 1.6;
+    transition: border-color 0.12s;
+  }
+  .fb-textarea:focus { outline: none; border-color: var(--accent); }
+  .fb-actions { display: flex; gap: 10px; margin-top: 22px; }
+  .fb-submit {
+    flex: 1; background: var(--accent); color: #000;
+    font-size: 14px; font-weight: 800; letter-spacing: -0.2px;
+    border: none; border-radius: 10px; padding: 13px;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .fb-submit:hover { opacity: 0.85; }
+  .fb-cancel {
+    font-size: 13px; color: var(--muted2); background: none;
+    border: 1px solid #2a2a3e; border-radius: 10px;
+    padding: 13px 18px; cursor: pointer; transition: border-color 0.12s;
+  }
+  .fb-cancel:hover { border-color: #4a4a6a; }
+  .fb-thanks { display: none; text-align: center; padding: 24px 0; }
+  .fb-thanks-emoji { font-size: 44px; margin-bottom: 14px; }
+  .fb-thanks-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+  .fb-thanks-body { font-size: 13px; color: var(--muted2); line-height: 1.7; }
+
+  /* カード内フィードバックボタン */
+  .btn-feedback {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--muted); background: none;
+    border: 1px solid #2a2a3e; border-radius: 99px;
+    padding: 4px 12px; cursor: pointer; transition: all 0.12s;
+    text-decoration: none; margin-top: 8px;
+  }
+  .btn-feedback:hover { border-color: var(--accent); color: var(--accent); }
   </style>
 </head>
 <body>
@@ -421,6 +488,7 @@
           <a href="https://moshimo.onrender.com" target="_blank" class="btn-try-live"
              style="background: #22c55e;"
              onclick="track('moshimo')">試してみる →</a>
+          <button class="btn-feedback" onclick="openFeedback('Moshimo')">💬 感想を送る</button>
         </div>
       </div>
     </div>
@@ -450,6 +518,7 @@
           <a href="https://reverie-music.vercel.app" target="_blank" class="btn-try-live"
              style="background: #7c6cf0;"
              onclick="track('reverie')">試してみる →</a>
+          <button class="btn-feedback" onclick="openFeedback('Reverie')">💬 感想を送る</button>
         </div>
       </div>
     </div>
@@ -479,6 +548,7 @@
           <a href="https://wearld.vercel.app" target="_blank" class="btn-try-live"
              style="background: #9b6cf0;"
              onclick="track('wearld')">試してみる →</a>
+          <button class="btn-feedback" onclick="openFeedback('Wearld')">💬 感想を送る</button>
         </div>
       </div>
     </div>
@@ -649,6 +719,60 @@
   <p>Betaship · 2026 · <a href="https://twitter.com/messages/compose?recipient_id=oKamone" target="_blank">作者にDMする</a></p>
 </footer>
 
+<!-- ─── FEEDBACK MODAL ─── -->
+<div class="fb-modal-bg" id="fb-modal-bg">
+  <div class="fb-modal" role="dialog" aria-modal="true">
+    <div class="fb-modal-header">
+      <div class="fb-modal-title">使ってみた感想を聞かせてください</div>
+      <div class="fb-modal-sub">匿名・1分以内。正直な声がいちばん助かります。</div>
+    </div>
+
+    <div id="fb-form">
+      <div class="fb-q">
+        <span class="fb-q-label">試したツール</span>
+        <div class="fb-chips">
+          <input type="radio" name="fb_tool" id="ft-moshimo" value="Moshimo" class="fb-chip-radio">
+          <label class="fb-chip-label" for="ft-moshimo">Moshimo</label>
+          <input type="radio" name="fb_tool" id="ft-reverie" value="Reverie" class="fb-chip-radio">
+          <label class="fb-chip-label" for="ft-reverie">Reverie</label>
+          <input type="radio" name="fb_tool" id="ft-wearld" value="Wearld" class="fb-chip-radio">
+          <label class="fb-chip-label" for="ft-wearld">Wearld</label>
+          <input type="radio" name="fb_tool" id="ft-multi" value="複数" class="fb-chip-radio">
+          <label class="fb-chip-label" for="ft-multi">複数試した</label>
+        </div>
+      </div>
+
+      <div class="fb-q">
+        <span class="fb-q-label">一言感想（なんでも）</span>
+        <textarea class="fb-textarea" id="fb-comment" placeholder="よかった、使い方がわからなかった、〇〇が面白かった… なんでも"></textarea>
+      </div>
+
+      <div class="fb-q">
+        <span class="fb-q-label">次の更新があったら知りたいですか？</span>
+        <div class="fb-chips">
+          <input type="radio" name="fb_notify" id="fn-yes" value="知りたい" class="fb-chip-radio">
+          <label class="fb-chip-label" for="fn-yes">知りたい</label>
+          <input type="radio" name="fb_notify" id="fn-maybe" value="たぶん" class="fb-chip-radio">
+          <label class="fb-chip-label" for="fn-maybe">たぶん</label>
+          <input type="radio" name="fb_notify" id="fn-no" value="いらない" class="fb-chip-radio">
+          <label class="fb-chip-label" for="fn-no">いらない</label>
+        </div>
+      </div>
+
+      <div class="fb-actions">
+        <button class="fb-submit" onclick="submitFeedback()">送信する</button>
+        <button class="fb-cancel" onclick="closeFeedback()">キャンセル</button>
+      </div>
+    </div>
+
+    <div class="fb-thanks" id="fb-thanks">
+      <div class="fb-thanks-emoji">🙏</div>
+      <div class="fb-thanks-title">ありがとうございます</div>
+      <div class="fb-thanks-body">正直な声、ちゃんと読みます。<br>またいつでも来てください。</div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ─── CATEGORY FILTER ───
 function filterCat(cat, el) {
@@ -682,6 +806,77 @@ function track(tool) {
   const log = JSON.parse(localStorage.getItem(key) || '[]');
   log.push({ tool, at: new Date().toISOString() });
   localStorage.setItem(key, JSON.stringify(log));
+}
+
+// ─── FEEDBACK MODAL ───
+// Google Form設定（フォーム作成後にここを更新する）
+// エントリーIDはGoogle Formを作成し、プレビューページのソースから取得してください
+const FB_FORM_URL = ''; // TODO: Google FormのformResponse URLを入れる
+const FB_ENTRY_TOOL    = 'entry.000000001'; // TODO: 「試したツール」のentry ID
+const FB_ENTRY_COMMENT = 'entry.000000002'; // TODO: 「一言感想」のentry ID
+const FB_ENTRY_NOTIFY  = 'entry.000000003'; // TODO: 「通知」のentry ID
+
+function openFeedback(toolName) {
+  // ツール名が指定されていれば自動選択
+  const target = toolName || (JSON.parse(localStorage.getItem('bs_clicks') || '[]').slice(-1)[0]?.tool || '');
+  if (target) {
+    const radio = document.querySelector(`input[name="fb_tool"][value="${target}"]`);
+    if (radio) radio.checked = true;
+  }
+  // フォームをリセット（サンキュー表示になっていた場合）
+  document.getElementById('fb-form').style.display = '';
+  document.getElementById('fb-thanks').style.display = 'none';
+  document.getElementById('fb-comment').value = '';
+
+  document.getElementById('fb-modal-bg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeFeedback() {
+  document.getElementById('fb-modal-bg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// モーダル背景クリックで閉じる
+document.getElementById('fb-modal-bg').addEventListener('click', function(e) {
+  if (e.target === this) closeFeedback();
+});
+
+// ESCキーで閉じる
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeFeedback();
+});
+
+function submitFeedback() {
+  const tool    = document.querySelector('input[name="fb_tool"]:checked')?.value || '（未選択）';
+  const comment = document.getElementById('fb-comment').value.trim();
+  const notify  = document.querySelector('input[name="fb_notify"]:checked')?.value || '（未選択）';
+
+  // localStorageにバックアップ（Google Formが未設定でも記録される）
+  const log = JSON.parse(localStorage.getItem('bs_feedback') || '[]');
+  log.push({ tool, comment, notify, at: new Date().toISOString() });
+  localStorage.setItem('bs_feedback', JSON.stringify(log));
+
+  // Google Formに送信（URLが設定されている場合のみ）
+  if (FB_FORM_URL) {
+    const body = new URLSearchParams();
+    body.append(FB_ENTRY_TOOL, tool);
+    body.append(FB_ENTRY_COMMENT, comment);
+    body.append(FB_ENTRY_NOTIFY, notify);
+    fetch(FB_FORM_URL, { method: 'POST', mode: 'no-cors', body }).catch(() => {});
+  }
+
+  // mailtoフォールバック（Google Form未設定時のみ動作）
+  if (!FB_FORM_URL) {
+    const subject = encodeURIComponent(`[Betaship感想] ${tool}`);
+    const body2 = encodeURIComponent(`ツール: ${tool}\n感想: ${comment}\n通知: ${notify}`);
+    window.open(`mailto:ha7ta0imoz_3_o1021@yahoo.co.jp?subject=${subject}&body=${body2}`, '_blank');
+  }
+
+  // サンキュー画面に切り替え
+  document.getElementById('fb-form').style.display = 'none';
+  document.getElementById('fb-thanks').style.display = 'block';
+  setTimeout(closeFeedback, 2400);
 }
 </script>
 
