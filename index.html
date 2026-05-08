@@ -428,6 +428,76 @@
     text-decoration: none; margin-top: 8px;
   }
   .btn-feedback:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ─── DATA PREVIEW ─── */
+  .data-preview-section { margin-bottom: 36px; }
+  .section-eyebrow-sm {
+    font-size: 11px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.8px; margin-bottom: 14px; font-weight: 600;
+  }
+  .data-preview-card {
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: 14px; padding: 22px 24px;
+  }
+  .data-preview-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+  }
+  .data-pulse {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green); box-shadow: 0 0 8px #22c55e60; flex-shrink: 0;
+  }
+  .data-preview-date { font-size: 12px; color: var(--muted2); }
+  .data-preview-tool { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 16px; }
+  .data-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .data-stat {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+  }
+  .data-stat-num { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px; }
+  .data-stat-label { font-size: 11px; color: var(--muted2); }
+  .data-comment-label {
+    font-size: 11px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600;
+  }
+  .data-comment {
+    background: var(--surface); border-radius: 8px; padding: 8px 12px;
+    margin-bottom: 6px; font-size: 13px; color: var(--muted2); line-height: 1.55;
+    border-left: 2px solid var(--border2);
+  }
+  .data-comment:last-child { margin-bottom: 0; }
+  .data-preview-note {
+    font-size: 11px; color: var(--muted); text-align: right; margin-top: 14px;
+  }
+
+  /* ─── STEPS ─── */
+  .steps-section { margin-bottom: 36px; }
+  .steps-list { border: 1px solid var(--border2); border-radius: 14px; overflow: hidden; }
+  .step {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 18px 20px; border-bottom: 1px solid var(--border);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    background: var(--accent-dim); border: 1px solid #f0a50030;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: var(--accent); margin-top: 2px;
+  }
+  .step-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .step-sub { font-size: 13px; color: var(--muted2); line-height: 1.5; }
+
+  /* ─── FAQ ─── */
+  .faq-section {
+    border-top: 1px solid var(--border2);
+    background: var(--surface);
+    padding: 64px 28px 80px;
+  }
+  .faq-inner { max-width: 860px; margin: 0 auto; }
+  .faq-list { border: 1px solid var(--border2); border-radius: 14px; overflow: hidden; }
+  .faq-item { padding: 22px 24px; border-bottom: 1px solid var(--border); }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-q { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .faq-a { font-size: 13px; color: var(--muted2); line-height: 1.7; }
   </style>
 </head>
 <body>
@@ -735,6 +805,60 @@
       </div>
     </div>
 
+    <!-- DATA PREVIEW -->
+    <div class="data-preview-section">
+      <div class="section-eyebrow-sm">出品すると、こんなデータが届きます</div>
+      <div class="data-preview-card">
+        <div class="data-preview-header">
+          <div class="data-pulse"></div>
+          <div class="data-preview-date">昨日の反応レポート · 出品翌日から届きます</div>
+        </div>
+        <div class="data-preview-tool">あなたのAIツール</div>
+        <div class="data-stats">
+          <div class="data-stat">
+            <div class="data-stat-num">23</div>
+            <div class="data-stat-label">クリック数</div>
+          </div>
+          <div class="data-stat">
+            <div class="data-stat-num">7</div>
+            <div class="data-stat-label">サーベイ回答</div>
+          </div>
+        </div>
+        <div class="data-comment-label">使った人の声</div>
+        <div class="data-comment">"UIがシンプルで直感的でした。また使います"</div>
+        <div class="data-comment">"こういうの探してた。友達にも教えます"</div>
+        <div class="data-preview-note">毎日このデータが届きます ↑</div>
+      </div>
+    </div>
+
+    <!-- STEPS -->
+    <div class="steps-section">
+      <div class="section-eyebrow-sm">出品の流れ</div>
+      <div class="steps-list">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">DMで話す</div>
+            <div class="step-sub">ツールを見せてください。審査なし、フォームなし。</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">24時間以内に掲載</div>
+            <div class="step-sub">カード設定・サーベイ設置はこちらで。あなたはコードだけ。</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">翌日から反応が届く</div>
+            <div class="step-sub">クリック数・感想・再訪意向。「使われた実感」が毎日見えます。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="creator-cta-block">
       <div class="creator-cta-title">まず話を聞かせてください</div>
       <div class="creator-cta-sub">作ったツールの話、詰まっていること、何でも。DMで直接やり取りします。</div>
@@ -744,6 +868,31 @@
       <div class="creator-cta-note">出品費用なし · 初期クリエイター限定 · 一緒に仕様を作ります</div>
     </div>
 
+  </div>
+</section>
+
+<!-- ─── FAQ ─── -->
+<section class="faq-section">
+  <div class="faq-inner">
+    <div class="section-eyebrow-sm" style="margin-bottom: 24px;">よくある質問</div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">どんなツールが出品できますか？</div>
+        <div class="faq-a">AIが使われている実装であれば形式は問いません。Webアプリ・Chrome拡張・LINE Bot など。「動く状態」であれば出品できます。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">審査や申請フォームはありますか？</div>
+        <div class="faq-a">ありません。最初の5〜10人はオーナー（@oKamone）が直接DMでお声がけします。気になった方は先にDMいただいても大丈夫です。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">費用はかかりますか？</div>
+        <div class="faq-a">掲載は無料です。フェーズが進んで収益分配が始まる段階になったら改めてご説明します。今は「使われた実感」を一緒に積み上げましょう。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">他の場所にすでに公開しているツールでも大丈夫？</div>
+        <div class="faq-a">はい、問題ありません。ProductHuntやGitHubに公開済みでも出品できます。</div>
+      </div>
+    </div>
   </div>
 </section>
 
