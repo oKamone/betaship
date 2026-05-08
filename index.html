@@ -429,6 +429,28 @@
   }
   .btn-feedback:hover { border-color: var(--accent); color: var(--accent); }
 
+  /* ─── INTEREST BUTTON ─── */
+  .btn-interest {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--muted); background: none;
+    border: 1px solid #2a2a3e; border-radius: 99px;
+    padding: 4px 12px; cursor: pointer; transition: all 0.12s;
+    margin-top: 8px;
+  }
+  .btn-interest:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-interest.done { border-color: var(--green); color: var(--green); cursor: default; }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(60px);
+    background: #1a1f2e; border: 1px solid var(--border2); border-radius: 10px;
+    padding: 10px 20px; font-size: 13px; color: var(--text);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 9999;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s;
+    opacity: 0;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
   /* ─── DATA PREVIEW ─── */
   .data-preview-section { margin-bottom: 36px; }
   .section-eyebrow-sm {
@@ -661,6 +683,7 @@
         <div class="card-price" style="color: var(--muted);">無料（予定）</div>
         <div class="card-cta">
           <div class="btn-try-soon">開発中</div>
+          <button class="btn-interest" onclick="trackInterest('Gait', this)">👋 気になってる</button>
         </div>
       </div>
     </div>
@@ -688,6 +711,7 @@
         <div class="card-price" style="color: var(--muted);">無料（予定）</div>
         <div class="card-cta">
           <div class="btn-try-soon">開発中</div>
+          <button class="btn-interest" onclick="trackInterest('Send Nudge', this)">👋 気になってる</button>
         </div>
       </div>
     </div>
@@ -715,6 +739,7 @@
         <div class="card-price" style="color: var(--muted);">無料（予定）</div>
         <div class="card-cta">
           <div class="btn-try-soon">開発中</div>
+          <button class="btn-interest" onclick="trackInterest('Brain Switch', this)">👋 気になってる</button>
         </div>
       </div>
     </div>
@@ -742,6 +767,7 @@
         <div class="card-price" style="color: var(--muted);">無料（予定）</div>
         <div class="card-cta">
           <div class="btn-try-soon">開発中</div>
+          <button class="btn-interest" onclick="trackInterest('Qliq', this)">👋 気になってる</button>
         </div>
       </div>
     </div>
@@ -769,6 +795,7 @@
         <div class="card-price" style="color: var(--muted);">無料（予定）</div>
         <div class="card-cta">
           <div class="btn-try-soon">開発中</div>
+          <button class="btn-interest" onclick="trackInterest('Saki', this)">👋 気になってる</button>
         </div>
       </div>
     </div>
@@ -955,7 +982,35 @@
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
+// ─── TOAST ───
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ─── INTEREST TRACKING ───
+function trackInterest(tool, btn) {
+  if (btn.classList.contains('done')) return;
+  btn.textContent = '✓ 記録しました';
+  btn.classList.add('done');
+
+  const log = JSON.parse(localStorage.getItem('bs_interests') || '[]');
+  log.push({ tool, at: new Date().toISOString() });
+  localStorage.setItem('bs_interests', JSON.stringify(log));
+
+  fetch(GAS_URL, {
+    method: 'POST', mode: 'no-cors',
+    body: JSON.stringify({ tool, comment: '気になっている（開発中）', notify: '知りたい' })
+  }).catch(() => {});
+
+  showToast('気になってる、記録しました 👋');
+}
+
 // ─── CATEGORY FILTER ───
 function filterCat(cat, el) {
   document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
