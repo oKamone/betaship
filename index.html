@@ -72,6 +72,21 @@
     .creator-cta-btn:hover { opacity: 0.85; }
     .creator-cta-note { font-size: 11px; color: var(--muted); }
 
+    .creator-value-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+      margin-bottom: 40px;
+    }
+    @media (max-width: 600px) {
+      .creator-value-grid { grid-template-columns: 1fr; }
+    }
+    .creator-value-card {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 12px; padding: 24px 20px; text-align: center;
+    }
+    .creator-value-icon { font-size: 28px; margin-bottom: 10px; }
+    .creator-value-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .creator-value-desc { font-size: 13px; color: var(--muted2); line-height: 1.6; }
+
     body {
       background: var(--bg);
       color: var(--text);
@@ -698,17 +713,35 @@
 
     <div class="creator-header">
       <div class="creator-eyebrow">クリエイターへ</div>
-      <h2 class="creator-title">AIツールを作ったけど、<br>出し方で詰まっていませんか？</h2>
-      <p class="creator-sub">APIコスト・課金設定・インフラ維持——<br>Betashipはこの問題を解決するプラットフォームを現在設計中です。</p>
+      <h2 class="creator-title">出したけど、<br>誰にも届かなかった。</h2>
+      <p class="creator-sub">Betashipは、そのツールを置く場所です。<br>出品無料。ユーザーの反応データを届けます。</p>
+    </div>
+
+    <div class="creator-value-grid">
+      <div class="creator-value-card">
+        <div class="creator-value-icon">📦</div>
+        <div class="creator-value-title">掲載スペース</div>
+        <div class="creator-value-desc">費用ゼロ。ツールが動く状態であれば出品できます。</div>
+      </div>
+      <div class="creator-value-card">
+        <div class="creator-value-icon">💬</div>
+        <div class="creator-value-title">サーベイ機能</div>
+        <div class="creator-value-desc">Betashipが自動で設置。設定は不要です。</div>
+      </div>
+      <div class="creator-value-card">
+        <div class="creator-value-icon">📊</div>
+        <div class="creator-value-title">反応データ</div>
+        <div class="creator-value-desc">使った人の感想・クリック数をまとめて届けます。</div>
+      </div>
     </div>
 
     <div class="creator-cta-block">
-      <div class="creator-cta-title">先行登録を受け付けています</div>
-      <div class="creator-cta-sub">「こういうツールを作っている」「出したいけど詰まっている」——<br>そういう方の話を今すぐ聞かせてください。仕組みを一緒に作っていきます。</div>
+      <div class="creator-cta-title">まず話を聞かせてください</div>
+      <div class="creator-cta-sub">作ったツールの話、詰まっていること、何でも。DMで直接やり取りします。</div>
       <a href="https://twitter.com/messages/compose?recipient_id=oKamone" target="_blank" class="creator-cta-btn">
-        DMで話を聞かせてください →
+        DMで話す → @oKamone
       </a>
-      <div class="creator-cta-note">現在設計フェーズ · 費用なし · 先行登録者の声をもとに仕様を決めます</div>
+      <div class="creator-cta-note">出品費用なし · 初期クリエイター限定 · 一緒に仕様を作ります</div>
     </div>
 
   </div>
