@@ -107,7 +107,7 @@ def ai_proxy():
     if not cr_row.data:
         # 初回利用: freeプランとして自動プロビジョニング
         _sb.schema("betaship").table("subscriptions").upsert({"user_id": uid, "plan": "free"}).execute()
-        _sb.rpc("betaship.grant_monthly_credits", {"p_user_id": uid, "p_plan": "free"}).execute()
+        _sb.schema("betaship").rpc("grant_monthly_credits", {"p_user_id": uid, "p_plan": "free"}).execute()
         cr_row = _sb.schema("betaship").table("credits").select("monthly_cr,topup_cr").eq("user_id", uid).maybe_single().execute()
     cr = cr_row.data or {}
     if (cr.get("monthly_cr", 0) + cr.get("topup_cr", 0)) < 1:
@@ -127,7 +127,7 @@ def ai_proxy():
     tokens_out = resp.usage.output_tokens
     cr_used    = max(1, (tokens_in + tokens_out * 3) // TOKENS_PER_CR)
 
-    _sb.rpc("betaship.deduct_credits", {
+    _sb.schema("betaship").rpc("deduct_credits", {
         "p_user_id":   uid,
         "p_amount":    cr_used,
         "p_service":   service,
@@ -176,14 +176,14 @@ def stripe_webhook():
                 "stripe_customer_id": session.get("customer"),
                 "stripe_subscription_id": session.get("subscription"),
             }).execute()
-            _sb.rpc("betaship.grant_monthly_credits", {"p_user_id": uid, "p_plan": plan}).execute()
+            _sb.schema("betaship").rpc("grant_monthly_credits", {"p_user_id": uid, "p_plan": plan}).execute()
 
         elif mode == "payment":
             # トップアップ購入 → cr加算
             price_id = session.get("metadata", {}).get("price_id", "")
             amount = TOPUP_PRICE_IDS.get(price_id, 0)
             if amount:
-                _sb.rpc("betaship.add_topup_credits", {"p_user_id": uid, "p_amount": amount}).execute()
+                _sb.schema("betaship").rpc("add_topup_credits", {"p_user_id": uid, "p_amount": amount}).execute()
 
     elif event["type"] == "invoice.paid":
         # サブスクリプション更新 → 月次cr付与
@@ -194,7 +194,7 @@ def stripe_webhook():
                 "stripe_subscription_id", sub_id
             ).maybe_single().execute()
             if sub_row.data:
-                _sb.rpc("betaship.grant_monthly_credits", {
+                _sb.schema("betaship").rpc("grant_monthly_credits", {
                     "p_user_id": sub_row.data["user_id"],
                     "p_plan":    sub_row.data["plan"],
                 }).execute()
