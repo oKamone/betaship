@@ -1,0 +1,80 @@
+concept:
+  summary: "複数プロダクトのβ検証・マネタイズ統合プロキシ"
+  experience_core: "見知らぬ他人が帰ってくることを確認する場所。Beta=未完OK × Ship=出す"
+  target: "クリエイター・ビルダー"
+  value_prop: "クリエイターはコードだけ出せばいい、マネタイズはBetashipが握る"
+
+status:
+  phase: 開発中
+  current_phase: Phase 0
+  completion_pct: null
+  url: "https://okamone.github.io/betaship/"
+  api_url: "https://betaship-api-66007692912.asia-northeast1.run.app"
+  next_action: "Phase 0検証ゲート通過"
+  phase_gate:
+    - "週次UU 50以上が2週連続"
+    - "複数ツール使用率 30%以上"
+    - "有料意向を示す人が5人"
+
+infra:
+  hosting: cloud-run
+  db: supabase
+  auth: supabase
+  ai: null
+  payments: stripe
+  stripe_mode: null  # ⚠️ 要確認
+
+billing:
+  model: "subscription + topup"
+  plans:
+    - name: Free
+      price: 0
+      currency: USD
+    - name: Maker
+      price: 5
+      currency: USD
+      interval: monthly
+    - name: Pro
+      price: 15
+      currency: USD
+      interval: monthly
+  topup:
+    - credits: 300
+      price: 3
+    - credits: 1200
+      price: 10
+
+security:
+  auth_method: supabase
+  rate_limit: "クレジット制"
+  data_retention: null
+
+go_condition: "Phase 0検証ゲート通過後にPhase 1実装"
+
+db_schema:
+  schema_name: betaship
+  tables:
+    - table: betaship.subscriptions
+      role: "課金状態の正源"
+      key_columns: "user_id, plan(free/maker/pro), stripe_customer_id, stripe_subscription_id"
+    - table: betaship.credits
+      role: "クレジット残高（月次+追加）"
+      key_columns: "user_id, monthly_cr, topup_cr"
+    - table: betaship.plan_config
+      role: "プランごとの月次クレジット設定"
+      key_columns: "plan, monthly_cr"
+    - table: betaship.product_config
+      role: "全体フラグ管理"
+      key_columns: "free_mode, billing_active, stripe_mode"
+
+conversion_plan:
+  method: A方式
+  note: "既存ユーザーはBetashipクレジットに自動変換。B方式（個別課金先廃止）は不採用"
+  examples:
+    - "Moshimo Pro ¥680/月 → 600cr/月（Maker相当）"
+    - "Wearld $9買い切り → 900cr（トップアップ相当）"
+
+marketing:
+  x_posting: "週3・12角度（失敗型・問い型・制作型を含む）"
+  warning: "宣伝感が出た瞬間に終わり"
+  x_auto_post: "2026-05-12確定。再開可能"

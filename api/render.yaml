@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: betaship-api
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn proxy:app
+    healthCheckPath: /health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: BETASHIP_SUPABASE_URL
+        sync: false
+      - key: BETASHIP_SUPABASE_SERVICE_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_MAKER
+        sync: false
+      - key: STRIPE_PRICE_PRO
+        sync: false
+      - key: STRIPE_PRICE_TOPUP_300
+        sync: false
+      - key: STRIPE_PRICE_TOPUP_1200
+        sync: false
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: APP_BASE_URL
+        value: https://okamone.github.io/betaship
+      - key: ALLOWED_ORIGINS
+        value: https://moshimo.onrender.com,https://wearld.vercel.app,https://reverie-music.vercel.app,https://okamone.github.io
+      - key: KEEPALIVE_URL
+        sync: false

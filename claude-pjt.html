@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8">
+<title>Betaship — BRIEF</title>
+<style>
+:root {
+  --bg:#0d0f14; --surface:#161a23; --border:#252b3a;
+  --accent:#818cf8; --green:#22c55e; --red:#ef4444; --amber:#f59e0b;
+  --text-1:#e2e6f0; --text-2:#9090a8; --text-3:#7a7d98; --muted:#3d4258;
+  --text-xs:11px; --text-sm:13px; --text-base:14px; --text-lg:17px; --text-xl:22px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px;
+  --radius-sm:6px; --radius-md:10px; --radius-lg:14px;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:-apple-system,'Helvetica Neue',sans-serif; background:var(--bg); color:var(--text-1); font-size:var(--text-sm); line-height:1.6; padding:var(--sp-6) var(--sp-8); }
+a { color:var(--accent); text-decoration:none; }
+a:hover { text-decoration:underline; }
+h1 { font-size:var(--text-xl); font-weight:700; color:var(--text-1); margin-bottom:var(--sp-2); }
+h2 { font-size:var(--text-base); font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.06em; margin:var(--sp-6) 0 var(--sp-3); padding-bottom:var(--sp-2); border-bottom:1px solid var(--border); }
+h3 { font-size:var(--text-sm); font-weight:700; color:var(--text-2); margin:var(--sp-4) 0 var(--sp-2); }
+p { color:var(--text-2); margin-bottom:var(--sp-2); }
+ul { padding-left:var(--sp-5); color:var(--text-2); }
+li { margin-bottom:2px; }
+code { font-family:monospace; font-size:var(--text-xs); background:#1a1f2b; padding:1px 5px; border-radius:3px; color:var(--text-2); }
+pre { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:var(--sp-4); font-size:var(--text-xs); color:var(--text-2); white-space:pre-wrap; overflow-x:auto; margin:var(--sp-2) 0; }
+table { width:100%; border-collapse:collapse; font-size:var(--text-xs); margin:var(--sp-2) 0; }
+th { text-align:left; padding:var(--sp-2) var(--sp-3); background:#1a1f2b; color:var(--text-3); font-weight:600; }
+td { padding:var(--sp-2) var(--sp-3); border-top:1px solid var(--border); color:var(--text-2); }
+.meta { font-size:var(--text-xs); color:var(--text-3); margin-bottom:var(--sp-6); }
+.back { font-size:var(--text-xs); color:var(--text-3); display:inline-block; margin-bottom:var(--sp-5); }
+
+.core-card { background:#0d2a1a; border:1px solid #1a4a2e; border-radius:var(--radius-lg); padding:var(--sp-6); margin-bottom:var(--sp-6); }
+.core-label { font-size:var(--text-xs); font-weight:700; color:#4ade80; text-transform:uppercase; letter-spacing:.08em; margin-bottom:var(--sp-3); }
+.core-text { font-size:var(--text-lg); font-weight:600; color:var(--text-1); line-height:1.6; }
+.threshold { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-3); margin-bottom:var(--sp-6); }
+.th-go { background:#0d2a1a; border:1px solid #1a4a2e; border-radius:var(--radius-md); padding:var(--sp-4); }
+.th-stop { background:#1a1218; border:1px solid #3a1a20; border-radius:var(--radius-md); padding:var(--sp-4); }
+.th-label { font-size:var(--text-xs); font-weight:800; letter-spacing:.1em; margin-bottom:var(--sp-2); }
+.th-go .th-label { color:#4ade80; }
+.th-stop .th-label { color:var(--red); }
+.th-text { font-size:var(--text-sm); color:var(--text-2); line-height:1.6; }
+.ptn-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-4); margin-bottom:var(--sp-6); }
+.ptn-good { background:#0d2a1a; border:1px solid #1a4a2e; border-radius:var(--radius-md); padding:var(--sp-4); }
+.ptn-ng   { background:#1a1218; border:1px solid #3a1a20; border-radius:var(--radius-md); padding:var(--sp-4); }
+.ptn-label { font-size:var(--text-xs); font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:var(--sp-3); }
+.ptn-good .ptn-label { color:#4ade80; }
+.ptn-ng   .ptn-label { color:var(--red); }
+.pjt-summary { font-size:var(--text-base); color:var(--text-2); margin-bottom:var(--sp-5); line-height:1.65; }
+.infra-row { display:flex; flex-wrap:wrap; gap:var(--sp-2); margin-bottom:var(--sp-5); }
+.ib { font-size:10px; font-weight:700; padding:3px 8px; border-radius:10px; letter-spacing:.04em; }
+.ib-ok   { background:#0d2a1a; color:#4ade80; border:1px solid #1a4a2e; }
+.ib-warn { background:#1a1506; color:#fbbf24; border:1px solid #352b10; }
+.ib-none { background:#1a1010; color:#6b7280; border:1px solid #2a1818; }
+.ib-gray { background:var(--surface); color:var(--text-3); border:1px solid var(--border); }
+.ib-url  { background:#111428; color:var(--accent); border:1px solid #1e2448; text-decoration:none; }
+.ib-url:hover { border-color:var(--accent); }
+.trunk-section { margin-bottom:var(--sp-6); }
+.trunk-label { font-size:var(--text-xs); font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.08em; margin-bottom:var(--sp-3); }
+.trunk-grid { display:flex; flex-wrap:wrap; gap:var(--sp-2); }
+.tk-item { display:flex; align-items:center; gap:5px; font-size:var(--text-xs); font-weight:600; padding:4px 10px; border-radius:var(--radius-sm); border:1px solid; }
+.tk-ok   { background:#0d2a1a; color:#4ade80; border-color:#1a4a2e; }
+.tk-warn { background:#1a1506; color:#fbbf24; border-color:#352b10; }
+.tk-none { background:var(--surface); color:var(--text-3); border-color:var(--border); }
+.tk-icon { font-size:10px; flex-shrink:0; }
+.tk-link { color:inherit; text-decoration:none; }
+.tk-link:hover { text-decoration:underline; }
+.pjt-links { display:flex; gap:var(--sp-2); margin-bottom:var(--sp-6); flex-wrap:wrap; }
+.pjt-link { font-size:var(--text-xs); font-weight:600; color:var(--accent); background:#111428; border:1px solid #1e2448; border-radius:var(--radius-sm); padding:4px 12px; text-decoration:none; }
+.pjt-link:hover { border-color:var(--accent); }
+</style>
+</head><body>
+<a class="back" href="../index.html">← Folio</a>
+<h1>Betaship</h1>
+<div class="meta">BRIEF　·　生成 05/27 03:38</div>
+
+<p class="pjt-summary">複数プロダクトのβ検証・マネタイズ統合プロキシ</p>
+<div class="infra-row">
+  <a class="ib ib-url" href="https://okamone.github.io/betaship/" target="_blank">okamone.github.io/betaship ↗</a>
+  <span class="ib ib-none">Stripe —</span>
+  <span class="ib ib-ok">Supabase Auth</span>
+</div>
+<div class="trunk-section">
+  <div class="trunk-label">幹チェック</div>
+  <div class="trunk-grid">
+    <div class="tk-item tk-ok"><span class="tk-icon">✓</span>コンセプト</div>
+    <div class="tk-item tk-none"><span class="tk-icon">—</span>完成の定義</div>
+    <div class="tk-item tk-none"><span class="tk-icon">—</span>課金設計</div>
+    <div class="tk-item tk-ok"><span class="tk-icon">✓</span>セキュリティ</div>
+    <div class="tk-item tk-none"><span class="tk-icon">—</span>CJM</div>
+    <div class="tk-item tk-none"><span class="tk-icon">—</span>プロンプト</div>
+  </div>
+</div>
+<div class="pjt-links"><a class="pjt-link" href="SPEC.md" target="_blank">SPEC →</a></div>
+
+<div class="core-card">
+  <div class="core-label">体験の核心</div>
+  <div class="core-text">「見知らぬ他人が帰ってくること」を確認する場所。Beta=未完OK × Ship=出す、の精神。
+クリエイターはコードだけ出せばいい、マネタイズはBetashipが握る。
+
+**GO：** Phase 0検証ゲート通過後にPhase 1実装（brief.yamlのphase_gateを参照）
+**STOP：** 仕組みが固まっていないうちに集客しない
+
+---</div>
+</div>
+
+<div class="threshold">
+  <div class="th-go">
+    <div class="th-label">GO</div>
+    <div class="th-text"></div>
+  </div>
+  <div class="th-stop">
+    <div class="th-label">STOP</div>
+    <div class="th-text"></div>
+  </div>
+</div>
+
+<div class="ptn-grid">
+  <div class="ptn-good">
+    <div class="ptn-label">正解パターン</div>
+    
+  </div>
+  <div class="ptn-ng">
+    <div class="ptn-label">NGパターン</div>
+    
+  </div>
+</div>
+
+<h2>完成の定義</h2>
+
+
+</body></html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8">
+<title>Betaship — BRIEF</title>
+<style>
+:root {
+  --bg:#0d0f14; --surface:#161a23; --border:#252b3a;
+  --accent:#818cf8; --green:#22c55e; --red:#ef4444; --amber:#f59e0b;
+  --text-1:#e2e6f0; --text-2:#9090a8; --text-3:#7a7d98; --muted:#3d4258;
+  --text-xs:11px; --text-sm:13px; --text-base:14px; --text-lg:17px; --text-xl:22px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px;
+  --radius-sm:6px; --radius-md:10px; --radius-lg:14px;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:-apple-system,'Helvetica Neue',sans-serif; background:var(--bg); color:var(--text-1); font-size:var(--text-sm); line-height:1.6; padding:var(--sp-6) var(--sp-8); }
+a { color:var(--accent); text-decoration:none; }
+a:hover { text-decoration:underline; }
+h1 { font-size:var(--text-xl); font-weight:700; color:var(--text-1); margin-bottom:var(--sp-2); }
+h2 { font-size:var(--text-base); font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.06em; margin:var(--sp-6) 0 var(--sp-3); padding-bottom:var(--sp-2); border-bottom:1px solid var(--border); }
+h3 { font-size:var(--text-sm); font-weight:700; color:var(--text-2); margin:var(--sp-4) 0 var(--sp-2); }
+p { color:var(--text-2); margin-bottom:var(--sp-2); }
+ul { padding-left:var(--sp-5); color:var(--text-2); }
+li { margin-bottom:2px; }
+code { font-family:monospace; font-size:var(--text-xs); background:#1a1f2b; padding:1px 5px; border-radius:3px; color:var(--text-2); }
+pre { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:var(--sp-4); font-size:var(--text-xs); color:var(--text-2); white-space:pre-wrap; overflow-x:auto; margin:var(--sp-2) 0; }
+table { width:100%; border-collapse:collapse; font-size:var(--text-xs); margin:var(--sp-2) 0; }
+th { text-align:left; padding:var(--sp-2) var(--sp-3); background:#1a1f2b; color:var(--text-3); font-weight:600; }
+td { padding:var(--sp-2) var(--sp-3); border-top:1px solid var(--border); color:var(--text-2); }
+.meta { font-size:var(--text-xs); color:var(--text-3); margin-bottom:var(--sp-6); }
+.back { font-size:var(--text-xs); color:var(--text-3); display:inline-block; margin-bottom:var(--sp-5); }
+
+.core-card { background:#0d2a1a; border:1px solid #1a4a2e; border-radius:var(--radius-lg); padding:var(--sp-6); margin-bottom:var(--sp-6); }
+.core-label { font-size:var(--text-xs); font-weight:700; color:#4ade80; text-transform:uppercase; letter-spacing:.08em; margin-bottom:var(--sp-3); }
+.core-text { font-size:var(--text-lg); font-weight:600; color:var(--text-1); line-height:1.6; }
+.threshold { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-3); margin-bottom:var(--sp-6); }
+.th-go { background:#0d2a1a; border:1px solid #1a4a2e; border-radius:var(--radius-md); padding:var(--sp-4); }
+.th-stop { background:#1a1218; border:1px solid #3a1a20; border-radius:var(--radius-md); padding:var(--sp-4); }
+.th-label { font-size:var(--text-xs); font-weight:800; letter-spacing:.1em; margin-bottom:var(--sp-2); }
+.th-go .th-label { color:#4ade80; }
+.th-stop .th-label { color:var(--red); }
+.th-text { font-size:var(--text-sm); color:var(--text-2); line-height:1.6; }
+.ptn-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-4); margin-bottom:var(--sp-6); }
+.ptn-good { background:#0d2a1a; border:1px solid #1a4a2e; border-radius:var(--radius-md); padding:var(--sp-4); }
+.ptn-ng   { background:#1a1218; border:1px solid #3a1a20; border-radius:var(--radius-md); padding:var(--sp-4); }
+.ptn-label { font-size:var(--text-xs); font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:var(--sp-3); }
+.ptn-good .ptn-label { color:#4ade80; }
+.ptn-ng   .ptn-label { color:var(--red); }
+</style>
+</head><body>
+<a class="back" href="../index.html">← Folio</a>
+<h1>Betaship</h1>
+<div class="meta">BRIEF.md　·　生成 05/25 00:27</div>
+
+<div class="core-card">
+  <div class="core-label">体験の核心</div>
+  <div class="core-text">「見知らぬ他人が帰ってくること」を確認する場所。Beta=未完OK × Ship=出す、の精神。</div>
+</div>
+
+<div class="threshold">
+  <div class="th-go">
+    <div class="th-label">GO</div>
+    <div class="th-text">検証ゲート（UU50×2週・30%・5人）通過後にPhase 1実装</div>
+  </div>
+  <div class="th-stop">
+    <div class="th-label">STOP</div>
+    <div class="th-text">仕組みが固まっていないうちに集客しない</div>
+  </div>
+</div>
+
+<div class="ptn-grid">
+  <div class="ptn-good">
+    <div class="ptn-label">正解パターン</div>
+    <p><strong>LP設計</strong></p><ul><li>Coming soonは不信感 → 削除済み</li><li>クレジット表示なし（Phase 0はLP言語化のみ）</li><li>フィードバック = カード直結モーダル（フローティングボタンはNG）</li><li>メアド収集もNG（最小で声を拾う）</li></ul><div style='height:var(--sp-2)'></div><p><strong>マーケ</strong></p><ul><li>X投稿は週3・12角度（失敗型・問い型・制作型を含む）</li><li>「宣伝感が出た瞬間に終わり」</li><li>英語投稿はPhase 1以降</li><li>クレジット設計確定済み → X自動投稿再開可能</li></ul><div style='height:var(--sp-2)'></div><p><strong>マネタイズ設計（2026-05-12 確定）</strong></p><ul><li>月額プラン＋トップアップ方式（Free/Maker $5/Pro $15）</li><li>個別課金との橋渡し：既存ユーザーはBetashipクレジットに自動変換（A方式）</li></ul><p>  - Moshimo Pro ¥680/月 → 600cr/月（Maker相当）</p><p>  - Wearld $9 → 900cr（トップアップ相当）</p><ul><li>Stripe Connect・APIプロキシは Phase 1以降</li><li>「クリエイターはコードだけ出せばいい、マネタイズはBetashipが握る」</li><li>統合後はBetaship1箇所課金で全プロダクト使える（Poe.com構造）</li></ul>
+  </div>
+  <div class="ptn-ng">
+    <div class="ptn-label">NGパターン</div>
+    <ul><li>Coming soon表示 → 不信感</li><li>フローティングフィードバックボタン → 「意見を集めたいサイト感」</li><li>メアド収集 → NG</li><li>バックエンド実装（Phase 0の検証ゲート前） → 「誰も来ない広場を整備するリスク」</li><li>Stripe Connect早期実装 → Phase 1以降</li><li>個別課金を先に廃止してBetashipに一本化（B方式）→ 採用しない（既存ユーザーへの影響大）</li></ul>
+  </div>
+</div>
+
+<h2>完成の定義</h2>
+<ul><li>週次UU 50以上が2週連続</li><li>複数ツール使用率 30%以上</li><li>有料意向を示す人が5人</li></ul><p>→ これが揃うまでバックエンド実装禁止</p>
+
+</body></html>

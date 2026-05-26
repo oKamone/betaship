@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Betaship Admin</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f11;color:#e8e8e8;min-height:100vh}
+.top{background:#18181c;border-bottom:1px solid #2a2a30;padding:16px 24px;display:flex;align-items:center;gap:12px}
+.top h1{font-size:18px;font-weight:600;letter-spacing:-.3px}
+.dot{width:8px;height:8px;border-radius:50%;background:#3a3a40}
+.dot.ok{background:#22c55e}
+.dot.err{background:#ef4444}
+.main{padding:24px;max-width:960px}
+h2{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#888;margin:28px 0 12px}
+.card{background:#18181c;border:1px solid #2a2a30;border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#666;padding:10px 14px;text-align:left;background:#141418;border-bottom:1px solid #22222a}
+td{padding:10px 14px;font-size:13px;border-bottom:1px solid #1e1e26;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;letter-spacing:.03em}
+.badge.active{background:#052e16;color:#4ade80;border:1px solid #14532d}
+.badge.inactive{background:#1c1c20;color:#666;border:1px solid #2a2a30}
+.badge.warn{background:#2d1a00;color:#fb923c;border:1px solid #7c2d12}
+.btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:5px 12px;border-radius:6px;border:none;cursor:pointer;transition:background .15s}
+.btn-on{background:#14532d;color:#4ade80}
+.btn-on:hover{background:#166534}
+.btn-off{background:#2a2a30;color:#888}
+.btn-off:hover{background:#3a3a40;color:#bbb}
+.btn-red{background:#450a0a;color:#f87171}
+.btn-red:hover{background:#7f1d1d}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:4px}
+.stat{background:#18181c;border:1px solid #2a2a30;border-radius:10px;padding:16px 20px}
+.stat .val{font-size:28px;font-weight:700;letter-spacing:-1px;margin-top:4px}
+.stat .lbl{font-size:11px;color:#666;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.stat .val.ok{color:#4ade80}
+.stat .val.warn{color:#fb923c}
+.check-row{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid #1e1e26}
+.check-row:last-child{border-bottom:none}
+.check-name{font-size:13px}
+.check-val{font-size:12px;font-weight:600}
+.ok-text{color:#4ade80}
+.err-text{color:#f87171}
+.warn-text{color:#fb923c}
+#loginWrap{display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:12px}
+#loginWrap input{background:#18181c;border:1px solid #3a3a40;color:#e8e8e8;padding:10px 14px;border-radius:8px;font-size:14px;width:280px;outline:none}
+#loginWrap input:focus{border-color:#6366f1}
+#loginWrap .btn-primary{background:#6366f1;color:#fff;padding:10px 24px;border-radius:8px;border:none;font-size:14px;font-weight:600;cursor:pointer;width:280px}
+#loginWrap .btn-primary:hover{background:#818cf8}
+#appWrap{display:none}
+</style>
+</head>
+<body>
+
+<div id="loginWrap">
+  <div style="font-size:22px;font-weight:700;margin-bottom:4px">Betaship Admin</div>
+  <div style="font-size:13px;color:#666;margin-bottom:16px">管理者トークンを入力してください</div>
+  <input type="password" id="tokenInput" placeholder="ADMIN_TOKEN" autocomplete="current-password">
+  <button class="btn-primary" onclick="doLogin()">ログイン</button>
+  <div id="loginErr" style="color:#f87171;font-size:12px;margin-top:8px;display:none">認証エラー</div>
+</div>
+
+<div id="appWrap">
+  <div class="top">
+    <div class="dot" id="pingDot"></div>
+    <h1>Betaship Admin</h1>
+    <span style="font-size:12px;color:#555;margin-left:auto" id="apiUrl"></span>
+    <button class="btn btn-off" onclick="doLogout()" style="margin-left:8px">ログアウト</button>
+  </div>
+
+  <div class="main">
+    <div class="stat-row">
+      <div class="stat"><div class="lbl">ユーザー数</div><div class="val" id="statUsers">—</div></div>
+      <div class="stat"><div class="lbl">Stripe</div><div class="val" id="statStripe">—</div></div>
+      <div class="stat"><div class="lbl">プラン分布</div><div class="val" id="statPlans">—</div></div>
+    </div>
+
+    <h2>プロダクト設定</h2>
+    <div class="card">
+      <table>
+        <thead><tr>
+          <th>プロダクト</th>
+          <th>課金</th>
+          <th>無料モード</th>
+          <th>メンテ</th>
+          <th>無料上限/日</th>
+          <th>操作</th>
+        </tr></thead>
+        <tbody id="productTable"><tr><td colspan="6" style="color:#444;text-align:center">読み込み中…</td></tr></tbody>
+      </table>
+    </div>
+
+    <h2>プランクレジット設定</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>プラン</th><th>月次cr</th><th>価格</th></tr></thead>
+        <tbody id="planTable"><tr><td colspan="3" style="color:#444;text-align:center">読み込み中…</td></tr></tbody>
+      </table>
+    </div>
+
+    <h2>ローンチ準備チェック</h2>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <select id="checkProduct" style="background:#18181c;border:1px solid #3a3a40;color:#e8e8e8;padding:7px 12px;border-radius:6px;font-size:13px">
+        <option value="moshimo">moshimo</option>
+        <option value="wearld">wearld</option>
+        <option value="reverie">reverie</option>
+        <option value="await">await</option>
+      </select>
+      <button class="btn btn-off" onclick="runHealthCheck()">チェック実行</button>
+    </div>
+    <div class="card" id="healthCard" style="display:none">
+      <div id="healthRows"></div>
+    </div>
+
+    <h2>課金有効化</h2>
+    <div style="display:flex;gap:8px;align-items:center">
+      <select id="activateProduct" style="background:#18181c;border:1px solid #3a3a40;color:#e8e8e8;padding:7px 12px;border-radius:6px;font-size:13px">
+        <option value="moshimo">moshimo</option>
+        <option value="wearld">wearld</option>
+        <option value="reverie">reverie</option>
+        <option value="await">await</option>
+      </select>
+      <button class="btn btn-on" onclick="activateBilling()">課金有効化</button>
+      <span id="activateMsg" style="font-size:12px;color:#888"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+let _token = '';
+let _base = window.location.origin;
+
+function doLogin() {
+  _token = document.getElementById('tokenInput').value.trim();
+  document.getElementById('apiUrl').textContent = _base;
+  fetch(`${_base}/api/admin/status`, { headers: { Authorization: `Bearer ${_token}` } })
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(data => {
+      document.getElementById('loginWrap').style.display = 'none';
+      document.getElementById('appWrap').style.display = 'block';
+      renderStatus(data);
+      ping();
+    })
+    .catch(() => {
+      document.getElementById('loginErr').style.display = 'block';
+    });
+}
+
+document.getElementById('tokenInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function doLogout() {
+  _token = '';
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('appWrap').style.display = 'none';
+  document.getElementById('tokenInput').value = '';
+}
+
+function ping() {
+  fetch(`${_base}/health`).then(r => {
+    document.getElementById('pingDot').className = r.ok ? 'dot ok' : 'dot err';
+  }).catch(() => {
+    document.getElementById('pingDot').className = 'dot err';
+  });
+}
+
+function renderStatus(d) {
+  document.getElementById('statUsers').textContent = d.user_count ?? '—';
+  const sEl = document.getElementById('statStripe');
+  sEl.textContent = d.stripe_ok ? 'OK' : 'NG';
+  sEl.className = 'val ' + (d.stripe_ok ? 'ok' : 'warn');
+
+  const pc = d.plan_counts || {};
+  document.getElementById('statPlans').textContent =
+    `F:${pc.free||0} M:${pc.maker||0} P:${pc.pro||0}`;
+
+  // plans
+  const plans = d.plans || [];
+  document.getElementById('planTable').innerHTML = plans.map(p => `
+    <tr>
+      <td>${p.plan}</td>
+      <td>${p.monthly_cr} cr</td>
+      <td>$${p.price_usd}</td>
+    </tr>`).join('');
+
+  // products
+  const prods = d.products || [];
+  document.getElementById('productTable').innerHTML = prods.length
+    ? prods.map(p => `
+    <tr>
+      <td><strong>${p.product_id}</strong></td>
+      <td>${badge(p.billing_active, '有効', '無効')}</td>
+      <td>${badge(p.free_mode, '無料中', 'OFF', true)}</td>
+      <td>${badge(p.maintenance_mode, '停止中', 'OK', true)}</td>
+      <td>${p.free_daily_limit || 5}</td>
+      <td>
+        <button class="btn ${p.free_mode ? 'btn-off' : 'btn-on'}" onclick="toggleField('${p.product_id}','free_mode',${!p.free_mode})">
+          ${p.free_mode ? '無料OFF' : '無料ON'}
+        </button>
+        <button class="btn ${p.maintenance_mode ? 'btn-red' : 'btn-off'}" style="margin-left:6px" onclick="toggleField('${p.product_id}','maintenance_mode',${!p.maintenance_mode})">
+          ${p.maintenance_mode ? 'メンテ解除' : 'メンテON'}
+        </button>
+      </td>
+    </tr>`).join('')
+    : '<tr><td colspan="6" style="color:#444;text-align:center">プロダクトなし</td></tr>';
+}
+
+function badge(val, labelTrue, labelFalse, invertColor) {
+  const isActive = val;
+  const cls = invertColor
+    ? (isActive ? 'warn' : 'active')
+    : (isActive ? 'active' : 'inactive');
+  return `<span class="badge ${cls}">${isActive ? labelTrue : labelFalse}</span>`;
+}
+
+function toggleField(productId, field, value) {
+  fetch(`${_base}/api/admin/product-config`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${_token}` },
+    body: JSON.stringify({ product_id: productId, [field]: value }),
+  }).then(() => refreshStatus());
+}
+
+function activateBilling() {
+  const pid = document.getElementById('activateProduct').value;
+  fetch(`${_base}/api/admin/activate-billing`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${_token}` },
+    body: JSON.stringify({ product_id: pid }),
+  }).then(r => r.json()).then(d => {
+    const msg = document.getElementById('activateMsg');
+    msg.textContent = d.ok ? `${pid} の課金を有効化しました` : 'エラー: ' + (d.error||'');
+    msg.style.color = d.ok ? '#4ade80' : '#f87171';
+    refreshStatus();
+  });
+}
+
+function runHealthCheck() {
+  const pid = document.getElementById('checkProduct').value;
+  fetch(`${_base}/api/admin/health-check?product=${pid}`, {
+    headers: { Authorization: `Bearer ${_token}` },
+  }).then(r => r.json()).then(data => {
+    const card = document.getElementById('healthCard');
+    card.style.display = 'block';
+    const labels = {
+      betaship_db: 'Betaship DB接続',
+      product_config: 'product_config存在',
+      free_daily_limit: '無料上限設定',
+      billing_active: '課金有効化済み',
+      free_mode: '無料モードOFF',
+      product_reachable: 'プロダクト到達可能',
+      product_stripe_live: 'Stripe liveモード',
+      product_webhook_configured: 'Webhook設定',
+      product_supabase_ok: 'プロダクトDB接続',
+      stripe_portal: 'Stripe課金ポータル',
+      stripe_webhook: 'Stripe Webhook有効',
+    };
+    document.getElementById('healthRows').innerHTML = Object.entries(labels).map(([k, label]) => {
+      const v = data[k];
+      const cls = v === true ? 'ok-text' : v === false ? 'err-text' : 'warn-text';
+      const txt = v === true ? '✓ OK' : v === false ? '✗ NG' : '— N/A';
+      return `<div class="check-row"><span class="check-name">${label}</span><span class="check-val ${cls}">${txt}</span></div>`;
+    }).join('');
+  });
+}
+
+function refreshStatus() {
+  fetch(`${_base}/api/admin/status`, { headers: { Authorization: `Bearer ${_token}` } })
+    .then(r => r.json()).then(renderStatus);
+}
+</script>
+</body>
+</html>
