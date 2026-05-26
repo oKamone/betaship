@@ -82,18 +82,28 @@ Stripeダッシュボードで以下を作成し、price_id を `.env` に記入
 | トップアップ 300cr | 一括払い | $3 |
 | トップアップ 1200cr | 一括払い | $10 |
 
-## ステップ3：APIプロキシを Render にデプロイ
+## ステップ3：APIプロキシを Cloud Run にデプロイ（moshimo-ai プロジェクト）
 
 ```bash
-cd output/betaship/api
-# .env.example をコピーして .env を作成・記入
-cp .env.example .env
+cd output/betaship  # Dockerfile があるルート
 
-# Render に新規 Web Service を作成
-# Build: pip install -r requirements.txt
-# Start: gunicorn proxy:app
-# 環境変数を .env の内容で設定
+gcloud run deploy betaship-api \
+  --project=moshimo-ai \
+  --region=asia-northeast1 \
+  --source=. \
+  --allow-unauthenticated \
+  --env-vars-file=api/.env.yaml \
+  --min-instances=0 \
+  --max-instances=2 \
+  --memory=512Mi \
+  --timeout=120
 ```
+
+**デプロイ済み URL（2026-05-27）:**
+`https://betaship-api-767603267032.asia-northeast1.run.app`
+
+**管理画面:**
+`https://betaship-api-767603267032.asia-northeast1.run.app/admin`
 
 ## ステップ4：Moshimo既存ユーザーを移行（手動確認後に実行）
 
@@ -117,7 +127,7 @@ resp = anthropic_client.messages.create(
 
 # 変更後（Betashipプロキシ経由）
 import requests
-resp = requests.post("https://betaship-api.onrender.com/api/ai", json={
+resp = requests.post("https://betaship-api-767603267032.asia-northeast1.run.app/api/ai", json={
     "service": "moshimo",
     "messages": messages,
     "max_tokens": 1024,
@@ -130,5 +140,5 @@ content = result["content"]
 
 Stripe → Developers → Webhooks → Add endpoint
 
-- URL: `https://betaship-api.onrender.com/api/stripe/webhook`
+- URL: `https://betaship-api-767603267032.asia-northeast1.run.app/api/stripe/webhook`
 - イベント: `checkout.session.completed`, `invoice.paid`
