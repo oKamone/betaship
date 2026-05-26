@@ -7,85 +7,43 @@
   <meta name="description" content="登録不要・ログイン不要。今すぐ試せるAIツールが集まる場所。">
   <meta property="og:title" content="Betaship — 登録不要で試せるAIツール">
   <meta property="og:description" content="登録不要・ログイン不要。今すぐ試せるAIツールが集まる場所。">
-  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GA_MEASUREMENT_ID');</script> -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NPRGLH5PXG"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-NPRGLH5PXG');</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0c0c0e;
-      --surface: #111113;
-      --surface2: #161618;
-      --border: #1e1e22;
-      --border2: #2a2a30;
-      --text: #e8e8ec;
-      --muted: #5c5c6a;
-      --muted2: #88889a;
-      --accent: #f0a500;
-      --accent-dim: #f0a50012;
-      --green: #22c55e;
-      --amber: #f59e0b;
+      --bg: #050d1a;
+      --surface: #071828;
+      --surface2: #0a1f32;
+      --border: #0e2a40;
+      --border2: #163650;
+      --text: #d4e8f0;
+      --muted: #3e6078;
+      --muted2: #6a90a8;
+      --accent: #c8a84b;
+      --accent-dim: #c8a84b14;
+      --green: #0d9488;
+      --amber: #c8a84b;
+      --teal: #0d9488;
     }
 
     html { scroll-behavior: smooth; }
 
-    /* ─── CREATOR SECTION ─── */
-    .creator-section {
-      border-top: 1px solid var(--border2);
-      background: linear-gradient(180deg, #0e0e12 0%, #0c0c0e 100%);
-      padding: 80px 28px 100px;
+    /* ─── 海図グリッド背景 ─── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(13,148,136,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(13,148,136,0.045) 1px, transparent 1px),
+        linear-gradient(rgba(13,148,136,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(13,148,136,0.02) 1px, transparent 1px);
+      background-size: 120px 120px, 120px 120px, 30px 30px, 30px 30px;
     }
-    .creator-inner { max-width: 860px; margin: 0 auto; }
+    body > * { position: relative; z-index: 1; }
 
-    .creator-header { text-align: center; margin-bottom: 56px; }
-    .creator-eyebrow {
-      display: inline-block; font-size: 11px; font-weight: 700;
-      color: var(--accent); text-transform: uppercase; letter-spacing: 1.2px;
-      background: var(--accent-dim); border: 1px solid #f0a50030;
-      padding: 4px 12px; border-radius: 99px; margin-bottom: 20px;
-    }
-    .creator-title {
-      font-size: clamp(22px, 4vw, 32px); font-weight: 800;
-      letter-spacing: -0.8px; line-height: 1.25; margin-bottom: 16px;
-    }
-    .creator-sub {
-      font-size: 15px; color: var(--muted2); line-height: 1.7;
-      max-width: 560px; margin: 0 auto;
-    }
-
-
-    .creator-cta-block {
-      text-align: center;
-      background: var(--surface); border: 1px solid var(--border2);
-      border-radius: 16px; padding: 36px 28px;
-    }
-    .creator-cta-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-    .creator-cta-sub { font-size: 14px; color: var(--muted2); margin-bottom: 24px; line-height: 1.6; }
-    .creator-cta-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--accent); color: #000;
-      font-size: 14px; font-weight: 800;
-      padding: 12px 28px; border-radius: 10px;
-      text-decoration: none; transition: opacity 0.15s;
-      margin-bottom: 12px;
-    }
-    .creator-cta-btn:hover { opacity: 0.85; }
-    .creator-cta-note { font-size: 11px; color: var(--muted); }
-
-    .creator-value-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-      margin-bottom: 40px;
-    }
-    @media (max-width: 600px) {
-      .creator-value-grid { grid-template-columns: 1fr; }
-    }
-    .creator-value-card {
-      background: var(--surface); border: 1px solid var(--border2);
-      border-radius: 12px; padding: 24px 20px; text-align: center;
-    }
-    .creator-value-icon { font-size: 28px; margin-bottom: 10px; }
-    .creator-value-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
-    .creator-value-desc { font-size: 13px; color: var(--muted2); line-height: 1.6; }
 
     body {
       background: var(--bg);
@@ -100,11 +58,12 @@
     header {
       position: sticky; top: 0; z-index: 200;
       height: 52px;
-      background: rgba(12,12,14,0.96);
-      border-bottom: 1px solid var(--border);
+      background: rgba(5,13,26,0.97);
+      border-bottom: 1px solid var(--border2);
       backdrop-filter: blur(16px);
       display: flex; align-items: center;
       padding: 0 28px; gap: 0;
+      box-shadow: 0 1px 0 rgba(13,148,136,0.15), 0 4px 20px rgba(0,0,0,0.4);
     }
 
     .logo {
@@ -141,10 +100,11 @@
 
     /* ─── ANNOUNCE BAND ─── */
     .announce-band {
-      background: linear-gradient(135deg, #0f1a12 0%, #0c0c12 50%, #0e0c14 100%);
+      background: linear-gradient(135deg, #071828 0%, #050d1a 50%, #061422 100%);
       border-bottom: 1px solid var(--border2);
       padding: 18px 28px 20px;
       text-align: center;
+      border-top: 1px solid rgba(13,148,136,0.2);
     }
 
     .announce-main {
@@ -165,9 +125,14 @@
 
     .announce-dot-live {
       width: 7px; height: 7px; border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 6px #22c55e60;
+      background: var(--teal);
+      box-shadow: 0 0 8px #0d948870;
       display: inline-block;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #0d948870; }
+      50% { opacity: 0.7; box-shadow: 0 0 14px #0d9488aa; }
     }
 
     .announce-divider {
@@ -229,14 +194,23 @@
       border-radius: 14px;
       overflow: hidden;
       display: flex; flex-direction: column;
-      transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
       position: relative;
     }
-    .tool-card:hover {
-      border-color: var(--border2);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+    .tool-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(13,148,136,0.04) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+      opacity: 0; transition: opacity 0.2s;
     }
+    .tool-card:hover::before { opacity: 1; }
+    .tool-card:hover {
+      border-color: rgba(13,148,136,0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(13,148,136,0.1);
+    }
+    .tool-card > * { position: relative; z-index: 1; }
     .tool-card[data-hidden="true"] { display: none; }
 
     /* thumbnail strip */
@@ -246,12 +220,22 @@
       font-size: 64px;
       position: relative;
       flex-shrink: 0;
+      overflow: hidden;
     }
     .card-thumb-glow {
       position: absolute; inset: 0; opacity: 0.15;
       background: radial-gradient(ellipse at center, #fff 0%, transparent 70%);
       pointer-events: none;
     }
+    .card-thumb-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity .5s ease;
+      z-index: 1;
+    }
+    .card-thumb-img.loaded { opacity: 1; }
 
     /* card body */
     .card-body {
@@ -274,9 +258,9 @@
       padding: 3px 9px; border-radius: 99px; letter-spacing: 0.3px;
       white-space: nowrap; flex-shrink: 0;
     }
-    .s-live { background: #22c55e14; color: var(--green); border: 1px solid #22c55e22; }
-    .s-beta { background: #f59e0b14; color: var(--amber); border: 1px solid #f59e0b22; }
-    .s-soon { background: #88889a14; color: var(--muted2); border: 1px solid #88889a22; }
+    .s-live { background: #0d948814; color: var(--teal); border: 1px solid #0d948830; }
+    .s-beta { background: #c8a84b14; color: var(--accent); border: 1px solid #c8a84b22; }
+    .s-soon { background: #6a90a814; color: var(--muted2); border: 1px solid #6a90a822; }
     .s-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
     /* catch copy */
@@ -360,6 +344,45 @@
 
     @media (min-width: 701px) and (max-width: 1024px) {
       .tools-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ─── SHIP HERO ─── */
+    .ship-hero {
+      position: relative; height: 340px; overflow: hidden;
+      background: linear-gradient(180deg, #010810 0%, #020c1c 40%, #050d1a 75%, #071828 100%);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding-top: 52px;
+    }
+    .hero-svg {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+    }
+    .hero-content {
+      position: relative; z-index: 10; text-align: center;
+      max-width: 520px; padding: 0 28px;
+    }
+    .hero-eyebrow {
+      font-size: 11px; color: var(--teal); font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 14px; opacity: 0.85;
+    }
+    .hero-headline {
+      font-size: clamp(24px, 4.5vw, 40px); font-weight: 900;
+      letter-spacing: -1.2px; line-height: 1.15; margin-bottom: 14px;
+      color: #d4e8f0; text-shadow: 0 2px 24px rgba(0,0,0,0.7);
+    }
+    .hero-headline span { color: var(--accent); }
+    .hero-sub {
+      font-size: 13px; color: var(--muted2); margin-bottom: 20px; line-height: 1.7;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(13,148,136,0.1); border: 1px solid rgba(13,148,136,0.28);
+      border-radius: 99px; padding: 7px 18px;
+      font-size: 13px; color: var(--teal); font-weight: 600;
+    }
+    @media (max-width: 700px) {
+      .ship-hero { height: 280px; padding-top: 36px; }
+      .hero-headline { font-size: 22px; }
     }
   /* ─── FEEDBACK MODAL ─── */
   .fb-modal-bg {
@@ -451,75 +474,32 @@
   }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-  /* ─── DATA PREVIEW ─── */
-  .data-preview-section { margin-bottom: 36px; }
-  .section-eyebrow-sm {
-    font-size: 11px; color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.8px; margin-bottom: 14px; font-weight: 600;
-  }
-  .data-preview-card {
-    background: var(--surface2); border: 1px solid var(--border2);
-    border-radius: 14px; padding: 22px 24px;
-  }
-  .data-preview-header {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
-  }
-  .data-pulse {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--green); box-shadow: 0 0 8px #22c55e60; flex-shrink: 0;
-  }
-  .data-preview-date { font-size: 12px; color: var(--muted2); }
-  .data-preview-tool { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 16px; }
-  .data-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-  .data-stat {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 12px 14px;
-  }
-  .data-stat-num { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px; }
-  .data-stat-label { font-size: 11px; color: var(--muted2); }
-  .data-comment-label {
-    font-size: 11px; color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600;
-  }
-  .data-comment {
-    background: var(--surface); border-radius: 8px; padding: 8px 12px;
-    margin-bottom: 6px; font-size: 13px; color: var(--muted2); line-height: 1.55;
-    border-left: 2px solid var(--border2);
-  }
-  .data-comment:last-child { margin-bottom: 0; }
-  .data-preview-note {
-    font-size: 11px; color: var(--muted); text-align: right; margin-top: 14px;
-  }
 
-  /* ─── STEPS ─── */
-  .steps-section { margin-bottom: 36px; }
-  .steps-list { border: 1px solid var(--border2); border-radius: 14px; overflow: hidden; }
-  .step {
-    display: flex; align-items: flex-start; gap: 16px;
-    padding: 18px 20px; border-bottom: 1px solid var(--border);
-  }
-  .step:last-child { border-bottom: none; }
-  .step-num {
-    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
-    background: var(--accent-dim); border: 1px solid #f0a50030;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 800; color: var(--accent); margin-top: 2px;
-  }
-  .step-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
-  .step-sub { font-size: 13px; color: var(--muted2); line-height: 1.5; }
-
-  /* ─── FAQ ─── */
-  .faq-section {
-    border-top: 1px solid var(--border2);
-    background: var(--surface);
-    padding: 64px 28px 80px;
-  }
-  .faq-inner { max-width: 860px; margin: 0 auto; }
-  .faq-list { border: 1px solid var(--border2); border-radius: 14px; overflow: hidden; }
-  .faq-item { padding: 22px 24px; border-bottom: 1px solid var(--border); }
-  .faq-item:last-child { border-bottom: none; }
-  .faq-q { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-  .faq-a { font-size: 13px; color: var(--muted2); line-height: 1.7; }
+    /* ─── CREATOR STRIP ─── */
+    .creator-strip {
+      border-top: 1px solid var(--border2);
+      background: var(--surface);
+      padding: 28px 28px;
+    }
+    .creator-strip-inner {
+      max-width: 860px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      flex-wrap: wrap;
+    }
+    .creator-strip-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .creator-strip-sub { font-size: 13px; color: var(--muted2); }
+    .creator-strip-btn {
+      display: inline-flex; align-items: center;
+      background: var(--surface2); border: 1px solid var(--border2);
+      color: var(--muted2); font-size: 13px; font-weight: 600;
+      padding: 9px 20px; border-radius: 9px; text-decoration: none;
+      white-space: nowrap; transition: border-color 0.12s, color 0.12s;
+      flex-shrink: 0;
+    }
+    .creator-strip-btn:hover { border-color: var(--accent); color: var(--accent); }
+    @media (max-width: 600px) {
+      .creator-strip-inner { flex-direction: column; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
@@ -527,7 +507,7 @@
 <!-- ─── HEADER ─── -->
 <header>
   <a href="/" class="logo">
-    <span class="logo-mark">⚡</span>
+    <span class="logo-mark">🧭</span>
     <span class="logo-text"><span>Beta</span>ship</span>
   </a>
   <div class="header-right">
@@ -535,18 +515,123 @@
   </div>
 </header>
 
-<!-- ─── ANNOUNCE BAND ─── -->
-<div class="announce-band">
-  <div class="announce-main">登録不要、今すぐ試せるAIツールが集まる場所</div>
-  <div class="announce-sub">
-    <span class="announce-stat">
-      <span class="announce-dot-live"></span>
-      3 tools live
-    </span>
-    <span class="announce-divider">·</span>
-    <span class="announce-stat">無料で試せる</span>
-    <span class="announce-divider">·</span>
-    <span class="announce-stat">ログイン不要</span>
+<!-- ─── SHIP HERO ─── -->
+<div class="ship-hero">
+  <svg class="hero-svg" viewBox="0 0 1200 340" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <!-- Stars -->
+    <g id="hero-stars">
+      <circle cx="42" cy="22" r="1.1" fill="#fff" opacity="0.6"/>
+      <circle cx="88" cy="48" r="0.7" fill="#fff" opacity="0.45"/>
+      <circle cx="135" cy="14" r="1.3" fill="#fff" opacity="0.75"/>
+      <circle cx="162" cy="56" r="0.8" fill="#fff" opacity="0.5"/>
+      <circle cx="210" cy="30" r="1" fill="#fff" opacity="0.65"/>
+      <circle cx="255" cy="8" r="0.7" fill="#fff" opacity="0.4"/>
+      <circle cx="290" cy="44" r="1.2" fill="#fff" opacity="0.7"/>
+      <circle cx="340" cy="20" r="0.9" fill="#fff" opacity="0.55"/>
+      <circle cx="380" cy="58" r="0.7" fill="#fff" opacity="0.42"/>
+      <circle cx="420" cy="12" r="1.1" fill="#fff" opacity="0.68"/>
+      <circle cx="462" cy="38" r="0.8" fill="#fff" opacity="0.5"/>
+      <circle cx="510" cy="24" r="1.4" fill="#c8a84b" opacity="0.55"/>
+      <circle cx="550" cy="54" r="0.7" fill="#fff" opacity="0.44"/>
+      <circle cx="64" cy="80" r="0.8" fill="#fff" opacity="0.38"/>
+      <circle cx="115" cy="95" r="0.6" fill="#fff" opacity="0.35"/>
+      <circle cx="178" cy="72" r="1" fill="#fff" opacity="0.5"/>
+      <circle cx="238" cy="100" r="0.7" fill="#fff" opacity="0.4"/>
+      <circle cx="308" cy="82" r="0.9" fill="#fff" opacity="0.48"/>
+      <circle cx="352" cy="105" r="0.6" fill="#fff" opacity="0.36"/>
+      <circle cx="422" cy="78" r="1.1" fill="#fff" opacity="0.58"/>
+      <circle cx="475" cy="108" r="0.8" fill="#fff" opacity="0.44"/>
+      <!-- right side -->
+      <circle cx="680" cy="16" r="0.9" fill="#fff" opacity="0.55"/>
+      <circle cx="730" cy="40" r="1.2" fill="#fff" opacity="0.7"/>
+      <circle cx="778" cy="10" r="0.7" fill="#fff" opacity="0.45"/>
+      <circle cx="820" cy="52" r="0.8" fill="#fff" opacity="0.5"/>
+      <circle cx="870" cy="28" r="1.1" fill="#fff" opacity="0.65"/>
+      <circle cx="916" cy="60" r="0.7" fill="#fff" opacity="0.42"/>
+      <circle cx="958" cy="18" r="1.3" fill="#fff" opacity="0.72"/>
+      <circle cx="700" cy="80" r="0.8" fill="#fff" opacity="0.42"/>
+      <circle cx="758" cy="95" r="0.6" fill="#fff" opacity="0.38"/>
+      <circle cx="808" cy="72" r="1" fill="#fff" opacity="0.52"/>
+      <circle cx="862" cy="98" r="0.7" fill="#fff" opacity="0.4"/>
+      <circle cx="912" cy="85" r="0.9" fill="#fff" opacity="0.48"/>
+      <circle cx="1155" cy="26" r="0.8" fill="#fff" opacity="0.45"/>
+      <circle cx="1100" cy="50" r="0.6" fill="#fff" opacity="0.38"/>
+      <circle cx="1060" cy="15" r="1" fill="#fff" opacity="0.55"/>
+      <!-- twinkle stars (larger) -->
+      <circle cx="318" cy="34" r="1.6" fill="#c8e8f8" opacity="0.6"/>
+      <circle cx="840" cy="20" r="1.5" fill="#c8e8f8" opacity="0.58"/>
+    </g>
+    <!-- Moon -->
+    <g transform="translate(1060,68)">
+      <circle cx="0" cy="0" r="40" fill="#c8e8f8" opacity="0.04"/>
+      <circle cx="0" cy="0" r="26" fill="#f5e6c0" opacity="0.07"/>
+      <circle cx="0" cy="0" r="15" fill="#f5e6c0" opacity="0.88"/>
+      <circle cx="7" cy="-4" r="12" fill="#010810"/>
+    </g>
+    <!-- Ocean base -->
+    <rect x="0" y="258" width="1200" height="82" fill="#040d1a"/>
+    <!-- Wave layers -->
+    <path d="M0 262 Q80 250 160 262 Q240 274 320 262 Q400 250 480 262 Q560 274 640 262 Q720 250 800 262 Q880 274 960 262 Q1040 250 1120 262 Q1160 268 1200 262 L1200 340 L0 340 Z" fill="#050e1c" opacity="0.95"/>
+    <path d="M0 270 Q100 258 200 270 Q300 282 400 270 Q500 258 600 270 Q700 282 800 270 Q900 258 1000 270 Q1100 282 1200 270 L1200 340 L0 340 Z" fill="#071828" opacity="1"/>
+    <path d="M0 280 Q150 268 300 280 Q450 292 600 280 Q750 268 900 280 Q1050 292 1200 280 L1200 340 L0 340 Z" fill="#071828"/>
+    <!-- ── Ship silhouette ── -->
+    <g transform="translate(600,128)">
+      <!-- Bowsprit (斜めの前檣) -->
+      <line x1="-118" y1="72" x2="-185" y2="42" stroke="#0e2535" stroke-width="3" stroke-linecap="round"/>
+      <!-- Fore mast -->
+      <rect x="-58" y="-55" width="4" height="145" fill="#0e253a" rx="1.5"/>
+      <!-- Main mast -->
+      <rect x="-2" y="-105" width="5" height="195" fill="#0e253a" rx="1.5"/>
+      <!-- Mizzen mast -->
+      <rect x="72" y="-40" width="3.5" height="122" fill="#0e253a" rx="1.5"/>
+      <!-- Main sail (big) -->
+      <path d="M3 -95 L60 -50 L62 80 L3 80 Z" fill="#0d2840" opacity="0.95"/>
+      <path d="M-2 -95 L-60 -50 L-62 80 L-2 80 Z" fill="#0a2038" opacity="0.9"/>
+      <!-- Fore sail -->
+      <path d="M-54 -44 L-18 -22 L-18 78 L-54 78 Z" fill="#0c2336" opacity="0.88"/>
+      <!-- Jibs (headstays) -->
+      <path d="M-57 -44 L-130 30 L-130 78 L-57 50 Z" fill="#0b1f32" opacity="0.7"/>
+      <!-- Mizzen sail -->
+      <path d="M73.5 -30 L110 -5 L112 72 L73.5 72 Z" fill="#0a1e30" opacity="0.82"/>
+      <!-- Topsails -->
+      <path d="M3 -105 L48 -80 L3 -60 Z" fill="#102c40" opacity="0.85"/>
+      <path d="M-2 -105 L-48 -80 L-2 -60 Z" fill="#0d2638" opacity="0.8"/>
+      <!-- Flag (teal) -->
+      <path d="M-2 -105 L22 -94 L-2 -83 Z" fill="#0d9488" opacity="0.92"/>
+      <!-- Hull -->
+      <path d="M-130 80 L-118 100 L118 100 L130 80 Z" fill="#071424"/>
+      <path d="M-118 100 Q0 114 118 100 L105 128 Q0 140 -105 128 Z" fill="#050f1e"/>
+      <!-- Hull trim line -->
+      <line x1="-128" y1="82" x2="128" y2="82" stroke="#0e2a40" stroke-width="1.5"/>
+      <!-- Portholes -->
+      <circle cx="-78" cy="90" r="5.5" fill="none" stroke="#132840" stroke-width="2"/>
+      <circle cx="-44" cy="92" r="5.5" fill="none" stroke="#132840" stroke-width="2"/>
+      <circle cx="-10" cy="93" r="5.5" fill="none" stroke="#132840" stroke-width="2"/>
+      <circle cx="24" cy="92" r="5.5" fill="none" stroke="#132840" stroke-width="2"/>
+      <circle cx="58" cy="90" r="5.5" fill="none" stroke="#132840" stroke-width="2"/>
+      <!-- Porthole glow -->
+      <circle cx="-78" cy="90" r="3.5" fill="#0d9488" opacity="0.18"/>
+      <circle cx="-10" cy="93" r="3.5" fill="#c8a84b" opacity="0.22"/>
+      <circle cx="58" cy="90" r="3.5" fill="#0d9488" opacity="0.16"/>
+      <!-- Water reflection -->
+      <path d="M-90 128 Q0 140 90 128 Q60 148 0 152 Q-60 148 -90 128 Z" fill="#071828" opacity="0.3"/>
+      <ellipse cx="0" cy="150" rx="80" ry="8" fill="#0d9488" opacity="0.04"/>
+    </g>
+    <!-- Distant tiny ship (left) -->
+    <g transform="translate(180,220)" opacity="0.3">
+      <rect x="-1" y="-18" width="2" height="32" fill="#0e253a"/>
+      <path d="M1 -15 L16 -5 L16 14 L1 14 Z" fill="#0d2840"/>
+      <path d="M-1 -15 L-16 -5 L-16 14 L-1 14 Z" fill="#0a2038"/>
+      <path d="M-22 14 L-18 20 L18 20 L22 14 Z" fill="#071424"/>
+    </g>
+  </svg>
+  <div class="hero-content">
+    <div class="hero-eyebrow">⚓ Betaship</div>
+    <h1 class="hero-headline">作りたての<span>AI</span>を、<br>一緒に航海する</h1>
+    <div class="hero-badge">
+      <span style="width:7px;height:7px;border-radius:50%;background:#0d9488;box-shadow:0 0 8px #0d948870;animation:pulse-dot 2s ease-in-out infinite;flex-shrink:0;display:inline-block;"></span>
+      2 tools aboard · ログイン不要
+    </div>
   </div>
 </div>
 
@@ -555,7 +640,7 @@
 
   <!-- FILTER PILLS -->
   <div class="filter-bar" id="filter-pills">
-    <div class="pill active" data-filter="all" onclick="filterCat('all', this)">すべて</div>
+    <div class="pill active" data-filter="all" onclick="filterCat('all', this)">🗺 全ツール</div>
     <div class="pill" data-filter="wellness" onclick="filterCat('wellness', this)">🧠 ウェルネス</div>
     <div class="pill" data-filter="creative" onclick="filterCat('creative', this)">🎨 クリエイティブ</div>
     <div class="pill" data-filter="productivity" onclick="filterCat('productivity', this)">⚙️ 生産性</div>
@@ -563,8 +648,8 @@
 
   <!-- GRID HEADER -->
   <div class="grid-header">
-    <div class="grid-label" id="grid-label">すべてのツール</div>
-    <div class="grid-count" id="grid-count">8件</div>
+    <div class="grid-label" id="grid-label">aboard のツール</div>
+    <div class="grid-count" id="grid-count">7件</div>
   </div>
 
   <!-- TOOLS GRID -->
@@ -572,16 +657,16 @@
 
     <!-- ── Moshimo ── -->
     <div class="tool-card" data-cat="wellness" data-name="moshimo">
-      <div class="card-thumb" style="background: #1a4a2e;">
+      <div class="card-thumb" style="background: linear-gradient(135deg, #0a2e1a 0%, #0e3d24 100%);">
         <div class="card-thumb-glow"></div>
         🧠
       </div>
       <div class="card-body">
         <div class="card-name-row">
           <div class="card-name">Moshimo（もしも）</div>
-          <span class="card-status s-live"><span class="s-dot"></span>Live</span>
+          <span class="card-status s-soon">準備中</span>
         </div>
-        <div class="card-catch">思考にAIメンターを入れる</div>
+        <div class="card-catch" style="color: var(--muted2);">思考にAIメンターを入れる</div>
         <div class="card-quote">「自分がどう考えているか」を、自分より先に知られる体験を作りたかった</div>
         <div class="card-meta">
           <div class="card-tags">
@@ -592,24 +677,23 @@
         </div>
         <div class="card-price">無料 / Pro ¥680/月</div>
         <div class="card-cta">
-          <a href="https://moshimo.onrender.com" target="_blank" class="btn-try-live"
-             style="background: #22c55e;"
-             onclick="track('moshimo')">試してみる →</a>
-          <button class="btn-feedback" onclick="openFeedback('Moshimo')">💬 感想を送る</button>
+          <div class="btn-try-soon">準備中</div>
+          <button class="btn-interest" onclick="trackInterest('Moshimo', this)">👋 気になってる</button>
         </div>
       </div>
     </div>
 
     <!-- ── Reverie ── -->
     <div class="tool-card" data-cat="creative" data-name="reverie">
-      <div class="card-thumb" style="background: #1e1a4a;">
+      <div class="card-thumb" style="background: linear-gradient(135deg, #0e0a2e 0%, #160d3d 100%);">
+        <img class="card-thumb-img" data-url="https://reverie-music.vercel.app" alt="">
         <div class="card-thumb-glow"></div>
         🎵
       </div>
       <div class="card-body">
         <div class="card-name-row">
           <div class="card-name">Reverie（レヴリー）</div>
-          <span class="card-status s-live"><span class="s-dot"></span>Live</span>
+          <span class="card-status s-live"><span class="s-dot"></span>試せる</span>
         </div>
         <div class="card-catch">今の気分に、映画のBGMを</div>
         <div class="card-quote">現実の場面がフィクションと重なる瞬間が好きで、それを音楽で再現したかった</div>
@@ -632,14 +716,15 @@
 
     <!-- ── Wearld ── -->
     <div class="tool-card" data-cat="creative" data-name="wearld">
-      <div class="card-thumb" style="background: #2a1a4a;">
+      <div class="card-thumb" style="background: linear-gradient(135deg, #180a2e 0%, #200d3d 100%);">
+        <img class="card-thumb-img" src="https://wearld.vercel.app/api/og" alt="">
         <div class="card-thumb-glow"></div>
         🌌
       </div>
       <div class="card-body">
         <div class="card-name-row">
           <div class="card-name">Wearld（ウェアルド）</div>
-          <span class="card-status s-beta"><span class="s-dot"></span>Beta</span>
+          <span class="card-status s-live"><span class="s-dot"></span>試せる</span>
         </div>
         <div class="card-catch">どのサイトも別世界に変える</div>
         <div class="card-quote">Webサイトの見た目が変わると、同じコンテンツでも感じ方が変わるのが面白い</div>
@@ -662,14 +747,14 @@
 
     <!-- ── Gait ── -->
     <div class="tool-card" data-cat="wellness" data-name="gait">
-      <div class="card-thumb" style="background: #1a3a2a; opacity: 0.85;">
+      <div class="card-thumb" style="background: linear-gradient(135deg, #071a10 0%, #0a2418 100%); opacity: 0.85;">
         <div class="card-thumb-glow"></div>
         🎧
       </div>
       <div class="card-body">
         <div class="card-name-row">
           <div class="card-name">Gait（ゲイト）</div>
-          <span class="card-status s-soon">Coming soon</span>
+          <span class="card-status s-soon">準備中</span>
         </div>
         <div class="card-catch" style="color: var(--muted2);">歩行BPMで過集中を抜ける</div>
         <div class="card-quote">過集中は自覚しにくい。音楽が体を動かし、体が脳を引き戻す仕組みが欲しかった</div>
@@ -682,78 +767,50 @@
         </div>
         <div class="card-price" style="color: var(--muted);">無料（予定）</div>
         <div class="card-cta">
-          <div class="btn-try-soon">開発中</div>
+          <div class="btn-try-soon">準備中</div>
           <button class="btn-interest" onclick="trackInterest('Gait', this)">👋 気になってる</button>
         </div>
       </div>
     </div>
 
-    <!-- ── Send Nudge ── -->
-    <div class="tool-card" data-cat="productivity" data-name="send-nudge">
-      <div class="card-thumb" style="background: #3a2a1a; opacity: 0.85;">
+    <!-- ── Await ── -->
+    <div class="tool-card" data-cat="wellness" data-name="await">
+      <div class="card-thumb" style="background: linear-gradient(135deg, #0f0a1a 0%, #180f2a 100%); opacity: 0.85;">
         <div class="card-thumb-glow"></div>
-        💬
+        💭
       </div>
       <div class="card-body">
         <div class="card-name-row">
-          <div class="card-name">Send Nudge</div>
-          <span class="card-status s-soon">Coming soon</span>
+          <div class="card-name">Await（アウェイト）</div>
+          <span class="card-status s-soon">準備中</span>
         </div>
-        <div class="card-catch" style="color: var(--muted2);">送信前に、感情を確認する</div>
-        <div class="card-quote">送ってから後悔することが多くて。AIが送る前にトーンを教えてくれたら違うと思った</div>
+        <div class="card-catch" style="color: var(--muted2);">会う前に、気になる相手のことをAIと話す</div>
+        <div class="card-quote">AIが一緒に知りたがってくれる。話すうちに、もっと会いたくなる</div>
         <div class="card-meta">
           <div class="card-tags">
-            <span class="card-tag">コミュニケーション</span>
-            <span class="card-tag">感情AI</span>
-          </div>
-          <span class="card-trial">試用: 約2分</span>
-        </div>
-        <div class="card-price" style="color: var(--muted);">無料（予定）</div>
-        <div class="card-cta">
-          <div class="btn-try-soon">開発中</div>
-          <button class="btn-interest" onclick="trackInterest('Send Nudge', this)">👋 気になってる</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Brain Switch ── -->
-    <div class="tool-card" data-cat="productivity" data-name="brain-switch">
-      <div class="card-thumb" style="background: #1a2a3a; opacity: 0.85;">
-        <div class="card-thumb-glow"></div>
-        🔀
-      </div>
-      <div class="card-body">
-        <div class="card-name-row">
-          <div class="card-name">Brain Switch</div>
-          <span class="card-status s-soon">Coming soon</span>
-        </div>
-        <div class="card-catch" style="color: var(--muted2);">思考モードを意図的に切り替える</div>
-        <div class="card-quote">集中モードと発散モードを自分でコントロールできる人が最強だと気づいた</div>
-        <div class="card-meta">
-          <div class="card-tags">
-            <span class="card-tag">生産性</span>
-            <span class="card-tag">AIパターン</span>
+            <span class="card-tag">恋愛・関係</span>
+            <span class="card-tag">AI対話</span>
           </div>
           <span class="card-trial">試用: 約5分</span>
         </div>
         <div class="card-price" style="color: var(--muted);">無料（予定）</div>
         <div class="card-cta">
-          <div class="btn-try-soon">開発中</div>
-          <button class="btn-interest" onclick="trackInterest('Brain Switch', this)">👋 気になってる</button>
+          <div class="btn-try-soon">準備中</div>
+          <button class="btn-interest" onclick="trackInterest('Await', this)">👋 気になってる</button>
         </div>
       </div>
     </div>
 
     <!-- ── Qliq ── -->
     <div class="tool-card" data-cat="productivity" data-name="qliq">
-      <div class="card-thumb" style="background: #3a1a2a; opacity: 0.85;">
+      <div class="card-thumb" style="background: linear-gradient(135deg, #1a0812 0%, #22101c 100%); opacity: 0.85;">
         <div class="card-thumb-glow"></div>
         📋
       </div>
       <div class="card-body">
         <div class="card-name-row">
           <div class="card-name">Qliq（クリック）</div>
-          <span class="card-status s-soon">Coming soon</span>
+          <span class="card-status s-soon">準備中</span>
         </div>
         <div class="card-catch" style="color: var(--muted2);">クリップボードを複数同時に持つ</div>
         <div class="card-quote">コピペを繰り返すたびに思った。なんで1個しか持てないの</div>
@@ -766,7 +823,7 @@
         </div>
         <div class="card-price" style="color: var(--muted);">無料（予定）</div>
         <div class="card-cta">
-          <div class="btn-try-soon">開発中</div>
+          <div class="btn-try-soon">準備中</div>
           <button class="btn-interest" onclick="trackInterest('Qliq', this)">👋 気になってる</button>
         </div>
       </div>
@@ -774,14 +831,14 @@
 
     <!-- ── Saki ── -->
     <div class="tool-card" data-cat="wellness" data-name="saki">
-      <div class="card-thumb" style="background: #3a1a3a; opacity: 0.85;">
+      <div class="card-thumb" style="background: linear-gradient(135deg, #1a081a 0%, #220c22 100%); opacity: 0.85;">
         <div class="card-thumb-glow"></div>
         ✨
       </div>
       <div class="card-body">
         <div class="card-name-row">
           <div class="card-name">Saki（サキ）</div>
-          <span class="card-status s-soon">Coming soon</span>
+          <span class="card-status s-soon">準備中</span>
         </div>
         <div class="card-catch" style="color: var(--muted2);">聴いてくれるAIキャラクター</div>
         <div class="card-quote">答えるだけじゃなく、聴いてる感が出るAIを作りたかった</div>
@@ -794,7 +851,7 @@
         </div>
         <div class="card-price" style="color: var(--muted);">無料（予定）</div>
         <div class="card-cta">
-          <div class="btn-try-soon">開発中</div>
+          <div class="btn-try-soon">準備中</div>
           <button class="btn-interest" onclick="trackInterest('Saki', this)">👋 気になってる</button>
         </div>
       </div>
@@ -804,124 +861,19 @@
 
 </div><!-- /page-wrap -->
 
-<!-- ─── FOR CREATORS ─── -->
-<section id="for-creators" class="creator-section">
-  <div class="creator-inner">
-
-    <div class="creator-header">
-      <div class="creator-eyebrow">クリエイターへ</div>
-      <h2 class="creator-title">出したけど、<br>誰にも届かなかった。</h2>
-      <p class="creator-sub">Betashipは、そのツールを置く場所です。<br>出品無料。ユーザーの反応データを届けます。</p>
+<!-- ─── CREATOR STRIP ─── -->
+<div class="creator-strip" id="for-creators">
+  <div class="creator-strip-inner">
+    <div>
+      <div class="creator-strip-title">AIツールを乗せたい方へ</div>
+      <div class="creator-strip-sub">掲載無料・ユーザーの反応データつき。まずDMで話しましょう。</div>
     </div>
-
-    <div class="creator-value-grid">
-      <div class="creator-value-card">
-        <div class="creator-value-icon">📦</div>
-        <div class="creator-value-title">掲載スペース</div>
-        <div class="creator-value-desc">費用ゼロ。ツールが動く状態であれば出品できます。</div>
-      </div>
-      <div class="creator-value-card">
-        <div class="creator-value-icon">💬</div>
-        <div class="creator-value-title">サーベイ機能</div>
-        <div class="creator-value-desc">Betashipが自動で設置。設定は不要です。</div>
-      </div>
-      <div class="creator-value-card">
-        <div class="creator-value-icon">📊</div>
-        <div class="creator-value-title">反応データ</div>
-        <div class="creator-value-desc">使った人の感想・クリック数をまとめて届けます。</div>
-      </div>
-    </div>
-
-    <!-- DATA PREVIEW -->
-    <div class="data-preview-section">
-      <div class="section-eyebrow-sm">出品すると、こんなデータが届きます</div>
-      <div class="data-preview-card">
-        <div class="data-preview-header">
-          <div class="data-pulse"></div>
-          <div class="data-preview-date">昨日の反応レポート · 出品翌日から届きます</div>
-        </div>
-        <div class="data-preview-tool">あなたのAIツール</div>
-        <div class="data-stats">
-          <div class="data-stat">
-            <div class="data-stat-num">23</div>
-            <div class="data-stat-label">クリック数</div>
-          </div>
-          <div class="data-stat">
-            <div class="data-stat-num">7</div>
-            <div class="data-stat-label">サーベイ回答</div>
-          </div>
-        </div>
-        <div class="data-comment-label">使った人の声</div>
-        <div class="data-comment">"UIがシンプルで直感的でした。また使います"</div>
-        <div class="data-comment">"こういうの探してた。友達にも教えます"</div>
-        <div class="data-preview-note">毎日このデータが届きます ↑</div>
-      </div>
-    </div>
-
-    <!-- STEPS -->
-    <div class="steps-section">
-      <div class="section-eyebrow-sm">出品の流れ</div>
-      <div class="steps-list">
-        <div class="step">
-          <div class="step-num">1</div>
-          <div>
-            <div class="step-title">DMで話す</div>
-            <div class="step-sub">ツールを見せてください。審査なし、フォームなし。</div>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <div>
-            <div class="step-title">24時間以内に掲載</div>
-            <div class="step-sub">カード設定・サーベイ設置はこちらで。あなたはコードだけ。</div>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <div>
-            <div class="step-title">翌日から反応が届く</div>
-            <div class="step-sub">クリック数・感想・再訪意向。「使われた実感」が毎日見えます。</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="creator-cta-block">
-      <div class="creator-cta-title">まず話を聞かせてください</div>
-      <div class="creator-cta-sub">作ったツールの話、詰まっていること、何でも。DMで直接やり取りします。</div>
-      <a href="https://twitter.com/messages/compose?recipient_id=oKamone" target="_blank" class="creator-cta-btn">
-        DMで話す → @oKamone
-      </a>
-      <div class="creator-cta-note">出品費用なし · 初期クリエイター限定 · 一緒に仕様を作ります</div>
-    </div>
-
+    <a href="https://twitter.com/messages/compose?recipient_id=oKamone" target="_blank" class="creator-strip-btn">
+      @oKamone にDM →
+    </a>
   </div>
-</section>
+</div>
 
-<!-- ─── FAQ ─── -->
-<section class="faq-section">
-  <div class="faq-inner">
-    <div class="section-eyebrow-sm" style="margin-bottom: 24px;">よくある質問</div>
-    <div class="faq-list">
-      <div class="faq-item">
-        <div class="faq-q">どんなツールが出品できますか？</div>
-        <div class="faq-a">AIが使われている実装であれば形式は問いません。Webアプリ・Chrome拡張・LINE Bot など。「動く状態」であれば出品できます。</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">審査や申請フォームはありますか？</div>
-        <div class="faq-a">ありません。最初の5〜10人はオーナー（@oKamone）が直接DMでお声がけします。気になった方は先にDMいただいても大丈夫です。</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">費用はかかりますか？</div>
-        <div class="faq-a">掲載は無料です。フェーズが進んで収益分配が始まる段階になったら改めてご説明します。今は「使われた実感」を一緒に積み上げましょう。</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">他の場所にすでに公開しているツールでも大丈夫？</div>
-        <div class="faq-a">はい、問題ありません。ProductHuntやGitHubに公開済みでも出品できます。</div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- ─── FOOTER ─── -->
 <footer>
@@ -1025,7 +977,7 @@ function filterCat(cat, el) {
   });
 
   const labels = {
-    'all': 'すべてのツール',
+    'all': 'aboard のツール',
     'wellness': 'ウェルネス',
     'creative': 'クリエイティブ',
     'productivity': '生産性'
@@ -1099,6 +1051,32 @@ function submitFeedback() {
   document.getElementById('fb-thanks').style.display = 'block';
   setTimeout(closeFeedback, 2400);
 }
+
+// ─── OGP IMAGE LOADER ───
+(async function loadOgImages() {
+  // Wearldは src 直書き済み → load/error だけ処理
+  document.querySelectorAll('.card-thumb-img[src]').forEach(img => {
+    if (img.complete) { img.naturalWidth > 0 ? img.classList.add('loaded') : img.remove(); }
+    else {
+      img.onload  = () => img.classList.add('loaded');
+      img.onerror = () => img.remove();
+    }
+  });
+
+  // Reverieなど data-url 指定カード → microlink で og:image を取得
+  for (const img of document.querySelectorAll('.card-thumb-img[data-url]')) {
+    try {
+      const url = img.dataset.url;
+      const res  = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
+      const json = await res.json();
+      const src  = json.data?.image?.url || json.data?.screenshot?.url;
+      if (!src) continue;
+      img.onload  = () => img.classList.add('loaded');
+      img.onerror = () => img.remove();
+      img.src = src;
+    } catch(e) { img.remove(); }
+  }
+})();
 </script>
 
 </body>
