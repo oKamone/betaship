@@ -116,10 +116,10 @@ products:
     name: "Await（アウェイト）"
     emoji: "💭"
     cat: wellness
-    status: soon
-    url: null
+    status: live
+    url: "https://await.web.app"
     catch: "会う前に、気になる相手のことをAIと話す"
     quote: "AIが一緒に知りたがってくれる。話すうちに、もっと会いたくなる"
     tags: [恋愛・関係, AI対話]
     trial_time: "約5分"
-    price: "無料（予定）"
+    price: "無料"

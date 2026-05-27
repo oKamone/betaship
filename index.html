@@ -7,6 +7,7 @@
   <meta name="description" content="今すぐ試せるAIツールが集まる場所。Beta=未完OK × Ship=出す。">
   <meta property="og:title" content="Betaship — 試せるAIツールが集まる場所">
   <meta property="og:description" content="今すぐ試せるAIツールが集まる場所。Beta=未完OK × Ship=出す。">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-NPRGLH5PXG"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-NPRGLH5PXG');</script>
   <style>
@@ -475,6 +476,75 @@
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
 
+    /* ─── PRICING ─── */
+    .pricing-section {
+      border-top: 1px solid var(--border2);
+      background: #080a0f;
+      padding: 72px 28px 64px;
+    }
+    .pricing-inner { max-width: 860px; margin: 0 auto; }
+    .pricing-head { text-align: center; margin-bottom: 40px; }
+    .pricing-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .pricing-sub { font-size: 14px; color: var(--muted2); }
+    .pricing-cards {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px;
+    }
+    @media (max-width: 640px) { .pricing-cards { grid-template-columns: 1fr; } }
+    .plan-card {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 16px; padding: 28px 24px; position: relative;
+      display: flex; flex-direction: column;
+    }
+    .plan-card-featured {
+      border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 8px 32px rgba(99,102,241,0.15);
+    }
+    .plan-badge {
+      position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: #fff;
+      font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.3px;
+    }
+    .plan-name { font-size: 13px; font-weight: 700; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+    .plan-price { font-size: 34px; font-weight: 900; letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
+    .plan-period { font-size: 16px; font-weight: 500; color: var(--muted2); }
+    .plan-cr { font-size: 13px; color: var(--muted2); margin-bottom: 20px; }
+    .plan-features { list-style: none; margin-bottom: 24px; flex: 1; }
+    .plan-features li { font-size: 13px; color: var(--muted2); padding: 5px 0; border-bottom: 1px solid var(--border2); }
+    .plan-features li:last-child { border-bottom: none; }
+    .plan-features li::before { content: "✓ "; color: var(--accent); }
+    .plan-btn {
+      display: block; width: 100%; padding: 11px; border-radius: 10px;
+      font-size: 14px; font-weight: 700; text-align: center; cursor: pointer;
+      border: none; transition: opacity 0.12s, transform 0.12s;
+    }
+    .plan-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .plan-btn:active { transform: translateY(0); }
+    .plan-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .plan-btn-free { background: var(--surface2); color: var(--muted2); }
+    .plan-btn-maker { background: var(--accent); color: #fff; }
+    .plan-btn-pro { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+    .topup-row {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 12px; padding: 18px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .topup-label { font-size: 13px; color: var(--muted2); }
+    .topup-cards { display: flex; gap: 10px; flex-wrap: wrap; }
+    .topup-btn {
+      background: var(--surface2); border: 1px solid var(--border2);
+      color: var(--text); font-size: 13px; font-weight: 600;
+      padding: 8px 16px; border-radius: 8px; cursor: pointer;
+      transition: border-color 0.12s, color 0.12s;
+    }
+    .topup-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .topup-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .pricing-note { text-align: center; font-size: 12px; color: var(--muted2); }
+    .pricing-test-badge {
+      display: inline-block; background: #7c3aed22; color: #a78bfa;
+      border: 1px solid #7c3aed44; border-radius: 6px;
+      font-size: 11px; font-weight: 600; padding: 2px 8px; margin-left: 6px; vertical-align: middle;
+    }
+
     /* ─── CREATOR STRIP ─── */
     .creator-strip {
       border-top: 1px solid var(--border2);
@@ -630,7 +700,7 @@
     <h1 class="hero-headline">作りたての<span>AI</span>を、<br>一緒に航海する</h1>
     <div class="hero-badge">
       <span style="width:7px;height:7px;border-radius:50%;background:#0d9488;box-shadow:0 0 8px #0d948870;animation:pulse-dot 2s ease-in-out infinite;flex-shrink:0;display:inline-block;"></span>
-      2 tools aboard
+      3 tools aboard
     </div>
   </div>
 </div>
@@ -718,16 +788,16 @@
 
     <!-- ── Await ── -->
     <div class="tool-card" data-cat="wellness" data-name="await">
-      <div class="card-thumb" style="background: linear-gradient(135deg, #0f0a1a 0%, #180f2a 100%); opacity: 0.85;">
+      <div class="card-thumb" style="background: linear-gradient(135deg, #0f0a1a 0%, #180f2a 100%);">
         <div class="card-thumb-glow"></div>
         💭
       </div>
       <div class="card-body">
         <div class="card-name-row">
           <div class="card-name">Await（アウェイト）</div>
-          <span class="card-status s-soon">準備中</span>
+          <span class="card-status s-live">試せる</span>
         </div>
-        <div class="card-catch" style="color: var(--muted2);">会う前に、気になる相手のことをAIと話す</div>
+        <div class="card-catch">会う前に、気になる相手のことをAIと話す</div>
         <div class="card-quote">AIが一緒に知りたがってくれる。話すうちに、もっと会いたくなる</div>
         <div class="card-meta">
           <div class="card-tags">
@@ -736,10 +806,12 @@
           </div>
           <span class="card-trial">試用: 約5分</span>
         </div>
-        <div class="card-price" style="color: var(--muted);">無料（予定）</div>
+        <div class="card-price">無料</div>
         <div class="card-cta">
-          <div class="btn-try-soon">準備中</div>
-          <button class="btn-interest" onclick="trackInterest('Await', this)">👋 気になってる</button>
+          <a href="https://await.web.app" target="_blank" class="btn-try-live"
+             style="background: #7c3aed;"
+             onclick="track('await')">試してみる →</a>
+          <button class="btn-feedback" onclick="openFeedback('Await')">💬 感想を送る</button>
         </div>
       </div>
     </div>
@@ -747,6 +819,69 @@
   </div><!-- /tools-grid -->
 
 </div><!-- /page-wrap -->
+
+<!-- ─── PRICING ─── -->
+<section class="pricing-section" id="pricing">
+  <div class="pricing-inner">
+    <div class="pricing-head">
+      <div class="pricing-title">クレジットプラン <span class="pricing-test-badge">テスト中</span></div>
+      <div class="pricing-sub">複数ツールをまとめて使える。使った分だけ消費。</div>
+    </div>
+
+    <div class="pricing-cards">
+      <!-- Free -->
+      <div class="plan-card">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">$0</div>
+        <div class="plan-cr">50 cr / 月</div>
+        <ul class="plan-features">
+          <li>全ツール利用可</li>
+          <li>月50クレジット</li>
+          <li>追加購入可</li>
+        </ul>
+        <button class="plan-btn plan-btn-free" onclick="startCheckout('free')">まず試す</button>
+      </div>
+
+      <!-- Maker -->
+      <div class="plan-card plan-card-featured">
+        <div class="plan-badge">おすすめ</div>
+        <div class="plan-name">Maker</div>
+        <div class="plan-price">$5<span class="plan-period">/月</span></div>
+        <div class="plan-cr">600 cr / 月</div>
+        <ul class="plan-features">
+          <li>全ツール利用可</li>
+          <li>月600クレジット</li>
+          <li>追加購入可</li>
+        </ul>
+        <button class="plan-btn plan-btn-maker" id="btn-maker" onclick="startCheckout('maker')">Makerになる</button>
+      </div>
+
+      <!-- Pro -->
+      <div class="plan-card">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">$15<span class="plan-period">/月</span></div>
+        <div class="plan-cr">2,500 cr / 月</div>
+        <ul class="plan-features">
+          <li>全ツール利用可</li>
+          <li>月2,500クレジット</li>
+          <li>追加購入可</li>
+        </ul>
+        <button class="plan-btn plan-btn-pro" id="btn-pro" onclick="startCheckout('pro')">Proになる</button>
+      </div>
+    </div>
+
+    <!-- Topup -->
+    <div class="topup-row">
+      <div class="topup-label">クレジットを追加購入（どのプランでも）</div>
+      <div class="topup-cards">
+        <button class="topup-btn" id="btn-topup300" onclick="startCheckout('topup300')">+300 cr — $3</button>
+        <button class="topup-btn" id="btn-topup1200" onclick="startCheckout('topup1200')">+1,200 cr — $10</button>
+      </div>
+    </div>
+
+    <div class="pricing-note">1 クレジット ≈ 800 トークン。Freeプランでも全ツール試せます。</div>
+  </div>
+</section>
 
 <!-- ─── CREATOR STRIP ─── -->
 <div class="creator-strip" id="for-creators">
@@ -781,10 +916,10 @@
         <div class="fb-chips">
           <input type="radio" name="fb_tool" id="ft-moshimo" value="Moshimo" class="fb-chip-radio">
           <label class="fb-chip-label" for="ft-moshimo">Moshimo</label>
-          <input type="radio" name="fb_tool" id="ft-reverie" value="Reverie" class="fb-chip-radio">
-          <label class="fb-chip-label" for="ft-reverie">Reverie</label>
-          <input type="radio" name="fb_tool" id="ft-wearld" value="Wearld" class="fb-chip-radio">
+<input type="radio" name="fb_tool" id="ft-wearld" value="Wearld" class="fb-chip-radio">
           <label class="fb-chip-label" for="ft-wearld">Wearld</label>
+          <input type="radio" name="fb_tool" id="ft-await" value="Await" class="fb-chip-radio">
+          <label class="fb-chip-label" for="ft-await">Await</label>
           <input type="radio" name="fb_tool" id="ft-multi" value="複数" class="fb-chip-radio">
           <label class="fb-chip-label" for="ft-multi">複数試した</label>
         </div>
@@ -872,6 +1007,84 @@ function filterCat(cat, el) {
   document.getElementById('grid-label').textContent = labels[cat] || 'すべてのツール';
   document.getElementById('grid-count').textContent = count + '件';
 }
+
+// ─── CHECKOUT ───
+const _BSAPI  = 'https://betaship-api-1000874026940.asia-northeast1.run.app';
+const _SB_URL = 'https://kphfolcpguniaaefcgcw.supabase.co';
+const _SB_KEY = 'sb_publishable_-mJ-zO_4n5ZKqjP53WDXFg_ZkHcdiwe';
+const _PRICES = {
+  maker:     { id: 'price_1TWEmjEm0oKuBhc8A42j0eHQ', mode: 'subscription' },
+  pro:       { id: 'price_1TWEmjEm0oKuBhc8ZhLsgZ17', mode: 'subscription' },
+  topup300:  { id: 'price_1TWEmkEm0oKuBhc8mAztcNlS', mode: 'payment' },
+  topup1200: { id: 'price_1TWEmkEm0oKuBhc8PK44XaXW', mode: 'payment' },
+};
+
+function _sbClient() {
+  return window.supabase.createClient(_SB_URL, _SB_KEY);
+}
+
+async function startCheckout(plan) {
+  if (plan === 'free') {
+    document.getElementById('tools-grid').scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
+  const price = _PRICES[plan];
+  if (!price) return;
+
+  const btnId = { maker: 'btn-maker', pro: 'btn-pro', topup300: 'btn-topup300', topup1200: 'btn-topup1200' }[plan];
+  const btn = document.getElementById(btnId);
+  if (btn) { btn.disabled = true; btn.textContent = '処理中…'; }
+
+  try {
+    const sb = _sbClient();
+    const { data: { session } } = await sb.auth.getSession();
+
+    if (!session) {
+      localStorage.setItem('bs_pending_price', price.id);
+      localStorage.setItem('bs_pending_mode',  price.mode);
+      await sb.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.href }
+      });
+      return;
+    }
+
+    await _doCheckout(session.access_token, price.id, price.mode);
+  } catch(e) {
+    showToast('エラーが発生しました。再度お試しください。');
+    if (btn) { btn.disabled = false; btn.textContent = _btnLabel(plan); }
+  }
+}
+
+async function _doCheckout(jwt, priceId, mode) {
+  const res = await fetch(`${_BSAPI}/api/stripe/checkout`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${jwt}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ price_id: priceId, mode }),
+  });
+  const json = await res.json();
+  if (json.url) { window.location.href = json.url; }
+  else { showToast('チェックアウトを開けませんでした。'); }
+}
+
+function _btnLabel(plan) {
+  return { maker: 'Makerになる', pro: 'Proになる', topup300: '+300 cr — $3', topup1200: '+1,200 cr — $10' }[plan] || '申し込む';
+}
+
+// OAuth リダイレクト後の自動チェックアウト
+(async function resumeCheckout() {
+  const pendingPrice = localStorage.getItem('bs_pending_price');
+  const pendingMode  = localStorage.getItem('bs_pending_mode');
+  if (!pendingPrice) return;
+
+  const sb = _sbClient();
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+
+  localStorage.removeItem('bs_pending_price');
+  localStorage.removeItem('bs_pending_mode');
+  await _doCheckout(session.access_token, pendingPrice, pendingMode || 'subscription');
+})();
 
 // ─── ANALYTICS ───
 function track(tool) {
