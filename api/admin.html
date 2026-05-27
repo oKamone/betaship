@@ -172,7 +172,7 @@ function renderStatus(d) {
 
   const pc = d.plan_counts || {};
   document.getElementById('statPlans').textContent =
-    `F:${pc.free||0} M:${pc.maker||0} P:${pc.pro||0}`;
+    `F:${pc.free||0} M:${pc.plus||0} P:${pc.pro||0}`;
 
   // plans
   const plans = d.plans || [];

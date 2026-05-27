@@ -1,0 +1,19 @@
+{
+  "hosting": [
+    {
+      "site": "betaship",
+      "public": "public",
+      "ignore": ["firebase.json", "**/.*"],
+      "rewrites": [
+        {
+          "source": "**",
+          "run": {
+            "serviceId": "betaship-api",
+            "region": "asia-northeast1",
+            "pinTag": false
+          }
+        }
+      ]
+    }
+  ]
+}

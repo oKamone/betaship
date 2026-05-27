@@ -5,16 +5,97 @@ concept:
   value_prop: "クリエイターはコードだけ出せばいい、マネタイズはBetashipが握る"
 
 status:
-  phase: 開発中
+  phase: dev
   current_phase: Phase 0
-  completion_pct: null
-  url: "https://okamone.github.io/betaship/"
-  api_url: "https://betaship-api-66007692912.asia-northeast1.run.app"
-  next_action: "Phase 0検証ゲート通過"
-  phase_gate:
-    - "週次UU 50以上が2週連続"
-    - "複数ツール使用率 30%以上"
-    - "有料意向を示す人が5人"
+  completion_pct: 45
+  url: "https://betaship.web.app"
+  api_url: "https://betaship.web.app"
+  next_action: "Phase 0検証ゲート通過（週次UU 50×2週・有料意向5人）"
+  checklist:
+    # ── Gate 0: 企画確定 ──
+    - item: "コンセプト定義（Beta=未完OK × Ship=出す）"
+      category: "Gate 0: 企画確定"
+      done: true
+    - item: "フェーズ設計（Phase 0/1/2 + ゲート定義）"
+      category: "Gate 0: 企画確定"
+      done: true
+    - item: "クレジット変換設計（A方式確定）"
+      category: "Gate 0: 企画確定"
+      done: true
+    - item: "DBスキーマ設計（betaship schema）"
+      category: "Gate 0: 企画確定"
+      done: true
+    - item: "マーケ方針設計（X投稿戦略・週3・12角度）"
+      category: "Gate 0: 企画確定"
+      done: true
+    # ── Gate 1: LP・マーケ立ち上げ ──
+    - item: "LP（index.html）作成・公開"
+      category: "Gate 1: LP・マーケ"
+      done: true
+    - item: "プロダクトカード表示（moshimo / wearld / await）"
+      category: "Gate 1: LP・マーケ"
+      done: true
+    - item: "OGP設定（og:title / og:description / og:image）"
+      category: "Gate 1: LP・マーケ"
+      done: true
+    - item: "ファビコン設定"
+      category: "Gate 1: LP・マーケ"
+      done: true
+    - item: "X自動投稿設定（autoposter.py 稼働）"
+      category: "Gate 1: LP・マーケ"
+      done: true
+    - item: "フィードバック動線（カード直結モーダル）"
+      category: "Gate 1: LP・マーケ"
+      done: true
+    # ── Gate 2: Phase 0 検証通過 ──
+    - item: "週次UU 50以上 × 2週連続"
+      category: "Gate 2: Phase 0 検証"
+      done: false
+    - item: "複数ツール使用率 30%以上"
+      category: "Gate 2: Phase 0 検証"
+      done: false
+    - item: "有料意向を示す人 5人"
+      category: "Gate 2: Phase 0 検証"
+      done: false
+    # ── Gate 3: バックエンド・課金稼働（Phase 1） ──
+    - item: "APIプロキシ実装（/api/ai・/api/credits）"
+      category: "Gate 3: バックエンド・課金"
+      done: true
+    - item: "Stripe checkout / webhook 実装"
+      category: "Gate 3: バックエンド・課金"
+      done: true
+    - item: "クレジット付与・消費ロジック実装"
+      category: "Gate 3: バックエンド・課金"
+      done: true
+    - item: "Stripe Live モード設定"
+      category: "Gate 3: バックエンド・課金"
+      done: false
+    - item: "billing_active 本番有効化"
+      category: "Gate 3: バックエンド・課金"
+      done: false
+    - item: "Stripe Connect 実装（クリエイター収益分配）"
+      category: "Gate 3: バックエンド・課金"
+      done: false
+    # ── Gate 4: ローンチ前整備 ──
+    - item: "利用規約・プライバシーポリシー公開"
+      category: "Gate 4: ローンチ前"
+      done: false
+    - item: "特定商取引法に基づく表記"
+      category: "Gate 4: ローンチ前"
+      done: false
+    - item: "障害時の対応フロー定義"
+      category: "Gate 4: ローンチ前"
+      done: false
+    - item: "Sentry等エラー監視設定"
+      category: "Gate 4: ローンチ前"
+      done: false
+    # ── Gate 5: ローンチ後 ──
+    - item: "週次UU・使用率・転換率の計測体制"
+      category: "Gate 5: ローンチ後"
+      done: false
+    - item: "ユーザーフィードバック収集・改善サイクル"
+      category: "Gate 5: ローンチ後"
+      done: false
 
 infra:
   hosting: cloud-run
@@ -29,20 +110,24 @@ billing:
   plans:
     - name: Free
       price: 0
-      currency: USD
-    - name: Maker
-      price: 5
-      currency: USD
+      currency: JPY
+    - name: Plus
+      price: 680
+      credits: 600
+      currency: JPY
       interval: monthly
     - name: Pro
-      price: 15
-      currency: USD
+      price: 1980
+      credits: 2000
+      currency: JPY
       interval: monthly
   topup:
     - credits: 300
-      price: 3
+      price: 300
+      currency: JPY
     - credits: 1200
-      price: 10
+      price: 1000
+      currency: JPY
 
 security:
   auth_method: supabase
@@ -56,7 +141,7 @@ db_schema:
   tables:
     - table: betaship.subscriptions
       role: "課金状態の正源"
-      key_columns: "user_id, plan(free/maker/pro), stripe_customer_id, stripe_subscription_id"
+      key_columns: "user_id, plan(free/plus/pro), stripe_customer_id, stripe_subscription_id"
     - table: betaship.credits
       role: "クレジット残高（月次+追加）"
       key_columns: "user_id, monthly_cr, topup_cr"
@@ -71,7 +156,7 @@ conversion_plan:
   method: A方式
   note: "既存ユーザーはBetashipクレジットに自動変換。B方式（個別課金先廃止）は不採用"
   examples:
-    - "Moshimo Pro ¥680/月 → 600cr/月（Maker相当）"
+    - "Moshimo Pro ¥680/月 → 600cr/月（Plus相当）"
     - "Wearld $9買い切り → 900cr（トップアップ相当）"
 
 marketing:

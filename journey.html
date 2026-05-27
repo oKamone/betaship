@@ -412,41 +412,128 @@ a { color: inherit; text-decoration: none; }
 .ctx-card-brief { min-width: 480px; max-width: 640px; }
 
 /* ── brief-hero ── */
-.brief-hero { margin: 0 var(--sp-8) var(--sp-6); display: flex; flex-direction: column; gap: 1px; background: var(--border); border-radius: var(--radius-md); overflow: hidden; }
-.bh-block { background: var(--surface); padding: var(--sp-4) var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-2); }
-.bh-lbl { font-size: 10px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; }
-.bh-summary { font-size: var(--text-lg); font-weight: 700; color: var(--text-1); line-height: var(--leading-tight); }
-.bh-ec { font-size: var(--text-sm); color: var(--purple); line-height: var(--leading-loose); }
-.bh-tags { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
-.bh-tag { font-size: 10px; padding: 2px 8px; border-radius: 8px; background: #1a1f2b; border: 1px solid var(--border); color: var(--text-3); }
-.bh-go-block { background: #0a1a10; }
-.bh-go-block .bh-lbl { color: var(--green); }
-.bh-go-text { font-size: var(--text-sm); color: var(--green); font-weight: 500; line-height: var(--leading-normal); }
-.bh-status-block { background: #111428; }
+.brief-hero { margin: 0 var(--sp-8) var(--sp-6); display: flex; flex-direction: column; gap: var(--sp-3); }
+
+/* 共通ブロック */
+.bh-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-5) var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.bh-lbl { font-size: 10px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; }
+
+/* 5W1H テーブル */
+.bh-table { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.bh-tr { display: grid; grid-template-columns: 52px 1fr; border-bottom: 1px solid var(--border); }
+.bh-tr:last-child { border-bottom: none; }
+.bh-td-key { padding: var(--sp-4) var(--sp-3); font-size: 10px; font-weight: 800; color: var(--text-3); letter-spacing: .07em; background: var(--bg); border-right: 1px solid var(--border); display: flex; align-items: flex-start; padding-top: var(--sp-5); }
+.bh-td-val { padding: var(--sp-4) var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-2); background: var(--surface); }
+.bh-td-val p { font-size: var(--text-sm); color: var(--text-2); line-height: var(--leading-loose); margin: 0; }
+.bh-why-text { }
+.bh-who-text { }
+.bh-what-headline { font-size: var(--text-lg); font-weight: 700; color: var(--text-1); line-height: var(--leading-tight); }
+.bh-what-sub { color: var(--text-3); }
+.bh-how-text { }
+
+
+/* 横並び行（完成の定義 + 今どこか） */
+.bh-row { display: grid; grid-template-columns: 3fr 2fr; gap: var(--sp-3); }
+
+/* 今どこか */
+.bh-block--status { border-left: 3px solid var(--accent); }
+.bh-block--status .bh-lbl { color: var(--accent); }
+.bh-status-top { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; margin-bottom: var(--sp-3); }
 .bh-chips-row { display: flex; flex-wrap: wrap; gap: var(--sp-1); align-items: center; }
-.bh-chip { font-size: 10px; padding: 2px 8px; border-radius: 8px; background: #1a1f2b; border: 1px solid var(--border); color: var(--text-3); }
+.bh-chip { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: #1a1f2b; border: 1px solid var(--border); color: var(--text-3); }
 .bh-chip-live { background: #0d2a1a; border-color: #1a4a2e; color: var(--green); }
 .bh-chip-test { background: #1a1408; border-color: #352b18; color: var(--amber); }
-.bh-url { font-size: 10px; color: var(--accent); text-decoration: none; padding: 2px 8px; border-radius: 8px; background: #111428; border: 1px solid #1e2448; }
+
+/* フェーズバッジ */
+.bh-phase-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: .04em; }
+.phase-idea    { background: #1e1e1e; color: var(--text-3); border: 1px solid var(--border); }
+.phase-design  { background: #141a28; color: #7ba4e0; border: 1px solid #1e3050; }
+.phase-dev     { background: #0f1e2c; color: #5bc0de; border: 1px solid #1a3a50; }
+.phase-launch  { background: #1a0f2e; color: #a78bfa; border: 1px solid #3a1f6e; }
+.phase-running { background: #0a1f12; color: var(--green); border: 1px solid #1a4a2e; }
+.phase-hold    { background: #1a1408; color: var(--amber); border: 1px solid #352b18; }
+.phase-other   { background: #1a1f2b; color: var(--text-3); border: 1px solid var(--border); }
+
+/* URL pill */
+.bh-url-pill { font-size: 11px; color: var(--accent); text-decoration: none; padding: 3px 10px; border-radius: 20px; background: #111428; border: 1px solid #1e2448; }
+.bh-url-pill:hover { text-decoration: underline; }
+.bh-url { font-size: 10px; color: var(--accent); text-decoration: none; padding: 2px 8px; border-radius: 20px; background: #111428; border: 1px solid #1e2448; }
 .bh-url:hover { text-decoration: underline; }
-.bh-na { font-size: var(--text-sm); color: var(--amber); font-weight: 500; }
-.bh-stop-block { background: #130a0a; }
-.bh-stop-block .bh-lbl { color: #f87171; }
-.bh-stops { display: flex; flex-direction: column; gap: 3px; }
-.bh-stop-item { font-size: var(--text-xs); color: #f87171; padding: 3px var(--sp-3); background: #1a0d0d; border-left: 2px solid #f87171; border-radius: 2px; }
-.bh-forb { display: flex; flex-direction: column; gap: 4px; margin-top: var(--sp-1); }
-.bh-forb-item { display: grid; grid-template-columns: 1fr 1.5fr; gap: var(--sp-2); font-size: var(--text-xs); padding: var(--sp-1) var(--sp-2); border-radius: var(--radius-sm); background: #1a1010; }
-.bh-forb-what { color: #f87171; font-weight: 600; }
-.bh-forb-reason { color: var(--text-3); }
-.bh-dec-block { background: #0f1220; }
-.bh-decs { display: flex; flex-direction: column; gap: 4px; }
-.bh-dec-item { display: grid; grid-template-columns: 1fr 1.5fr; gap: var(--sp-2); font-size: var(--text-xs); padding: var(--sp-1) var(--sp-2); border-radius: var(--radius-sm); background: #1a1f2b; }
-.bh-dec-what { color: var(--text-2); font-weight: 600; }
-.bh-dec-why { color: var(--text-3); }
-.bh-secondary { background: var(--surface); }
-.bh-secondary-summary { font-size: var(--text-xs); font-weight: 700; color: var(--text-3); padding: var(--sp-3) var(--sp-5); cursor: pointer; list-style: none; border-top: 1px solid var(--border); }
+
+/* プログレスバー */
+.bh-progress-wrap { display: flex; align-items: center; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+.bh-progress-bar { flex: 1; height: 6px; background: #1a1f2b; border-radius: 3px; overflow: hidden; }
+.bh-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #a78bfa); border-radius: 3px; transition: width .3s; }
+.bh-progress-pct { font-size: 11px; font-weight: 700; color: var(--text-2); min-width: 32px; text-align: right; }
+
+/* 次のアクション */
+.bh-next-action { display: flex; align-items: baseline; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+.bh-na-label { font-size: 10px; font-weight: 700; color: var(--amber); white-space: nowrap; letter-spacing: .04em; }
+.bh-na-text { font-size: var(--text-sm); color: var(--text-1); font-weight: 600; }
+
+/* ブロッカー */
+.bh-blockers { margin-top: var(--sp-2); }
+.bh-bl-label { font-size: 10px; font-weight: 700; color: var(--red); letter-spacing: .04em; display: block; margin-bottom: var(--sp-1); }
+.bh-blockers ul { margin: 0; padding-left: var(--sp-4); }
+.bh-blockers li { font-size: var(--text-xs); color: var(--text-2); line-height: var(--leading-loose); }
+
+/* チェックリスト */
+.bh-checklist { margin-top: var(--sp-4); border-top: 1px solid var(--border); padding-top: var(--sp-3); }
+.bh-cl-summary { display: flex; align-items: baseline; gap: var(--sp-2); margin-bottom: var(--sp-4); }
+.bh-cl-fraction { font-size: 22px; font-weight: 800; color: var(--text-1); line-height: 1; letter-spacing: -.02em; }
+.bh-cl-done-num { color: var(--accent); }
+.bh-cl-sep { color: var(--text-3); margin: 0 2px; }
+.bh-cl-label { font-size: 11px; color: var(--text-3); font-weight: 500; }
+
+/* カテゴリグループ */
+.bh-cl-group { margin-bottom: var(--sp-3); }
+.bh-cl-cat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-1); padding-bottom: var(--sp-1); border-bottom: 1px solid var(--border); }
+.bh-cl-cat-name { font-size: 10px; font-weight: 700; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; }
+.bh-cl-cat-frac { font-size: 10px; color: var(--text-3); }
+.bh-cl-cat--all-done .bh-cl-cat-name { color: var(--green); }
+.bh-cl-cat--all-done .bh-cl-cat-frac { color: var(--green); }
+
+/* アイテム */
+.bh-cl-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--sp-4); margin-bottom: var(--sp-3); }
+.bh-cl-cat-header { grid-column: 1 / -1; }
+.bh-cl-item { display: flex; align-items: baseline; gap: var(--sp-1); padding: 2px 0; font-size: 11px; line-height: var(--leading-normal); }
+.bh-cl-icon { width: 12px; flex-shrink: 0; text-align: center; font-size: 9px; }
+.bh-cl-todo { color: var(--text-1); font-weight: 600; }
+.bh-cl-todo .bh-cl-icon { color: var(--amber); }
+.bh-cl-checked { color: var(--text-3); }
+.bh-cl-checked .bh-cl-icon { color: var(--green); }
+
+/* やってはいけないこと */
+.bh-block--stop { border-left: 3px solid var(--red); background: #100a0a; border-color: #251515; border-left-color: var(--red); }
+.bh-block--stop .bh-lbl { color: var(--red); }
+.bh-stop-pills { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+.bh-stop-pill { font-size: var(--text-xs); color: #f87171; background: #1a0d0d; border: 1px solid #2e1515; border-radius: 4px; padding: 3px var(--sp-3); line-height: 1.4; }
+.bh-forb { display: flex; flex-direction: column; gap: var(--sp-2); }
+.bh-forb-item { padding: var(--sp-2) var(--sp-3); background: #180f0f; border: 1px solid #2a1515; border-radius: var(--radius-sm); }
+.bh-forb-what { font-size: var(--text-xs); color: #f87171; font-weight: 600; line-height: 1.5; }
+.bh-forb-reason { font-size: 10px; color: var(--text-3); margin-top: 2px; line-height: 1.5; }
+
+/* なぜそうなっているか */
+.bh-block--dec { }
+.bh-dec-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--sp-2); }
+.bh-dec-item { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--sp-3) var(--sp-4); display: flex; flex-direction: column; gap: 4px; }
+.bh-dec-what { font-size: var(--text-xs); color: var(--text-2); font-weight: 600; line-height: 1.5; }
+.bh-dec-why { font-size: 10px; color: var(--text-3); line-height: 1.6; }
+
+/* 技術詳細アコーディオン */
+.bh-secondary { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.bh-secondary-summary { font-size: var(--text-xs); font-weight: 600; color: var(--text-3); padding: var(--sp-3) var(--sp-5); cursor: pointer; list-style: none; user-select: none; }
+.bh-secondary-summary::-webkit-details-marker { display: none; }
 .bh-secondary-summary:hover { color: var(--text-2); }
-.bh-secondary-body { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+.bh-secondary-body { display: flex; flex-direction: column; gap: 1px; background: var(--border); border-top: 1px solid var(--border); }
 .bh-sub-block { background: var(--surface); padding: var(--sp-3) var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-2); }
 .bh-sub-block .bh-lbl { font-size: 10px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; }
 .bh-schema { display: flex; flex-direction: column; gap: 3px; }
@@ -460,6 +547,40 @@ a { color: inherit; text-decoration: none; }
 .bh-metric-ns { font-size: var(--text-sm); color: var(--green); font-weight: 600; }
 .bh-metric-sub { font-size: var(--text-xs); color: var(--text-3); }
 .bh-metrics { display: flex; flex-direction: column; gap: 3px; }
+
+/* 体験の流れ（CJMチャート） */
+.bh-block--cjm { padding: var(--sp-4) var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-3); }
+.cjm-entry { font-size: var(--text-xs); color: var(--green); font-weight: 600; }
+.cjm-exit  { font-size: var(--text-xs); color: var(--amber); font-weight: 600; text-align: right; }
+
+/* スクロールコンテナ（グラフ＋カードを一緒に動かす） */
+.cjm-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 0; }
+.cjm-scroll::-webkit-scrollbar { height: 4px; }
+.cjm-scroll::-webkit-scrollbar-track { background: var(--bg); border-radius: 2px; }
+.cjm-scroll::-webkit-scrollbar-thumb { background: #2a2a3e; border-radius: 2px; }
+
+/* フェーズカード */
+.cjm-phases { display: flex; gap: 8px; }
+
+.cjm-phase { flex: 0 0 175px; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; scroll-snap-align: start; }
+.cjm-ph-head { padding: var(--sp-2) var(--sp-3); display: flex; align-items: flex-start; gap: var(--sp-2); background: var(--surface); border-bottom: 1px solid var(--border); }
+.cjm-ph-num  { font-size: 9px; color: var(--text-3); font-weight: 700; flex-shrink: 0; padding-top: 2px; }
+.cjm-ph-title { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cjm-ph-name { font-size: 10px; color: var(--text-2); font-weight: 600; line-height: 1.3; }
+.cjm-ph-sub  { font-size: 9px; color: var(--text-3); line-height: 1.3; }
+.cjm-ph-emoji { font-size: 16px; flex-shrink: 0; }
+
+.cjm-ph-screen { display: block; overflow: hidden; }
+.cjm-ph-screen img { width: 100%; height: auto; display: block; transition: opacity .15s; }
+.cjm-ph-screen:hover img { opacity: .85; }
+.cjm-ph-screen-empty { height: 88px; background: #0b0b12; border-bottom: 1px solid var(--border); }
+
+.cjm-ph-body { padding: var(--sp-2) var(--sp-3); flex: 1; display: flex; flex-direction: column; gap: var(--sp-1); }
+.cjm-ph-tp     { font-size: 9px; color: var(--accent); font-weight: 700; }
+.cjm-ph-thought { font-size: 10px; color: var(--text-2); line-height: 1.6; font-style: italic; }
+.cjm-ph-emo    { font-size: 9px; color: var(--text-3); margin-top: auto; padding-top: var(--sp-1); }
+
+/* コンテキストパネル折りたたみ */
 .ctx-panel-wrap { margin: 0 var(--sp-8) var(--sp-6); }
 .ctx-panel-summary { font-size: var(--text-xs); font-weight: 700; color: var(--text-3); padding: var(--sp-2) var(--sp-4); cursor: pointer; list-style: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
 .ctx-panel-summary:hover { color: var(--text-2); }
@@ -493,27 +614,34 @@ a { color: inherit; text-decoration: none; }
   <a href="../index.html" class="back-link">← Folio</a>
 </div>
 
-<div class="brief-hero"><div class="bh-block">
-  <div class="bh-lbl">プロダクト</div>
-  <div class="bh-summary">複数プロダクトのβ検証・マネタイズ統合プロキシ</div>
-  <div class='bh-ec'>見知らぬ他人が帰ってくることを確認する場所。Beta=未完OK × Ship=出す</div>
-  <div class='bh-tags'><span class="bh-tag">クリエイター・ビルダー</span><span class="bh-tag">クリエイターはコードだけ出せばいい、マネタイズはBetashipが握る</span></div>
-</div><div class="bh-block bh-go-block">
-  <div class="bh-lbl">完成の定義</div>
-  <div class="bh-go-text">Phase 0検証ゲート通過後にPhase 1実装</div>
-</div><div class="bh-block bh-status-block">
+<div class="brief-hero"><div class="bh-table"><div class="bh-tr">
+  <div class="bh-td-key">Who</div>
+  <div class="bh-td-val"><p class="bh-who-text">クリエイター・ビルダー</p></div>
+</div><div class="bh-tr">
+  <div class="bh-td-key">What</div>
+  <div class="bh-td-val"><p class="bh-what-headline">複数プロダクトのβ検証・マネタイズ統合プロキシ</p><p class="bh-what-sub">クリエイターはコードだけ出せばいい、マネタイズはBetashipが握る</p></div>
+</div><div class="bh-tr">
+  <div class="bh-td-key">How</div>
+  <div class="bh-td-val"><p class="bh-how-text">見知らぬ他人が帰ってくることを確認する場所。Beta=未完OK × Ship=出す</p></div>
+</div></div><div class="bh-block bh-block--status">
   <div class="bh-lbl">今どこか</div>
-  <div class="bh-chips-row"><span class="bh-chip">開発中</span><a href="https://okamone.github.io/betaship/" target="_blank" class="bh-url">okamone.github.io/betaship/</a></div>
-  <div class='bh-na'>→ Phase 0検証ゲート通過</div>
-</div><div class="bh-block bh-stop-block">
+  <div class='bh-status-top'><span class="bh-phase-badge phase-dev">開発中</span><a href="https://betaship.web.app" target="_blank" class="bh-url-pill">↗ betaship.web.app</a></div>
+  <div class="bh-progress-wrap">
+  <div class="bh-progress-bar"><div class="bh-progress-fill" style="width:45%"></div></div>
+  <span class="bh-progress-pct">45%</span>
+</div>
+  <div class="bh-next-action"><span class="bh-na-label">次のアクション</span><span class="bh-na-text">Phase 0検証ゲート通過（週次UU 50×2週・有料意向5人）</span></div>
+  
+  <div class="bh-checklist"><div class="bh-cl-summary"><span class="bh-cl-fraction"><span class="bh-cl-done-num">14</span><span class="bh-cl-sep">/</span>26</span><span class="bh-cl-label">完了</span></div><div class="bh-cl-group bh-cl-cat--all-done"><div class="bh-cl-cat-header"><span class="bh-cl-cat-name">Gate 0: 企画確定</span><span class="bh-cl-cat-frac">5/5</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>コンセプト定義（Beta=未完OK × Ship=出す）</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>フェーズ設計（Phase 0/1/2 + ゲート定義）</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>クレジット変換設計（A方式確定）</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>DBスキーマ設計（betaship schema）</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>マーケ方針設計（X投稿戦略・週3・12角度）</span></div></div><div class="bh-cl-group bh-cl-cat--all-done"><div class="bh-cl-cat-header"><span class="bh-cl-cat-name">Gate 1: LP・マーケ</span><span class="bh-cl-cat-frac">6/6</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>LP（index.html）作成・公開</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>プロダクトカード表示（moshimo / wearld / await）</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>OGP設定（og:title / og:description / og:image）</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>ファビコン設定</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>X自動投稿設定（autoposter.py 稼働）</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>フィードバック動線（カード直結モーダル）</span></div></div><div class="bh-cl-group"><div class="bh-cl-cat-header"><span class="bh-cl-cat-name">Gate 2: Phase 0 検証</span><span class="bh-cl-cat-frac">0/3</span></div><div class="bh-cl-item bh-cl-todo"><span class="bh-cl-icon">□</span><span>週次UU 50以上 × 2週連続</span></div><div class="bh-cl-item bh-cl-todo"><span class="bh-cl-icon">□</span><span>複数ツール使用率 30%以上</span></div><div class="bh-cl-item bh-cl-todo"><span class="bh-cl-icon">□</span><span>有料意向を示す人 5人</span></div></div><div class="bh-cl-group"><div class="bh-cl-cat-header"><span class="bh-cl-cat-name">Gate 3: バックエンド・課金</span><span class="bh-cl-cat-frac">3/6</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>APIプロキシ実装（/api/ai・/api/credits）</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>Stripe checkout / webhook 実装</span></div><div class="bh-cl-item bh-cl-checked"><span class="bh-cl-icon">✓</span><span>クレジット付与・消費ロジック実装</span></div><div class="bh-cl-item bh-cl-todo"><span class="bh-cl-icon">□</span><span>Stripe Live モード設定</span></div><div class="bh-cl-item bh-cl-todo"><span class="bh-cl-icon">□</span><span>billing_active 本番有効化</span></div><div class="bh-cl-item bh-cl-todo"><span class="bh-cl-icon">□</span><span>Stripe Connect 実装（クリエイター収益分配）</span></div></div><div class="bh-cl-group"><div class="bh-cl-cat-header"><span class="bh-cl-cat-name">Gate 4: ローンチ前</span><span class="bh-cl-cat-frac">0/4</span></div><div class="bh-cl-item bh-cl-todo"><span class="bh-cl-icon">□</span><span>利用規約・プライバシーポリシー公開</span></div><div class="bh-cl-item bh-cl-todo"><span class="bh-cl-icon">□</span><span>特定商取引法に基づく表記</span></div><div class="bh-cl-item bh-cl-todo"><span class="bh-cl-icon">□</span><span>障害時の対応フロー定義</span></div><div class="bh-cl-item bh-cl-todo"><span class="bh-cl-icon">□</span><span>Sentry等エラー監視設定</span></div></div><div class="bh-cl-group"><div class="bh-cl-cat-header"><span class="bh-cl-cat-name">Gate 5: ローンチ後</span><span class="bh-cl-cat-frac">0/2</span></div><div class="bh-cl-item bh-cl-todo"><span class="bh-cl-icon">□</span><span>週次UU・使用率・転換率の計測体制</span></div><div class="bh-cl-item bh-cl-todo"><span class="bh-cl-icon">□</span><span>ユーザーフィードバック収集・改善サイクル</span></div></div></div>
+</div><div class="bh-block bh-block--stop">
   <div class="bh-lbl">やってはいけないこと</div>
-  <div class='bh-stops'><div class="bh-stop-item">仕組みが固まっていないうちに集客しない</div></div>
-  <div class='bh-forb'><div class="bh-forb-item"><span class="bh-forb-what">Coming soon表示</span><span class="bh-forb-reason">削除済み</span></div><div class="bh-forb-item"><span class="bh-forb-what">フローティングフィードバックボタン</span><span class="bh-forb-reason">カード直結モーダルのみ</span></div><div class="bh-forb-item"><span class="bh-forb-what">メアド収集</span><span class="bh-forb-reason">最小で声を拾う設計</span></div><div class="bh-forb-item"><span class="bh-forb-what">バックエンド実装（Phase 0中）</span><span class="bh-forb-reason">誰も来ない広場を整備するリスク</span></div><div class="bh-forb-item"><span class="bh-forb-what">Stripe Connect早期実装</span><span class="bh-forb-reason">Phase 1以降</span></div><div class="bh-forb-item"><span class="bh-forb-what">個別課金を先に廃止してBetaship一本化（B方式）</span><span class="bh-forb-reason">採用しない</span></div><div class="bh-forb-item"><span class="bh-forb-what">英語投稿</span><span class="bh-forb-reason">Phase 1以降</span></div><div class="bh-forb-item"><span class="bh-forb-what">クレジット表示（Phase 0中）</span><span class="bh-forb-reason">LP言語化のみ</span></div></div>
+  <div class='bh-stop-pills'><span class="bh-stop-pill">仕組みが固まっていないうちに集客しない</span></div>
+  <div class='bh-forb'><div class="bh-forb-item"><div class="bh-forb-what">Coming soon表示</div><div class="bh-forb-reason">削除済み</div></div><div class="bh-forb-item"><div class="bh-forb-what">フローティングフィードバックボタン</div><div class="bh-forb-reason">カード直結モーダルのみ</div></div><div class="bh-forb-item"><div class="bh-forb-what">メアド収集</div><div class="bh-forb-reason">最小で声を拾う設計</div></div><div class="bh-forb-item"><div class="bh-forb-what">バックエンド実装（Phase 0中）</div><div class="bh-forb-reason">誰も来ない広場を整備するリスク</div></div><div class="bh-forb-item"><div class="bh-forb-what">Stripe Connect早期実装</div><div class="bh-forb-reason">Phase 1以降</div></div><div class="bh-forb-item"><div class="bh-forb-what">個別課金を先に廃止してBetaship一本化（B方式）</div><div class="bh-forb-reason">採用しない</div></div><div class="bh-forb-item"><div class="bh-forb-what">英語投稿</div><div class="bh-forb-reason">Phase 1以降</div></div><div class="bh-forb-item"><div class="bh-forb-what">クレジット表示（Phase 0中）</div><div class="bh-forb-reason">LP言語化のみ</div></div></div>
 </div><details class="bh-secondary">
   <summary class="bh-secondary-summary">インフラ・技術詳細 ▾</summary>
   <div class="bh-secondary-body"><div class="bh-sub-block"><div class="bh-lbl">インフラ</div><div class="bh-chips-row"><span class="bh-chip">ホスト: cloud-run</span><span class="bh-chip">DB: supabase</span><span class="bh-chip">Auth: supabase</span><span class="bh-chip">課金: stripe</span></div></div><div class="bh-sub-block"><div class="bh-lbl">セキュリティ</div><div class="bh-chips-row"><span class="bh-chip">認証: supabase</span><span class="bh-chip">クレジット制</span></div></div><div class="bh-sub-block"><div class="bh-lbl">DBスキーマ</div><div class="bh-schema"></div></div></div>
 </details></div>
-<div class="phase-bar"><div class="phase-item current" style="--phase-color:#a78bfa"><div class="phase-label">検討</div><div class="phase-count">—</div></div><div class="phase-item future" style="--phase-color:#c084fc"><div class="phase-label">設計</div><div class="phase-count">1 件</div></div><div class="phase-item future" style="--phase-color:#818cf8"><div class="phase-label">開発</div><div class="phase-count">7 件</div></div><div class="phase-item future" style="--phase-color:#22c55e"><div class="phase-label">稼働</div><div class="phase-count">—</div></div></div>
+<div class="phase-bar"><div class="phase-item current" style="--phase-color:#a78bfa"><div class="phase-label">検討</div><div class="phase-count">—</div></div><div class="phase-item future" style="--phase-color:#c084fc"><div class="phase-label">設計</div><div class="phase-count">1 件</div></div><div class="phase-item future" style="--phase-color:#818cf8"><div class="phase-label">開発</div><div class="phase-count">11 件</div></div><div class="phase-item future" style="--phase-color:#22c55e"><div class="phase-label">稼働</div><div class="phase-count">—</div></div></div>
 <div class="comp-meter">
   <div class="comp-ring-wrap"><svg viewBox="0 0 80 80" class="comp-ring" aria-label="0%完成">
   <circle cx="40" cy="40" r="30" class="comp-ring-bg"/>
@@ -565,6 +693,19 @@ a { color: inherit; text-decoration: none; }
     </div>
   </div>
   <div class="ctx-card-body"><pre class="ctx-code">projects:
+- id: hangout
+  name: (未定)
+  aliases:
+  - hangout
+  - 幹事ツール
+  - 企画者ツール
+  - 友達予定
+  status: 設計中
+  path: output/hangout/
+  summary: 友達グループの企画者向け意思決定支援。候補の穴とプランリスクを可視化し「今夜どこ行く」の判断を速くする。
+  context_files:
+  - path: output/hangout/brief.yaml
+    role: プロダクトの設計データ（コンセプト・ターゲット・スコープ・市場ポジション）
 - id: matching-app
   name: マッチングアプリ
   aliases:
@@ -608,7 +749,7 @@ a { color: inherit; text-decoration: none; }
   aliases:
   - friend-matching
   - 友達マッチング
-  status: 設計中
+  status: 保留
   path: output/friend-matching/
   summary: 友達作りマッチングサービスの設計・UX。
   infra:
@@ -630,7 +771,7 @@ a { color: inherit; text-decoration: none; }
   - Aircast
   - ポッドキャストツール
   - Podcast
-  status: 開発中
+  status: 保留
   path: output/aircast/
   notes_path: .company/secretary/notes/aircast-project.md
   summary: ZoomインタビューをPodcastにする日本語特化ツール。FastAPI + Whisper-1 + GPT-4o-mini。
@@ -656,7 +797,7 @@ a { color: inherit; text-decoration: none; }
   - saki
   - さき
   - Saki
-  status: 開発中
+  status: 保留
   path: output/saki/
   summary: AIキャラクター「さき」。音声・UX・シェア機能を含む。
   infra:
@@ -667,7 +808,7 @@ a { color: inherit; text-decoration: none; }
   - qliq
   - Qliq
   - クリック
-  status: 開発中
+  status: 保留
   path: output/qliq/
   summary: バッチコピー・履歴管理機能を持つツール。
   infra:
@@ -682,6 +823,12 @@ a { color: inherit; text-decoration: none; }
   context_files:
   - path: output/moshimo/brief.yaml
     role: Moshimoのプロダクトデータ（コンセプト・課金・DB・インフラ・GO条件）
+  - path: output/moshimo/cjm.html
+    role: カスタマージャーニーマップ。UX変更・画面追加のとき読む
+  - path: output/moshimo/ux-design.html
+    role: UX設計書・画面構成。UI変更のとき読む
+  - path: output/moshimo/flow-design.html
+    role: 画面遷移・フロー設計。動線変更のとき読む
 - id: gait
   name: Gait
   aliases:
@@ -692,7 +839,7 @@ a { color: inherit; text-decoration: none; }
   - Paceflow
   - BPMマインドフルネス
   - ケイデンス
-  status: 開発中
+  status: 保留
   path: output/gait/
   summary: BPMリズム同期マインドフルネスPWA「Gait」。歩行BPMに合わせたサウンドで過集中を解除。グローバルB2C。
   infra:
@@ -743,21 +890,7 @@ a { color: inherit; text-decoration: none; }
   path: output/tagine/
   design_path: output/taste-map/
   notes_path: .company/secretary/notes/2026-05-08-panel-tagine-ux-design.md
-  summary: 捨てるだけで好みが育つ飲食推薦ツール。スクショ/URL/テキスト投げ込み→Claude解析→個人味覚DB→状況条件付き1件推薦。日本語・飲食ファースト。
-  infra:
-    stripe: null
-  context_files:
-  - path: .company/secretary/notes/2026-05-08-panel-tagine-ux-design.md
-    role: UX設計の根拠。6つの設計原則・画面構成・スコープ外の決定ログ
-  - path: output/tagine/prompts.json
-    role: Claudeに渡している全プロンプト定義。編集可能
-  - path: output/tagine/cjm.html
-    role: カスタマージャーニーマップ（4フェーズ）。体験設計の前提
-  - path: output/tagine/notes.json
-    role: 成果物ごとの修正依頼メモ。次セッションでClaudeが読む
-  - path: output/tagine/devmemo-notes.md
-    role: DevMemoの修正依頼メモ（問題・アイデア・疑問）。次セッションでClaudeが参照する
-- id: betashi</pre></div>
+  summary: 捨てるだけで好みが育つ飲食推薦ツール。スクショ/URL/テキスト投げ込み→Claude解析→個人味覚DB→状況条件付き1件推薦。日本語・飲</pre></div>
 </div><div class="ctx-card" style="opacity:.5;">
   <div class="ctx-card-head">
     <span class="ctx-card-icon">📝</span>
@@ -786,7 +919,7 @@ a { color: inherit; text-decoration: none; }
       <div class="ctx-card-role">Betashipのプロダクトデータ（コンセプト・課金プラン・DB・フェーズゲート）</div>
     </div>
   </div>
-  <div class="ctx-card-body"><div class="brief-viz"><div class="bv-concept"><div class="bv-summary">複数プロダクトのβ検証・マネタイズ統合プロキシ</div><div class="bv-ec">見知らぬ他人が帰ってくることを確認する場所。Beta=未完OK × Ship=出す</div><div class="bv-tags"><span class="bv-tag">クリエイター・ビルダー</span><span class="bv-tag">クリエイターはコードだけ出せばいい、マネタイズはBetashipが握る</span></div></div><div class="bv-row bv-go"><div class="bv-row-label">完成の定義</div><div class="bv-row-val">Phase 0検証ゲート通過後にPhase 1実装</div></div><div class="bv-row bv-next"><div class="bv-row-label">次のアクション</div><div class="bv-row-val">Phase 0検証ゲート通過</div></div><div class="bv-row"><div class="bv-row-label">ステータス</div><div class="bv-row-val bv-chips-row"><span class="bv-chip">開発中</span><a href="https://okamone.github.io/betaship/" target="_blank" class="bv-url">okamone.github.io/betaship/</a></div></div><div class="bv-row"><div class="bv-row-label">インフラ</div><div class="bv-row-val bv-chips-row"><span class="bv-chip">ホスト: cloud-run</span><span class="bv-chip">DB: supabase</span><span class="bv-chip">Auth: supabase</span><span class="bv-chip">課金: stripe</span></div></div><div class="bv-row"><div class="bv-row-label">認証</div><div class="bv-row-val">supabase</div></div><div class="bv-row"><div class="bv-row-label">レート制限</div><div class="bv-row-val">クレジット制</div></div></div></div>
+  <div class="ctx-card-body"><div class="brief-viz"><div class="bv-concept"><div class="bv-summary">複数プロダクトのβ検証・マネタイズ統合プロキシ</div><div class="bv-ec">見知らぬ他人が帰ってくることを確認する場所。Beta=未完OK × Ship=出す</div><div class="bv-tags"><span class="bv-tag">クリエイター・ビルダー</span><span class="bv-tag">クリエイターはコードだけ出せばいい、マネタイズはBetashipが握る</span></div></div><div class="bv-row bv-go"><div class="bv-row-label">完成の定義</div><div class="bv-row-val">Phase 0検証ゲート通過後にPhase 1実装</div></div><div class="bv-row bv-next"><div class="bv-row-label">次のアクション</div><div class="bv-row-val">Phase 0検証ゲート通過（週次UU 50×2週・有料意向5人）</div></div><div class="bv-row"><div class="bv-row-label">ステータス</div><div class="bv-row-val bv-chips-row"><span class="bv-chip">dev</span><span class="bv-chip">45%</span><a href="https://betaship.web.app" target="_blank" class="bv-url">betaship.web.app</a></div></div><div class="bv-row"><div class="bv-row-label">インフラ</div><div class="bv-row-val bv-chips-row"><span class="bv-chip">ホスト: cloud-run</span><span class="bv-chip">DB: supabase</span><span class="bv-chip">Auth: supabase</span><span class="bv-chip">課金: stripe</span></div></div><div class="bv-row"><div class="bv-row-label">認証</div><div class="bv-row-val">supabase</div></div><div class="bv-row"><div class="bv-row-label">レート制限</div><div class="bv-row-val">クレジット制</div></div></div></div>
 </div></div>
 </div>
 </details>
@@ -867,37 +1000,109 @@ a { color: inherit; text-decoration: none; }
   <span class="t-dot" style="background:#555568"></span>
   <div class="t-body">
     <div class="t-title"><a href="claude-pjt.html" target="_blank">claude-pjt.html</a></div>
-    <div class="t-meta">05/27 03:37 &nbsp;·&nbsp; html</div>
-  </div>
-</div><div class="t-item">
-  <span class="t-dot" style="background:#555568"></span>
-  <div class="t-body">
-    <div class="t-title"><a href="api/admin.html" target="_blank">admin.html</a></div>
-    <div class="t-meta">05/27 03:37 &nbsp;·&nbsp; html</div>
+    <div class="t-meta">05/28 04:44 &nbsp;·&nbsp; html</div>
   </div>
 </div><div class="t-item">
   <span class="t-dot" style="background:#555568"></span>
   <div class="t-body">
     <div class="t-title"><a href="index.html" target="_blank">index.html</a></div>
-    <div class="t-meta">05/27 03:01 &nbsp;·&nbsp; html</div>
+    <div class="t-meta">05/28 04:44 &nbsp;·&nbsp; html</div>
   </div>
 </div><div class="t-item">
   <span class="t-dot" style="background:#555568"></span>
   <div class="t-body">
     <div class="t-title"><a href="api/proxy.py" target="_blank">proxy.py</a></div>
-    <div class="t-meta">05/26 02:03 &nbsp;·&nbsp; py</div>
+    <div class="t-meta">05/28 04:29 &nbsp;·&nbsp; py</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="api/admin.html" target="_blank">admin.html</a></div>
+    <div class="t-meta">05/28 03:41 &nbsp;·&nbsp; html</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="wireframe.html" target="_blank">wireframe.html</a></div>
+    <div class="t-meta">05/28 03:35 &nbsp;·&nbsp; html</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="public/tokushoho.html" target="_blank">tokushoho.html</a></div>
+    <div class="t-meta">05/28 03:19 &nbsp;·&nbsp; html</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="public/privacy.html" target="_blank">privacy.html</a></div>
+    <div class="t-meta">05/28 03:18 &nbsp;·&nbsp; html</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="public/terms.html" target="_blank">terms.html</a></div>
+    <div class="t-meta">05/28 03:17 &nbsp;·&nbsp; html</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="marketing/posted_log.json" target="_blank">posted_log.json</a></div>
+    <div class="t-meta">05/28 02:14 &nbsp;·&nbsp; json</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="screen-design.html" target="_blank">screen-design.html</a></div>
+    <div class="t-meta">05/28 02:14 &nbsp;·&nbsp; html</div>
   </div>
 </div><div class="t-item">
   <span class="t-dot" style="background:#555568"></span>
   <div class="t-body">
     <div class="t-title"><a href="SPEC.md" target="_blank">SPEC.md</a></div>
-    <div class="t-meta">05/26 02:03 &nbsp;·&nbsp; md</div>
+    <div class="t-meta">05/28 02:14 &nbsp;·&nbsp; md</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="launch-kit.html" target="_blank">launch-kit.html</a></div>
+    <div class="t-meta">05/28 02:14 &nbsp;·&nbsp; html</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="marketing/marketer.py" target="_blank">marketer.py</a></div>
+    <div class="t-meta">05/28 02:14 &nbsp;·&nbsp; py</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="marketing/autoposter.py" target="_blank">autoposter.py</a></div>
+    <div class="t-meta">05/28 02:05 &nbsp;·&nbsp; py</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="firebase.json" target="_blank">firebase.json</a></div>
+    <div class="t-meta">05/28 02:05 &nbsp;·&nbsp; json</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="marketing/engagement_checker.py" target="_blank">engagement_checker.py</a></div>
+    <div class="t-meta">05/28 02:03 &nbsp;·&nbsp; py</div>
+  </div>
+</div><div class="t-item">
+  <span class="t-dot" style="background:#555568"></span>
+  <div class="t-body">
+    <div class="t-title"><a href="marketing/style_guide.json" target="_blank">style_guide.json</a></div>
+    <div class="t-meta">05/28 02:01 &nbsp;·&nbsp; json</div>
   </div>
 </div><div class="t-item">
   <span class="t-dot" style="background:#555568"></span>
   <div class="t-body">
     <div class="t-title"><a href="DEPLOY.md" target="_blank">DEPLOY.md</a></div>
-    <div class="t-meta">05/26 02:03 &nbsp;·&nbsp; md</div>
+    <div class="t-meta">05/27 18:46 &nbsp;·&nbsp; md</div>
   </div>
 </div><div class="t-item">
   <span class="t-dot" style="background:#555568"></span>
@@ -929,30 +1134,6 @@ a { color: inherit; text-decoration: none; }
     <div class="t-title"><a href="api/migrate_moshimo.py" target="_blank">migrate_moshimo.py</a></div>
     <div class="t-meta">05/13 00:11 &nbsp;·&nbsp; py</div>
   </div>
-</div><div class="t-item">
-  <span class="t-dot" style="background:#555568"></span>
-  <div class="t-body">
-    <div class="t-title"><a href="screen-design.html" target="_blank">screen-design.html</a></div>
-    <div class="t-meta">05/12 02:32 &nbsp;·&nbsp; html</div>
-  </div>
-</div><div class="t-item">
-  <span class="t-dot" style="background:#555568"></span>
-  <div class="t-body">
-    <div class="t-title"><a href="launch-kit.html" target="_blank">launch-kit.html</a></div>
-    <div class="t-meta">05/12 02:32 &nbsp;·&nbsp; html</div>
-  </div>
-</div><div class="t-item">
-  <span class="t-dot" style="background:#555568"></span>
-  <div class="t-body">
-    <div class="t-title"><a href="marketing/autoposter.py" target="_blank">autoposter.py</a></div>
-    <div class="t-meta">05/08 03:16 &nbsp;·&nbsp; py</div>
-  </div>
-</div><div class="t-item">
-  <span class="t-dot" style="background:#555568"></span>
-  <div class="t-body">
-    <div class="t-title"><a href="marketing/posted_log.json" target="_blank">posted_log.json</a></div>
-    <div class="t-meta">05/08 03:05 &nbsp;·&nbsp; json</div>
-  </div>
 </div></div>
 </div>
   <div class="future-section">
@@ -962,7 +1143,7 @@ a { color: inherit; text-decoration: none; }
   <div class="log-section">
   <div class="section-title active">関連実行ログ（process-log）</div>
   <div class="log-list"><a href="../process-log/tagine.html" class="log-item" target="_blank">
-  <span class="log-date">05/26 02:03</span>
+  <span class="log-date">05/27 18:46</span>
   <span class="log-title">Tagine — プロセスログ</span>
 </a><a href="../process-log/project-tracker.html" class="log-item" target="_blank">
   <span class="log-date">05/12 02:32</span>
@@ -974,7 +1155,7 @@ a { color: inherit; text-decoration: none; }
   <span class="log-date">05/24 17:55</span>
   <span class="log-title">multi-agent-design — 作業ログ</span>
 </a><a href="../process-log/moshimo.html" class="log-item" target="_blank">
-  <span class="log-date">05/26 02:03</span>
+  <span class="log-date">05/27 18:46</span>
   <span class="log-title">Moshimo — プロセスログ</span>
 </a><a href="../process-log/mentor-install.html" class="log-item" target="_blank">
   <span class="log-date">05/12 02:32</span>
@@ -986,7 +1167,7 @@ a { color: inherit; text-decoration: none; }
   <span class="log-date">05/25 13:10</span>
   <span class="log-title">folio — 作業ログ</span>
 </a><a href="../process-log/devmemo.html" class="log-item" target="_blank">
-  <span class="log-date">05/26 02:03</span>
+  <span class="log-date">05/27 18:46</span>
   <span class="log-title">devmemo — 作業ログ</span>
 </a><a href="../process-log/countdown.html" class="log-item" target="_blank">
   <span class="log-date">05/26 01:59</span>
@@ -995,11 +1176,20 @@ a { color: inherit; text-decoration: none; }
   <span class="log-date">05/26 01:54</span>
   <span class="log-title">betaship — 作業ログ</span>
 </a><a href="../process-log/await.html" class="log-item" target="_blank">
-  <span class="log-date">05/26 02:03</span>
+  <span class="log-date">05/27 18:46</span>
   <span class="log-title">Await — プロセスログ</span>
 </a><a href="../process-log/agent-status.html" class="log-item" target="_blank">
   <span class="log-date">05/24 16:47</span>
   <span class="log-title">自律エージェント状況 — 2026-05-24 16:47</span>
+</a><a href="../process-log/2026-05-28-betaship-marketing-strategy.html" class="log-item" target="_blank">
+  <span class="log-date">05/28 02:25</span>
+  <span class="log-title">Betaship マーケティング戦略書</span>
+</a><a href="../process-log/2026-05-28-betaship-marketing-design.html" class="log-item" target="_blank">
+  <span class="log-date">05/28 02:14</span>
+  <span class="log-title">Betaship マーケティング設計</span>
+</a><a href="../process-log/2026-05-28-betaship-kpi.html" class="log-item" target="_blank">
+  <span class="log-date">05/28 02:35</span>
+  <span class="log-title">Betaship KPI目標</span>
 </a><a href="../process-log/2026-05-25-await-autonomous.html" class="log-item" target="_blank">
   <span class="log-date">05/25 02:28</span>
   <span class="log-title">Await autonomous — 2026-05-25</span>
@@ -1012,65 +1202,86 @@ a { color: inherit; text-decoration: none; }
 </a><a href="../process-log/2026-05-13-betaship-credit-infra.html" class="log-item" target="_blank">
   <span class="log-date">05/13 00:05</span>
   <span class="log-title">Betaship クレジット基盤構築 — 2026-05-13</span>
-</a><a href="../process-log/2026-05-10-panel-launch-checklist.html" class="log-item" target="_blank">
-  <span class="log-date">05/12 02:32</span>
-  <span class="log-title">Panel Report — ローンチチェックリスト過不足評価</span>
-</a><a href="../process-log/2026-05-10-panel-cjm.html" class="log-item" target="_blank">
-  <span class="log-date">05/12 02:32</span>
-  <span class="log-title">CJM：知りたくてたまらない状態アプリ</span>
-</a><a href="../process-log/2026-05-10-panel-await-product.html" class="log-item" target="_blank">
-  <span class="log-date">05/12 02:32</span>
-  <span class="log-title">パネルレポート：「知りたくてたまらない状態」プロダクト構想</span>
 </a></div>
 </div>
   <div class="gh-section">
   <div class="section-title">変更履歴（git）</div>
-  <div class="gh-list"><div class="gh-date">2026-05-20</div><div class="gh-item">
+  <div class="gh-list"><div class="gh-date">2026-05-28</div><div class="gh-item">
+  <span class="gh-badge" style="color:#4ade80;background:#0d2a1a;border-color:#1a4a2e">feat</span>
+  <span class="gh-body">モデル別クレジット換算レートを実装</span>
+  <span class="gh-sha">f7c5c7d3</span>
+</div>
+<div class="gh-item">
+  <span class="gh-badge" style="color:#7a7d98;background:#111428;border-color:#1e2448">pricing</span>
+  <span class="gh-body">USD→JPY（Plus ¥500/月、Pro ¥1,500/月、topup ¥300/¥1,000）</span>
+  <span class="gh-sha">5dba8849</span>
+</div>
+<div class="gh-item">
+  <span class="gh-badge" style="color:#4ade80;background:#0d2a1a;border-color:#1a4a2e">feat</span>
+  <span class="gh-body">Betashipクレジット基盤を全ツールに接続</span>
+  <span class="gh-sha">33531197</span>
+</div>
+<div class="gh-date">2026-05-27</div><div class="gh-item">
+  <span class="gh-badge" style="color:#4ade80;background:#0d2a1a;border-color:#1a4a2e">feat</span>
+  <span class="gh-body">Await を live に昇格（https://await.web.app）、3 tools aboard</span>
+  <span class="gh-sha">413691f4</span>
+</div>
+<div class="gh-item">
+  <span class="gh-badge" style="color:#f87171;background:#1a1218;border-color:#3a1a20">fix</span>
+  <span class="gh-body">LP から「ログイン不要」テキストを削除</span>
+  <span class="gh-sha">0e39b850</span>
+</div>
+<div class="gh-date">2026-05-26</div><div class="gh-item">
+  <span class="gh-badge" style="color:#7a7d98;background:#111428;border-color:#1e2448">chore</span>
+  <span class="gh-body">output/journey.html および journey-map.html を更新</span>
+  <span class="gh-sha">5dbc00aa</span>
+</div>
+<div class="gh-date">2026-05-20</div><div class="gh-item">
   <span class="gh-badge" style="color:#4ade80;background:#0d2a1a;border-color:#1a4a2e">feat</span>
   <span class="gh-body">ローンチフェーズ管理・課金制御をBetashipに集約</span>
-  <span class="gh-sha">d0a33be</span>
+  <span class="gh-sha">d0a33be6</span>
 </div>
 <div class="gh-date">2026-05-19</div><div class="gh-item">
   <span class="gh-badge" style="color:#f87171;background:#1a1218;border-color:#3a1a20">fix</span>
   <span class="gh-body">schema再実行時のpolicy重複エラーを修正</span>
-  <span class="gh-sha">99a091f</span>
+  <span class="gh-sha">99a091fc</span>
 </div>
 <div class="gh-date">2026-05-18</div><div class="gh-item">
   <span class="gh-badge" style="color:#4ade80;background:#0d2a1a;border-color:#1a4a2e">feat</span>
   <span class="gh-body">Betaship Control Center（課金管理ダッシュボード）を追加</span>
-  <span class="gh-sha">4425a44</span>
+  <span class="gh-sha">4425a449</span>
 </div>
 <div class="gh-date">2026-05-13</div><div class="gh-item">
   <span class="gh-badge" style="color:#f87171;background:#1a1218;border-color:#3a1a20">fix</span>
   <span class="gh-body">betaship RPC呼び出しとスキーマ参照を修正</span>
-  <span class="gh-sha">bddfe2a</span>
+  <span class="gh-sha">bddfe2a7</span>
 </div>
 <div class="gh-item">
   <span class="gh-badge" style="color:#4ade80;background:#0d2a1a;border-color:#1a4a2e">feat</span>
   <span class="gh-body">Moshimo → Betashipプロキシ経由に切り替え</span>
-  <span class="gh-sha">af88e60</span>
+  <span class="gh-sha">af88e601</span>
 </div>
 <div class="gh-date">2026-05-10</div><div class="gh-item">
   <span class="gh-badge" style="color:#7a7d98;background:#111428;border-color:#1e2448">chore</span>
   <span class="gh-body">本番状態スナップショット — dev/prod ブランチ分離前</span>
-  <span class="gh-sha">9653770</span>
+  <span class="gh-sha">96537704</span>
 </div>
 <div class="gh-date">2026-05-08</div><div class="gh-item">
   <span class="gh-badge" style="color:#7a7d98;background:#111428;border-color:#1e2448">chore</span>
   <span class="gh-body">nightly cleanup — Reverie arch docs, Betaship launch-kit, Wearld banner</span>
-  <span class="gh-sha">8833c69</span>
+  <span class="gh-sha">8833c69d</span>
 </div>
 <div class="gh-item">
   <span class="gh-badge" style="color:#7a7d98;background:#111428;border-color:#1e2448">checkpoint</span>
   <span class="gh-body">pre-orchestrator-run 2026-05-08 (rollback point)</span>
-  <span class="gh-sha">ae5ecb3</span>
+  <span class="gh-sha">ae5ecb38</span>
 </div>
 </div>
 </div>
 </div>
 
 <div style="padding:12px 32px;border-top:1px solid #252b3a;font-size:12px;color:#9090a8;background:#161a23">
-  15 成果物 &nbsp;·&nbsp; 現在フェーズ: 検討 &nbsp;·&nbsp; 更新 05/27 03:37
+  23 成果物 &nbsp;·&nbsp; 現在フェーズ: 検討 &nbsp;·&nbsp; 更新 05/28 04:44
 </div>
 
 <script>

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Betaship Control Center</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d26;
+      --border: #2a2d3e;
+      --accent: #6366f1;
+      --text: #e2e4ef;
+      --muted: #8892b0;
+      --ok: #22c55e;
+      --err: #ef4444;
+      --warn: #f59e0b;
+      --r: 10px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; }
+
+    /* ── Login ── */
+    #login-overlay {
+      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: var(--bg); z-index: 100;
+    }
+    .login-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+      padding: 40px; width: 340px; text-align: center;
+    }
+    .login-card h2 { font-size: 20px; margin-bottom: 6px; }
+    .login-card p  { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+    #login-err { color: var(--err); font-size: 13px; margin-top: 10px; min-height: 18px; }
+
+    /* ── Layout ── */
+    #app { display: none; max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+    }
+    header h1 { font-size: 18px; font-weight: 700; }
+
+    .status-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .dot-row { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+    .dot.ok  { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
+    .dot.err { background: var(--err); box-shadow: 0 0 6px var(--err); }
+
+    /* ── Stats ── */
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; }
+    .stat-num   { font-size: 34px; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+    /* ── Section ── */
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 22px; margin-bottom: 16px; }
+    .sec-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px; }
+
+    /* ── Plan table ── */
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; font-size: 11px; color: var(--muted); text-transform: uppercase; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    td { padding: 12px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .badge.free   { background: #162116; color: #4ade80; }
+    .badge.maker  { background: #16162e; color: #818cf8; }
+    .badge.pro    { background: #2e1616; color: #f87171; }
+
+    /* ── Control rows ── */
+    .control-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .control-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .ctrl-label { flex: 1; }
+    .ctrl-label strong { font-size: 14px; display: block; margin-bottom: 3px; }
+    .ctrl-label span   { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+    /* ── Toggle ── */
+    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; cursor: pointer; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track { position: absolute; inset: 0; background: var(--border); border-radius: 24px; transition: .2s; }
+    .toggle-thumb { position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .2s; }
+    input:checked ~ .toggle-track { background: var(--accent); }
+    input:checked ~ .toggle-thumb { transform: translateX(20px); }
+
+    /* ── Form elements ── */
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    select {
+      background: var(--bg); border: 1px solid var(--border); color: var(--text);
+      padding: 8px 10px; border-radius: 6px; font-size: 13px; outline: none;
+      transition: border-color .15s;
+    }
+    input:focus, select:focus { border-color: var(--accent); }
+
+    .inline-edit { display: flex; align-items: center; gap: 8px; }
+    .inline-edit input { width: 86px; }
+
+    /* ── Buttons ── */
+    .btn {
+      padding: 7px 14px; border-radius: 6px; font-size: 13px; font-weight: 500;
+      cursor: pointer; border: none; transition: .15s; white-space: nowrap;
+    }
+    .btn-primary   { background: var(--accent); color: #fff; }
+    .btn-primary:hover   { opacity: .85; }
+    .btn-secondary { background: var(--border); color: var(--text); }
+    .btn-secondary:hover { opacity: .75; }
+    .btn-danger    { background: #5c1616; color: #fca5a5; }
+
+    /* ── Campaign form ── */
+    .coupon-grid {
+      display: grid;
+      grid-template-columns: 1fr 100px 130px auto;
+      gap: 10px; align-items: end;
+    }
+    .form-field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+    .form-field input, .form-field select { width: 100%; }
+    .coupon-result {
+      margin-top: 14px; padding: 12px 14px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 6px;
+      font-family: monospace; font-size: 13px; display: none;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 18px; font-size: 13px;
+      display: none; z-index: 200; max-width: 300px;
+    }
+    #toast.ok  { border-color: var(--ok);  color: var(--ok);  }
+    #toast.err { border-color: var(--err); color: var(--err); }
+
+    /* ── Misc ── */
+    .tag-warn { background: #2a2000; color: var(--warn); padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+    .tag-on   { background: #162116; color: var(--ok);   padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+
+    /* ── Launch Readiness ── */
+    .phase-block { border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+    .phase-head  { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .phase-num   { background: var(--accent); color: #fff; border-radius: 50%; width: 22px; height: 22px;
+                   font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .phase-name  { font-size: 14px; font-weight: 600; flex: 1; }
+    .check-item  { display: flex; align-items: center; gap: 8px; padding: 6px 0;
+                   border-bottom: 1px solid var(--border); font-size: 13px; }
+    .check-item:last-child { border-bottom: none; }
+    .check-icon  { width: 18px; text-align: center; flex-shrink: 0; }
+    .check-label { flex: 1; }
+    .check-sub   { font-size: 11px; color: var(--muted); }
+    .divider     { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em;
+                   padding: 10px 0 4px; }
+    .btn-activate { background: #1a3a1a; color: var(--ok); border: 1px solid var(--ok);
+                    width: 100%; margin-top: 14px; padding: 10px; font-size: 14px; font-weight: 600; }
+    .btn-activate:hover:not(:disabled) { background: #1f4a1f; }
+    .btn-activate:disabled { opacity: .4; cursor: not-allowed; }
+    .billing-status { font-size: 12px; padding: 3px 10px; border-radius: 20px; }
+    .billing-status.off { background: #162116; color: var(--ok); }
+    .billing-status.on  { background: #2a2000; color: var(--warn); }
+
+    @media (max-width: 600px) {
+      .stats { grid-template-columns: 1fr 1fr; }
+      .coupon-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Login ── -->
+<div id="login-overlay">
+  <div class="login-card">
+    <h2>🎛️ Control Center</h2>
+    <p>管理トークンを入力してください</p>
+    <input type="password" id="token-input" placeholder="Admin Token" style="width:100%;margin-bottom:12px"
+      onkeydown="if(event.key==='Enter')login()">
+    <button class="btn btn-primary" style="width:100%" onclick="login()">ログイン</button>
+    <div id="login-err"></div>
+  </div>
+</div>
+
+<!-- ── Dashboard ── -->
+<div id="app">
+  <header>
+    <h1>🎛️ Betaship Control Center</h1>
+    <div class="status-bar">
+      <div class="dot-row"><div class="dot" id="dot-api"></div><span>API</span></div>
+      <div class="dot-row"><div class="dot" id="dot-stripe"></div><span>Stripe</span></div>
+      <button class="btn btn-secondary" onclick="load()">↻ 更新</button>
+      <button class="btn btn-secondary" onclick="logout()">ログアウト</button>
+    </div>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-num" id="s-total">—</div>
+      <div class="stat-label">総ユーザー</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="s-free">—</div>
+      <div class="stat-label">Free</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="s-paid">—</div>
+      <div class="stat-label">有料プラン</div>
+    </div>
+  </div>
+
+  <!-- Plan Config -->
+  <div class="section">
+    <div class="sec-title">プラン設定（月次クレジット量）</div>
+    <table>
+      <thead>
+        <tr>
+          <th>プラン</th>
+          <th>月次クレジット</th>
+          <th>価格 (USD/月)</th>
+        </tr>
+      </thead>
+      <tbody id="plan-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Moshimo Config -->
+  <div class="section">
+    <div class="sec-title">Moshimo 設定</div>
+
+    <div class="control-row">
+      <div class="ctrl-label">
+        <strong>無料日次上限</strong>
+        <span>ログイン・未ログイン問わず、無料ユーザーが1日に送れるメッセージ数</span>
+      </div>
+      <div class="inline-edit">
+        <input type="number" id="m-daily" min="0" max="9999" style="width:80px">
+        <button class="btn btn-primary" onclick="saveMoshimoField('free_daily_limit', +document.getElementById('m-daily').value)">保存</button>
+      </div>
+    </div>
+
+    <div class="control-row">
+      <div class="ctrl-label">
+        <strong>全無料モード <span id="free-mode-tag"></span></strong>
+        <span>ONにすると全ユーザーがクレジット消費なしで使える（ローンチ期間・キャンペーンに）</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="m-free-mode" onchange="saveMoshimoField('free_mode', this.checked)">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+
+    <div class="control-row">
+      <div class="ctrl-label">
+        <strong>メンテナンスモード <span id="maint-tag"></span></strong>
+        <span>ONにすると全APIアクセスを遮断（緊急停止・障害対応時に）</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="m-maint" onchange="saveMoshimoField('maintenance_mode', this.checked)">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+  </div>
+
+  <!-- Launch Readiness -->
+  <div class="section">
+    <div class="sec-title" style="display:flex;align-items:center;justify-content:space-between">
+      <span>🚀 ローンチ準備チェック — Moshimo</span>
+      <button class="btn btn-secondary" id="hc-btn" onclick="runHealthCheck()" style="font-size:12px;padding:4px 12px">↻ チェック実行</button>
+    </div>
+
+    <!-- Phase 1 -->
+    <div class="phase-block">
+      <div class="phase-head">
+        <div class="phase-num">1</div>
+        <div class="phase-name">無料公開</div>
+        <span id="p1-badge"></span>
+      </div>
+      <div id="p1-auto"></div>
+      <div class="divider">手動確認（自分で確かめてチェック）</div>
+      <div class="check-item">
+        <input type="checkbox" id="m-p1-auth" onchange="saveManual('p1_auth')">
+        <div class="check-label">
+          ログイン→チャットのE2Eを自分のアカウントで確認した
+          <div class="check-sub">マジックリンクを受け取り、クリックしてログイン→チャット送信まで通した</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <input type="checkbox" id="m-p1-error" onchange="saveManual('p1_error')">
+        <div class="check-label">
+          エラー時の表示が適切か確認した
+          <div class="check-sub">制限超過・ネットワーク断・未ログインのそれぞれでメッセージが出る</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase-block">
+      <div class="phase-head">
+        <div class="phase-num">2</div>
+        <div class="phase-name">課金ON</div>
+        <span id="billing-badge" class="billing-status off">無料モード中</span>
+      </div>
+      <div id="p2-auto"></div>
+      <div class="divider">手動確認（自分で確かめてチェック）</div>
+      <div class="check-item">
+        <input type="checkbox" id="m-p2-payment" onchange="saveManual('p2_payment')">
+        <div class="check-label">
+          実カードでテスト決済を完了した
+          <div class="check-sub">Stripe Dashboard でも決済を確認した</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <input type="checkbox" id="m-p2-unlock" onchange="saveManual('p2_unlock')">
+        <div class="check-label">
+          決済後にアンロックされることを確認した
+          <div class="check-sub">Pro購入後、チャットが制限なく使えることを実際に試した</div>
+        </div>
+      </div>
+      <button class="btn btn-activate" id="activate-btn" disabled onclick="activateBilling()">
+        課金をONにする（全無料モードを解除）
+      </button>
+    </div>
+  </div>
+
+  <!-- Campaign -->
+  <div class="section">
+    <div class="sec-title">キャンペーン / Stripe クーポン発行</div>
+    <div class="coupon-grid">
+      <div class="form-field">
+        <label>クーポン名</label>
+        <input type="text" id="c-name" placeholder="ローンチキャンペーン">
+      </div>
+      <div class="form-field">
+        <label>割引率 (%)</label>
+        <input type="number" id="c-pct" min="1" max="100" placeholder="30">
+      </div>
+      <div class="form-field">
+        <label>適用期間</label>
+        <select id="c-dur">
+          <option value="once">1回のみ</option>
+          <option value="forever">永続</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>&nbsp;</label>
+        <button class="btn btn-primary" onclick="createCoupon()">発行</button>
+      </div>
+    </div>
+    <div id="coupon-result" class="coupon-result"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // サーバーから配信される場合は相対パス、ローカルファイルの場合はフルURL
+  const DEFAULT_API = location.protocol === 'file:' ? 'https://betaship.onrender.com' : '';
+  localStorage.removeItem('bs_api'); // 古いURLキャッシュをクリア
+  let API   = DEFAULT_API;
+  let TOKEN = localStorage.getItem('bs_token') || '';
+
+  // ── Auth ──────────────────────────────────────────────
+  async function login() {
+    const t = document.getElementById('token-input').value.trim();
+    if (!t) return;
+    TOKEN = t;
+    localStorage.setItem('bs_token', t);
+    await load();
+  }
+
+  function logout() {
+    localStorage.removeItem('bs_token');
+    TOKEN = '';
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-overlay').style.display = 'flex';
+    document.getElementById('token-input').value = '';
+  }
+
+  // ── API helper ────────────────────────────────────────
+  async function call(method, path, body) {
+    const opts = {
+      method,
+      headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
+    };
+    if (body != null) opts.body = JSON.stringify(body);
+    const r = await fetch(`${API}${path}`, opts);
+    if (r.status === 401) { logout(); throw new Error('401'); }
+    return r;
+  }
+
+  // ── Load dashboard ────────────────────────────────────
+  async function load() {
+    try {
+      const r = await call('GET', '/api/admin/status');
+      if (!r.ok) { toast('接続失敗 ' + r.status, 'err'); dot('dot-api', false); return; }
+      const d = await r.json();
+      render(d);
+      document.getElementById('login-overlay').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('login-err').textContent = '';
+      dot('dot-api', true);
+      dot('dot-stripe', d.stripe_ok);
+    } catch (e) {
+      document.getElementById('login-err').textContent = '接続できませんでした';
+      dot('dot-api', false);
+    }
+  }
+
+  function dot(id, ok) {
+    document.getElementById(id).className = 'dot ' + (ok ? 'ok' : 'err');
+  }
+
+  // ── Render ────────────────────────────────────────────
+  function render(d) {
+    const counts = d.plan_counts || {};
+    const paid = Object.entries(counts).filter(([k]) => k !== 'free').reduce((s, [, v]) => s + v, 0);
+    document.getElementById('s-total').textContent = d.user_count ?? 0;
+    document.getElementById('s-free').textContent  = counts.free ?? 0;
+    document.getElementById('s-paid').textContent  = paid;
+
+    // Plan table
+    const plans = d.plans || [];
+    document.getElementById('plan-tbody').innerHTML = plans.map(p => `
+      <tr>
+        <td><span class="badge ${p.plan}">${p.plan}</span></td>
+        <td>
+          <div class="inline-edit">
+            <input type="number" id="cr-${p.plan}" value="${p.monthly_cr}" min="0" style="width:86px">
+            <button class="btn btn-secondary"
+              onclick="savePlan('${p.plan}', +document.getElementById('cr-${p.plan}').value)">保存</button>
+          </div>
+        </td>
+        <td style="color:var(--muted);font-size:13px">$${p.price_usd ?? 0}</td>
+      </tr>
+    `).join('');
+
+    // Moshimo
+    const m = (d.products || []).find(p => p.product_id === 'moshimo') || {};
+    document.getElementById('m-daily').value      = m.free_daily_limit ?? 5;
+    document.getElementById('m-free-mode').checked = !!(m.free_mode);
+    document.getElementById('m-maint').checked     = !!(m.maintenance_mode);
+    document.getElementById('free-mode-tag').innerHTML  = m.free_mode        ? '<span class="tag-on">ON</span>' : '';
+    document.getElementById('maint-tag').innerHTML      = m.maintenance_mode  ? '<span class="tag-warn">ON</span>' : '';
+  }
+
+  // ── Plan config ───────────────────────────────────────
+  async function savePlan(plan, monthly_cr) {
+    const r = await call('PATCH', '/api/admin/plan-config', { plan, monthly_cr });
+    toast(r.ok ? `${plan}: ${monthly_cr}cr/月 に更新` : '更新失敗', r.ok ? 'ok' : 'err');
+    if (r.ok) load();
+  }
+
+  // ── Product config ────────────────────────────────────
+  async function saveMoshimoField(field, value) {
+    const r = await call('PATCH', '/api/admin/product-config', { product_id: 'moshimo', [field]: value });
+    const labels = { free_daily_limit: '無料日次上限', free_mode: '全無料モード', maintenance_mode: 'メンテナンスモード' };
+    toast(r.ok ? `${labels[field]}: ${value} に更新` : '更新失敗', r.ok ? 'ok' : 'err');
+    if (r.ok) load();
+  }
+
+  // ── Coupon ────────────────────────────────────────────
+  async function createCoupon() {
+    const name = document.getElementById('c-name').value.trim();
+    const pct  = +document.getElementById('c-pct').value;
+    const dur  = document.getElementById('c-dur').value;
+    if (!name || !pct) { toast('名前と割引率を入力してください', 'err'); return; }
+    const r = await call('POST', '/api/admin/coupon', { name, percent_off: pct, duration: dur });
+    const d = await r.json().catch(() => ({}));
+    const el = document.getElementById('coupon-result');
+    el.style.display = 'block';
+    if (r.ok) {
+      el.style.color = 'var(--ok)';
+      el.textContent = `✅ クーポンID: ${d.coupon_id}  (${pct}% OFF / ${dur})`;
+      toast('クーポンを発行しました', 'ok');
+    } else {
+      el.style.color = 'var(--err)';
+      el.textContent = `❌ ${d.error}`;
+    }
+  }
+
+  // ── Health Check ─────────────────────────────────────
+  let _hcData = {};
+
+  async function runHealthCheck() {
+    const btn = document.getElementById('hc-btn');
+    btn.textContent = '確認中...'; btn.disabled = true;
+    try {
+      const r = await call('GET', '/api/admin/health-check?product=moshimo');
+      if (!r.ok) { toast('チェック失敗', 'err'); return; }
+      _hcData = await r.json();
+      renderChecks(_hcData);
+    } catch(e) {
+      toast('チェックエラー', 'err');
+    } finally {
+      btn.textContent = '↻ チェック実行'; btn.disabled = false;
+    }
+  }
+
+  const P1_CHECKS = [
+    { key: 'betaship_db',      label: 'Betaship DB接続',   sub: 'クレジット管理DBに接続できる' },
+    { key: 'product_config',   label: '製品設定あり',        sub: 'product_configにmoshimoの行がある' },
+    { key: 'free_daily_limit', label: '無料制限値設定済み',   sub: '日次上限が0より大きい' },
+    { key: 'product_reachable',label: 'アプリ到達可能',       sub: 'moshimo.onrender.comにアクセスできる' },
+    { key: 'product_supabase_ok', label: 'アプリDB接続',     sub: 'MoshimoのSupabase接続が正常' },
+  ];
+
+  const P2_CHECKS = [
+    { key: 'product_stripe_live',        label: 'Stripe本番モード',            sub: 'sk_live_ キーで動いている' },
+    { key: 'product_webhook_configured', label: 'Webhookシークレット設定済み',  sub: '環境変数 STRIPE_WEBHOOK_SECRET がある' },
+    { key: 'stripe_webhook',             label: 'StripeにWebhook登録済み',      sub: 'Stripeダッシュボードにエンドポイントがある' },
+    { key: 'stripe_portal',              label: '顧客ポータル設定済み',          sub: 'Stripeのカスタマーポータルが有効' },
+  ];
+
+  function renderChecks(d) {
+    renderList('p1-auto', P1_CHECKS, d);
+    renderList('p2-auto', P2_CHECKS, d);
+
+    const badge = document.getElementById('billing-badge');
+    if (d.billing_active) {
+      badge.textContent = '課金モード中'; badge.className = 'billing-status on';
+    } else {
+      badge.textContent = '無料モード中'; badge.className = 'billing-status off';
+    }
+
+    // P1 badge
+    const p1ok = P1_CHECKS.every(c => d[c.key]);
+    document.getElementById('p1-badge').innerHTML =
+      p1ok ? '<span class="tag-on">準備OK</span>' : '<span class="tag-warn">未完了あり</span>';
+
+    // restore manual checkboxes
+    ['p1_auth','p1_error','p2_payment','p2_unlock'].forEach(k => {
+      const el = document.getElementById(`m-${k.replace('_','-')}`);
+      if (el) el.checked = localStorage.getItem(`manual_${k}_moshimo`) === 'true';
+    });
+
+    updateActivateBtn(d);
+  }
+
+  function renderList(id, checks, d) {
+    document.getElementById(id).innerHTML = checks.map(c => {
+      const v = d[c.key];
+      const icon = v === null ? '⚪' : v ? '✅' : '❌';
+      return `<div class="check-item">
+        <span class="check-icon">${icon}</span>
+        <div class="check-label">${c.label}<div class="check-sub">${c.sub}</div></div>
+      </div>`;
+    }).join('');
+  }
+
+  function saveManual(key) {
+    const el = document.getElementById(`m-${key.replace('_','-')}`);
+    localStorage.setItem(`manual_${key}_moshimo`, el.checked ? 'true' : 'false');
+    updateActivateBtn(_hcData);
+  }
+
+  function updateActivateBtn(d) {
+    const autoOk = ['product_stripe_live','product_webhook_configured','stripe_webhook','stripe_portal']
+      .every(k => d[k] === true);
+    const manualOk = ['p2_payment','p2_unlock']
+      .every(k => localStorage.getItem(`manual_${k}_moshimo`) === 'true');
+    const btn = document.getElementById('activate-btn');
+    btn.disabled = !(autoOk && manualOk) || d.billing_active;
+    if (d.billing_active) btn.textContent = '✅ 課金は有効化済みです';
+  }
+
+  async function activateBilling() {
+    if (!confirm('課金をONにします。\n全無料モードが解除され、ユーザーはクレジット制限内での利用になります。\nよいですか？')) return;
+    const r = await call('POST', '/api/admin/activate-billing', { product_id: 'moshimo' });
+    if (r.ok) {
+      toast('課金を有効化しました', 'ok');
+      runHealthCheck();
+    } else {
+      toast('有効化に失敗しました', 'err');
+    }
+  }
+
+  // ── Toast ─────────────────────────────────────────────
+  let _tid;
+  function toast(msg, type = 'ok') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = type;
+    el.style.display = 'block';
+    clearTimeout(_tid);
+    _tid = setTimeout(() => el.style.display = 'none', 3000);
+  }
+
+  // ── Init ──────────────────────────────────────────────
+  if (TOKEN) load().then(() => runHealthCheck());
+</script>
+</body>
+</html>

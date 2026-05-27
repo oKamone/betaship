@@ -45,7 +45,7 @@ output/betaship/
 ## デプロイ方法（コスト0）
 
 → `DEPLOY.md` を参照
-→ 公開URL: https://okamone.github.io/betaship/
+→ 公開URL: https://betaship.web.app/
 
 ## フィードバック収集
 

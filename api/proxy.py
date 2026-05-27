@@ -24,17 +24,27 @@ _sb: Client = create_client(
 )
 stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
 
-# クレジット換算レート（tokens → cr）
-# 1cr = 800 input tokens 相当（Haiku基準で原価約$0.0003/cr、余裕を持たせた設定）
-TOKENS_PER_CR = 800
+# モデル別クレジット換算レート（tokens → cr）
+# Anthropic 料金比率に基づく: Haiku $0.8/MTok, Sonnet $3/MTok, Opus $15/MTok
+TOKENS_PER_CR = {
+    "claude-haiku":  800,   # 基準
+    "claude-sonnet": 200,   # Haikuの3.75倍高い → 1/4のトークンで1cr
+    "claude-opus":    40,   # Haikuの18倍高い → 1/20のトークンで1cr
+}
+
+def _tokens_per_cr(model: str) -> int:
+    for prefix, rate in TOKENS_PER_CR.items():
+        if prefix in model:
+            return rate
+    return TOKENS_PER_CR["claude-haiku"]
 
 STRIPE_PRICE_IDS = {
-    "maker": os.environ.get("STRIPE_PRICE_MAKER", ""),   # $5/月
-    "pro":   os.environ.get("STRIPE_PRICE_PRO", ""),     # $15/月
+    "plus": os.environ.get("STRIPE_PRICE_MAKER", ""),   # ¥680/月 / 600cr
+    "pro":   os.environ.get("STRIPE_PRICE_PRO", ""),     # ¥1,980/月 / 2,000cr
 }
 TOPUP_PRICE_IDS = {
-    os.environ.get("STRIPE_PRICE_TOPUP_300", ""): 300,   # $3=300cr
-    os.environ.get("STRIPE_PRICE_TOPUP_1200", ""): 1200, # $10=1200cr
+    os.environ.get("STRIPE_PRICE_TOPUP_300", ""): 300,   # ¥300=300cr
+    os.environ.get("STRIPE_PRICE_TOPUP_1200", ""): 1200, # ¥1,000=1200cr
 }
 
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "")
@@ -54,15 +64,37 @@ def _require_admin(f):
 # --------------------------------------------------------
 # ヘルパー：リクエストのJWTからuser_idを取得
 # --------------------------------------------------------
+def _get_client_ip(req) -> str:
+    forwarded = req.headers.get("X-Forwarded-For", "")
+    for ip in [i.strip() for i in forwarded.split(",")]:
+        if ip and not (ip.startswith("10.") or ip.startswith("172.") or ip.startswith("127.") or ip == "::1"):
+            return ip
+    return req.remote_addr or "unknown"
+
+
+def _anon_rate_ok(ip: str, product_id: str, limit: int) -> bool:
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    try:
+        result = _sb.schema("betaship").rpc("increment_anon_usage", {
+            "p_ip": ip, "p_date": f"{product_id}:{today}"
+        }).execute()
+        count = result.data if isinstance(result.data, int) else int(result.data or 0)
+        return count <= limit
+    except Exception:
+        return True  # テーブル未作成などのエラー時は通す
+
+
 def _get_user_id(req) -> str | None:
     auth = req.headers.get("Authorization", "")
     if not auth.startswith("Bearer "):
+        print("[auth] Authorization header missing or not Bearer", flush=True)
         return None
     token = auth[7:]
     try:
         resp = _sb.auth.get_user(token)
         return resp.user.id if resp.user else None
-    except Exception:
+    except Exception as e:
+        print(f"[auth] get_user failed: {e}", flush=True)
         return None
 
 
@@ -103,38 +135,55 @@ def get_credits():
 @app.route("/api/ai", methods=["POST"])
 def ai_proxy():
     uid = _get_user_id(request)
-    if not uid:
-        return jsonify({"error": "unauthorized"}), 401
 
     body = request.get_json(force=True)
-    service  = body.get("service", "unknown")   # 呼び出し元サービス名
-    tool     = body.get("tool")
-    messages = body.get("messages", [])
-    system   = body.get("system", "")
-    model    = body.get("model", "claude-haiku-4-5-20251001")
+    service    = body.get("service", "unknown")
+    tool       = body.get("tool")
+    messages   = body.get("messages", [])
+    system     = body.get("system", "")
+    model      = body.get("model", "claude-haiku-4-5-20251001")
     max_tokens = int(body.get("max_tokens", 1024))
 
     if not messages:
         return jsonify({"error": "messages required"}), 400
 
-    # プロダクトが free_mode または billing_active=False の場合はクレジットチェックをスキップ
-    skip_credits = False
+    # product_config 取得
+    cfg_data = {}
     try:
-        cfg_row = _sb.schema("betaship").table("product_config").select("free_mode,billing_active").eq(
-            "product_id", service
-        ).maybe_single().execute()
+        cfg_row = _sb.schema("betaship").table("product_config").select(
+            "free_mode,billing_active,free_daily_limit"
+        ).eq("product_id", service).maybe_single().execute()
         cfg_data = cfg_row.data or {}
-        skip_credits = cfg_data.get("free_mode", False) or not cfg_data.get("billing_active", False)
     except Exception:
         pass
 
+    free_mode       = cfg_data.get("free_mode", False)
+    billing_active  = cfg_data.get("billing_active", False)
+    free_daily_limit = int(cfg_data.get("free_daily_limit") or 10)
+    skip_credits    = free_mode or not billing_active
+
+    if not uid:
+        # 非ログイン → IPレート制限
+        ip = _get_client_ip(request)
+        if not _anon_rate_ok(ip, service, free_daily_limit):
+            return jsonify({
+                "error": "daily_limit_exceeded",
+                "message": f"本日の無料利用回数（{free_daily_limit}回）に達しました。"
+            }), 429
+
     if not skip_credits:
-        # 残高チェック（最低1crあれば続行。実際の消費は後で計算）
+        # 残高チェック（最低1crあれば続行）
         cr_row = _sb.schema("betaship").table("credits").select("monthly_cr,topup_cr").eq("user_id", uid).maybe_single().execute()
         if not cr_row.data:
             # 初回利用: freeプランとして自動プロビジョニング
             _sb.schema("betaship").table("subscriptions").upsert({"user_id": uid, "plan": "free"}).execute()
-            _sb.schema("betaship").rpc("grant_monthly_credits", {"p_user_id": uid, "p_plan": "free"}).execute()
+            plan_row = _sb.schema("betaship").table("plan_config").select("monthly_cr").eq("plan", "free").maybe_single().execute()
+            init_cr = (plan_row.data or {}).get("monthly_cr", 50)
+            from datetime import date
+            _sb.schema("betaship").table("credits").upsert({
+                "user_id": uid, "monthly_cr": init_cr, "topup_cr": 0,
+                "period_start": date.today().replace(day=1).isoformat()
+            }).execute()
             cr_row = _sb.schema("betaship").table("credits").select("monthly_cr,topup_cr").eq("user_id", uid).maybe_single().execute()
         cr = cr_row.data or {}
         if (cr.get("monthly_cr", 0) + cr.get("topup_cr", 0)) < 1:
@@ -149,19 +198,22 @@ def ai_proxy():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-    # Token → cr 換算して消費
+    # Token → cr 換算して消費（モデル別レート適用）
     tokens_in  = resp.usage.input_tokens
     tokens_out = resp.usage.output_tokens
-    cr_used    = max(1, (tokens_in + tokens_out * 3) // TOKENS_PER_CR)
+    cr_used    = max(1, (tokens_in + tokens_out * 3) // _tokens_per_cr(model))
 
-    _sb.schema("betaship").rpc("deduct_credits", {
-        "p_user_id":   uid,
-        "p_amount":    cr_used,
-        "p_service":   service,
-        "p_tool":      tool,
-        "p_tokens_in": tokens_in,
-        "p_tokens_out": tokens_out,
-    }).execute()
+    if not skip_credits:
+        # monthly_cr → topup_cr の順に消費
+        cr = (cr_row.data or {})
+        monthly = cr.get("monthly_cr", 0)
+        topup   = cr.get("topup_cr", 0)
+        if monthly >= cr_used:
+            _sb.schema("betaship").table("credits").update({"monthly_cr": monthly - cr_used}).eq("user_id", uid).execute()
+        elif monthly > 0:
+            _sb.schema("betaship").table("credits").update({"monthly_cr": 0, "topup_cr": topup - (cr_used - monthly)}).eq("user_id", uid).execute()
+        else:
+            _sb.schema("betaship").table("credits").update({"topup_cr": topup - cr_used}).eq("user_id", uid).execute()
 
     return jsonify({
         "content":    resp.content[0].text if resp.content else "",
@@ -196,7 +248,7 @@ def stripe_webhook():
         if mode == "subscription":
             # プラン購入 → プラン更新 + 月次cr付与
             price_id = session.get("metadata", {}).get("price_id", "")
-            plan = next((p for p, pid in STRIPE_PRICE_IDS.items() if pid == price_id), "maker")
+            plan = next((p for p, pid in STRIPE_PRICE_IDS.items() if pid == price_id), "plus")
             _sb.schema("betaship").table("subscriptions").upsert({
                 "user_id": uid,
                 "plan": plan,
@@ -245,13 +297,13 @@ def create_checkout():
     if not price_id:
         return jsonify({"error": "price_id required"}), 400
 
-    base_url = os.environ.get("APP_BASE_URL", "https://okamone.github.io/betaship")
+    base_url = os.environ.get("APP_BASE_URL", "https://betaship.web.app")
     session = stripe.checkout.Session.create(
         mode=mode,
         line_items=[{"price": price_id, "quantity": 1}],
         metadata={"user_id": uid, "price_id": price_id},
-        success_url=f"{base_url}/success?session_id={{CHECKOUT_SESSION_ID}}",
-        cancel_url=f"{base_url}/cancel",
+        success_url=f"{base_url}/?checkout=success&session_id={{CHECKOUT_SESSION_ID}}",
+        cancel_url=f"{base_url}/",
     )
     return jsonify({"url": session.url})
 
@@ -360,14 +412,14 @@ def get_product_config():
     if not product_id:
         return jsonify({"error": "product required"}), 400
     try:
-        row = _sb.schema("betaship").table("product_config").select("*").eq(
-            "product_id", product_id
-        ).maybe_single().execute()
+        row = _sb.schema("betaship").table("product_config").select(
+            "product_id,free_mode,billing_active,maintenance_mode,free_daily_limit"
+        ).eq("product_id", product_id).maybe_single().execute()
         if row.data:
             return jsonify(row.data)
     except Exception:
         pass
-    return jsonify({"product_id": product_id, "free_daily_limit": 5, "free_mode": False, "maintenance_mode": False})
+    return jsonify({"product_id": product_id, "free_daily_limit": 5, "free_mode": False, "maintenance_mode": False, "billing_active": False})
 
 
 # --------------------------------------------------------
@@ -465,9 +517,29 @@ def admin_create_coupon():
 # --------------------------------------------------------
 # GET /admin  — 管理画面HTML配信
 # --------------------------------------------------------
+@app.route("/")
+def index_page():
+    import os
+    return send_file(os.path.join(os.path.dirname(__file__), "index.html"))
+
+
+@app.route("/widget.js")
+def widget_js():
+    import os
+    from flask import Response
+    path = os.path.join(os.path.dirname(__file__), "widget.js")
+    with open(path) as f:
+        code = f.read()
+    return Response(code, mimetype="application/javascript",
+                    headers={"Cache-Control": "public, max-age=300", "Access-Control-Allow-Origin": "*"})
+
+
 @app.route("/admin")
 def admin_page():
     import os
+    token = request.args.get("token", "")
+    if not ADMIN_TOKEN or token != ADMIN_TOKEN:
+        return "Unauthorized", 401
     return send_file(os.path.join(os.path.dirname(__file__), "admin.html"))
 
 

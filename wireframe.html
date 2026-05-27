@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Betaship TOP — ワイヤーフレーム</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0e10;
+      --surface: #161618;
+      --surface2: #1c1c1e;
+      --border: #2a2a2e;
+      --text: #e8e8ea;
+      --muted: #6b6b72;
+      --muted2: #9898a0;
+      --accent: #c8a84b;
+      --teal: #0d9488;
+      --red: #e05555;
+      --wf-border: rgba(200,168,75,0.5);
+      --wf-label-bg: rgba(200,168,75,0.12);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px; line-height: 1.6;
+    }
+
+    /* ─── ワイヤーフレーム共通 ─── */
+    .wf-section {
+      position: relative;
+      border: 1.5px dashed var(--wf-border);
+      margin: 16px;
+      border-radius: 12px;
+      overflow: visible;
+    }
+    .wf-label {
+      position: absolute;
+      top: -11px; right: 12px;
+      background: var(--wf-label-bg);
+      border: 1px solid var(--wf-border);
+      color: var(--accent);
+      font-size: 11px; font-weight: 700;
+      padding: 2px 10px; border-radius: 20px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .wf-note {
+      background: rgba(200,168,75,0.07);
+      border-left: 3px solid var(--accent);
+      padding: 10px 14px; margin: 0 0 0 0;
+      font-size: 12px; color: var(--muted2);
+      line-height: 1.6;
+    }
+    .wf-note strong { color: var(--accent); }
+    .wf-note ul { padding-left: 16px; margin-top: 4px; }
+    .wf-note li { margin-bottom: 2px; }
+
+    .placeholder-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 12px;
+    }
+
+    /* ─── TOOL BAR ─── */
+    .wf-toolbar {
+      background: #1a1200;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 10px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 12px 16px;
+      font-size: 12px;
+    }
+    .wf-toolbar-title { font-weight: 700; color: var(--accent); }
+    .wf-toolbar-meta { color: var(--muted2); }
+
+    /* ─── HEADER ─── */
+    .wf-header-inner {
+      height: 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      background: var(--surface);
+      border-radius: 10px;
+      margin: 12px;
+    }
+    .wf-logo {
+      font-weight: 800; font-size: 16px; letter-spacing: -0.5px;
+      color: var(--text);
+    }
+    .wf-logo span { color: var(--accent); }
+    .wf-header-nav { display: flex; gap: 8px; }
+    .wf-nav-item {
+      font-size: 12px; padding: 5px 12px; border-radius: 6px;
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--muted2);
+    }
+    .wf-nav-item.primary {
+      background: rgba(200,168,75,0.12); border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ─── HERO ─── */
+    .wf-hero-inner {
+      padding: 64px 24px 56px;
+      display: grid; grid-template-columns: 1fr 400px; gap: 48px; align-items: center;
+    }
+    .hero-headline {
+      font-size: 42px; font-weight: 800; letter-spacing: -2px;
+      line-height: 1.1; margin-bottom: 16px;
+      color: var(--text);
+    }
+    .hero-headline .hl-accent { color: var(--accent); }
+    .hero-headline .hl-option {
+      font-size: 13px; font-weight: 500; color: var(--muted2);
+      letter-spacing: 0; margin-left: 8px;
+      background: var(--surface2); padding: 2px 8px; border-radius: 4px;
+      vertical-align: middle;
+    }
+    .hero-sub {
+      font-size: 16px; color: var(--muted2); margin-bottom: 28px;
+      line-height: 1.6; max-width: 440px;
+    }
+    .hero-cta-row { display: flex; gap: 12px; align-items: center; }
+    .cta-primary {
+      background: var(--accent); color: #000;
+      font-size: 14px; font-weight: 700; padding: 12px 28px;
+      border-radius: 8px; border: none; cursor: pointer;
+    }
+    .cta-secondary {
+      font-size: 13px; color: var(--muted2); text-decoration: underline;
+      cursor: pointer;
+    }
+    .hero-badge-row {
+      display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap;
+    }
+    .hero-badge {
+      font-size: 12px; color: var(--muted2);
+      background: var(--surface2); border: 1px solid var(--border);
+      padding: 4px 12px; border-radius: 20px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--teal);
+    }
+    .hero-visual {
+      height: 280px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 8px;
+      color: var(--muted); font-size: 13px;
+    }
+    .hero-visual .icon { font-size: 48px; opacity: 0.3; }
+
+    /* ─── TOOLS ─── */
+    .wf-tools-inner { padding: 32px 24px; }
+    .section-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 20px;
+    }
+    .section-title { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+    .section-count { font-size: 12px; color: var(--muted); }
+    .filter-row { display: flex; gap: 8px; margin-bottom: 24px; }
+    .filter-pill {
+      font-size: 12px; padding: 6px 14px; border-radius: 20px;
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--muted2);
+    }
+    .filter-pill.active {
+      background: var(--accent); border-color: var(--accent);
+      color: #000; font-weight: 700;
+    }
+    .tools-grid-wf {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    }
+    .tool-card-wf {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .tc-thumb {
+      height: 120px; background: var(--surface2); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; opacity: 0.5;
+    }
+    .tc-body { padding: 16px; }
+    .tc-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .tc-catch { font-size: 12px; color: var(--muted2); margin-bottom: 12px; }
+    .tc-tags { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .tc-tag {
+      font-size: 11px; padding: 2px 8px; border-radius: 4px;
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--muted2);
+    }
+    .tc-btn {
+      width: 100%; padding: 9px; border-radius: 7px;
+      background: var(--teal); color: #fff;
+      font-size: 13px; font-weight: 600; border: none; cursor: pointer;
+    }
+
+    /* ─── WHY / VALUE PROP ─── */
+    .wf-why-inner { padding: 48px 24px; }
+    .why-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+      margin-top: 24px;
+    }
+    .why-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px;
+    }
+    .why-icon { font-size: 28px; margin-bottom: 12px; }
+    .why-title { font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+    .why-body { font-size: 13px; color: var(--muted2); line-height: 1.6; }
+
+    /* ─── PRICING ─── */
+    .wf-pricing-inner { padding: 48px 24px; text-align: center; }
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+      max-width: 800px; margin: 24px auto 0;
+    }
+    .plan-wf {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px; text-align: left;
+    }
+    .plan-wf.featured { border-color: var(--accent); }
+    .plan-name { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+    .plan-price { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; }
+    .plan-price span { font-size: 14px; font-weight: 400; color: var(--muted2); }
+    .plan-cr { font-size: 12px; color: var(--muted2); margin-bottom: 16px; }
+    .plan-btn {
+      width: 100%; padding: 9px; border-radius: 7px; border: none; cursor: pointer;
+      font-size: 13px; font-weight: 600;
+      background: var(--surface2); color: var(--muted2);
+    }
+    .plan-btn.featured { background: var(--accent); color: #000; }
+
+    /* ─── CREATOR ─── */
+    .wf-creator-inner {
+      padding: 40px 24px;
+      background: var(--surface);
+      border-radius: 10px; margin: 8px;
+      display: flex; justify-content: space-between; align-items: center; gap: 24px;
+    }
+    .creator-text .creator-title {
+      font-size: 18px; font-weight: 700; margin-bottom: 8px;
+    }
+    .creator-text .creator-sub { font-size: 13px; color: var(--muted2); }
+    .creator-btn {
+      background: none; border: 1.5px solid var(--accent);
+      color: var(--accent); font-size: 13px; font-weight: 700;
+      padding: 10px 24px; border-radius: 8px; cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* ─── FOOTER ─── */
+    .wf-footer-inner {
+      padding: 20px 24px; text-align: center;
+      color: var(--muted); font-size: 11px;
+      border-top: 1px solid var(--border);
+    }
+    .wf-footer-inner a { color: var(--muted2); margin: 0 8px; }
+
+    /* ─── 削除候補セクション ─── */
+    .wf-section.cut {
+      border-color: rgba(224,85,85,0.4);
+      opacity: 0.6;
+    }
+    .wf-section.cut .wf-label {
+      background: rgba(224,85,85,0.12);
+      border-color: rgba(224,85,85,0.4);
+      color: var(--red);
+    }
+
+    /* ─── 新規セクション ─── */
+    .wf-section.new .wf-label {
+      background: rgba(13,148,136,0.12);
+      border-color: rgba(13,148,136,0.5);
+      color: var(--teal);
+    }
+    .wf-section.new {
+      border-color: rgba(13,148,136,0.4);
+    }
+
+    @media (max-width: 900px) {
+      .wf-hero-inner { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .tools-grid-wf, .why-grid, .pricing-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .tools-grid-wf, .why-grid, .pricing-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ────────────────────────────────────────
+  ツールバー
+──────────────────────────────────────── -->
+<div class="wf-toolbar">
+  <div>
+    <span class="wf-toolbar-title">⚓ Betaship TOP — ワイヤーフレーム</span>
+    <span style="color:var(--muted2); margin-left:16px; font-size:11px;">2026-05-28</span>
+  </div>
+  <div class="wf-toolbar-meta">
+    <span style="color:var(--accent);">─── </span>既存セクション
+    &nbsp;&nbsp;
+    <span style="color:var(--teal);">─── </span>新規追加
+    &nbsp;&nbsp;
+    <span style="color:var(--red); opacity:0.8;">─── </span>削除候補
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────
+  SEC 1 : HEADER
+──────────────────────────────────────── -->
+<div class="wf-section">
+  <div class="wf-label">01 · HEADER</div>
+  <div class="wf-header-inner">
+    <div class="wf-logo">⚓ Beta<span>ship</span></div>
+    <div class="wf-header-nav">
+      <div class="wf-nav-item">料金</div>
+      <div class="wf-nav-item">ツールを置く</div>
+      <div class="wf-nav-item primary">ログイン</div>
+    </div>
+  </div>
+  <div class="wf-note">
+    <strong>変更点：</strong>ナビに「料金」「ツールを置く」のアンカーリンクを追加。<br>
+    現状はログインボタンのみ → 初回訪問者が何ができるか分からない問題を解消。
+    <ul>
+      <li>「料金」→ pricing section へスクロール</li>
+      <li>「ツールを置く」→ creator section or モーダル</li>
+      <li>ログイン済み時は「クレジット残高 + アカウント」に切り替え</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────
+  SEC 2 : HERO
+──────────────────────────────────────── -->
+<div class="wf-section">
+  <div class="wf-label">02 · HERO</div>
+  <div class="wf-hero-inner">
+    <div>
+      <div class="hero-headline">
+        アイデアに、<br>
+        <span class="hl-accent">帆を張れ。</span>
+        <span class="hl-option">← コピー案A</span>
+      </div>
+      <div class="hero-sub">
+        作りかけのAIツールが集まる場所。<br>
+        Beta=未完でいい。Ship=とにかく出す。
+      </div>
+      <div class="hero-cta-row">
+        <button class="cta-primary">ツールを試してみる</button>
+        <span class="cta-secondary">料金を見る</span>
+      </div>
+      <div class="hero-badge-row">
+        <div class="hero-badge"><span class="dot"></span> 3 tools live</div>
+        <div class="hero-badge">無料で試せる</div>
+        <div class="hero-badge">Googleアカウントで1秒ログイン</div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="icon">⛵</div>
+      <div>船のイラスト or アニメーション</div>
+      <div style="font-size:11px; color:var(--muted);">現行のSVGを流用可</div>
+    </div>
+  </div>
+  <div class="wf-note">
+    <strong>コピー案：</strong><br>
+    A. 「アイデアに、帆を張れ。」― 行動喚起・短い<br>
+    B. 「未完のまま、出航する。」― コンセプトそのまま<br>
+    C. 「まだ港にいるの？」― 問いかけ型・刺さりやすい<br>
+    D. 「AIツールを、試す場所。」― 説明的・検索流入向き<br><br>
+    <strong>サブコピー方針：</strong>Beta=未完OK / Ship=出す を2行で説明。理念より「何ができるか」優先。
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────
+  SEC 3 : TOOLS（既存・構造維持）
+──────────────────────────────────────── -->
+<div class="wf-section">
+  <div class="wf-label">03 · TOOLS</div>
+  <div class="wf-tools-inner">
+    <div class="section-head">
+      <div class="section-title">aboard のツール</div>
+      <div class="section-count">3件</div>
+    </div>
+    <div class="filter-row">
+      <div class="filter-pill active">🗺 全ツール</div>
+      <div class="filter-pill">🧠 ウェルネス</div>
+      <div class="filter-pill">🎨 クリエイティブ</div>
+      <div class="filter-pill">⚙️ 生産性</div>
+    </div>
+    <div class="tools-grid-wf">
+      <div class="tool-card-wf">
+        <div class="tc-thumb">🧠</div>
+        <div class="tc-body">
+          <div class="tc-name">Moshimo（もしも）</div>
+          <div class="tc-catch">思考にAIメンターを入れる</div>
+          <div class="tc-tags">
+            <div class="tc-tag">自己成長</div><div class="tc-tag">チャット</div>
+          </div>
+          <button class="tc-btn">試してみる →</button>
+        </div>
+      </div>
+      <div class="tool-card-wf">
+        <div class="tc-thumb">🌌</div>
+        <div class="tc-body">
+          <div class="tc-name">Wearld（ウェアルド）</div>
+          <div class="tc-catch">どのサイトも別世界に変える</div>
+          <div class="tc-tags">
+            <div class="tc-tag">CSS</div><div class="tc-tag">ブラウザ</div>
+          </div>
+          <button class="tc-btn" style="background:#9b6cf0;">試してみる →</button>
+        </div>
+      </div>
+      <div class="tool-card-wf">
+        <div class="tc-thumb">💭</div>
+        <div class="tc-body">
+          <div class="tc-name">Await（アウェイト）</div>
+          <div class="tc-catch">会う前に、気になる相手のことをAIと話す</div>
+          <div class="tc-tags">
+            <div class="tc-tag">恋愛</div><div class="tc-tag">AI対話</div>
+          </div>
+          <button class="tc-btn" style="background:#7c3aed;">試してみる →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wf-note">
+    <strong>現行から変更なし。</strong> カードのレイアウト・フィルター機能は維持。<br>
+    追加検討: カードにクレジット消費量を表示（例:「1回 ≈ 5cr」）→ Phase 1以降でいい。
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────
+  SEC 4 : WHY BETASHIP（新規）
+──────────────────────────────────────── -->
+<div class="wf-section new">
+  <div class="wf-label">04 · WHY（新規）</div>
+  <div class="wf-why-inner">
+    <div class="section-head">
+      <div class="section-title">なぜBetashipで試すの？</div>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">🔑</div>
+        <div class="why-title">1アカウントで全ツール</div>
+        <div class="why-body">Googleアカウントで一度ログインすれば、aboard の全AIツールがすぐ使える。何度もサインアップしなくていい。</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">💎</div>
+        <div class="why-title">クレジット共通</div>
+        <div class="why-body">1つのプランで全ツールのクレジットが使える。Moshimoで使っても、Wearldで使っても同じバランス。</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">⚡</div>
+        <div class="why-title">Betaだから、先端を試せる</div>
+        <div class="why-body">完成を待たずに出てくるアイデアたち。使う人の声がプロダクトを変える。あなたのフィードバックが意味を持つ。</div>
+      </div>
+    </div>
+  </div>
+  <div class="wf-note">
+    <strong>新規追加セクション。</strong> 現状LPには「なぜMoshimoではなくBetashipを経由するか」の説明がない。<br>
+    各サービス直アクセスユーザーがBetaship経由に移行する動線を作るための価値訴求。<br>
+    Phase 0ではコピーで勝負。Phase 1クレジット統合後にこのセクションが最も重要になる。
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────
+  SEC 5 : PRICING（既存・位置変更なし）
+──────────────────────────────────────── -->
+<div class="wf-section">
+  <div class="wf-label">05 · PRICING</div>
+  <div class="wf-pricing-inner">
+    <div class="section-title">クレジットプラン</div>
+    <div style="font-size:13px; color:var(--muted2); margin-top:8px;">1クレジット ≈ 800トークン。全ツールで使える。</div>
+    <div class="pricing-grid">
+      <div class="plan-wf">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">$0</div>
+        <div class="plan-cr">50 cr / 月</div>
+        <button class="plan-btn">まず試す</button>
+      </div>
+      <div class="plan-wf featured">
+        <div style="font-size:11px; color:var(--accent); font-weight:700; margin-bottom:6px;">おすすめ</div>
+        <div class="plan-name">Maker</div>
+        <div class="plan-price">$5<span>/月</span></div>
+        <div class="plan-cr">600 cr / 月</div>
+        <button class="plan-btn featured">Makerになる</button>
+      </div>
+      <div class="plan-wf">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">$15<span>/月</span></div>
+        <div class="plan-cr">2,500 cr / 月</div>
+        <button class="plan-btn">Proになる</button>
+      </div>
+    </div>
+    <div style="margin-top:20px; font-size:12px; color:var(--muted2);">
+      追加購入：+300 cr $3 / +1,200 cr $10
+    </div>
+  </div>
+  <div class="wf-note">
+    <strong>変更点：</strong>「テスト中」バッジを削除。本番として見せる。<br>
+    Phase 0では実際に課金は走らないが、「課金の意向があるか」を確認するためにボタンは存在させる。
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────
+  SEC 6 : ANNOUNCE BAND（削除候補）
+──────────────────────────────────────── -->
+<div class="wf-section cut">
+  <div class="wf-label">06 · ANNOUNCE BAND（削除候補）</div>
+  <div style="padding:20px 24px; text-align:center; color:var(--muted2);">
+    ── 現行のお知らせバンド ──
+  </div>
+  <div class="wf-note" style="border-color:var(--red); background:rgba(224,85,85,0.05);">
+    <strong style="color:var(--red);">削除を提案。</strong>
+    現状「Beta=未完OK × Ship=出す」の説明バンドが header直下にあるが、ヒーローセクションで同じ内容を伝えるため冗長。<br>
+    「新ツール追加時」「メンテナンス告知」等のオペレーショナルな使い方に限定するか、削除。
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────
+  SEC 7 : CREATOR CTA（既存・内容見直し）
+──────────────────────────────────────── -->
+<div class="wf-section">
+  <div class="wf-label">07 · CREATOR CTA</div>
+  <div class="wf-creator-inner">
+    <div class="creator-text">
+      <div class="creator-title">AIツールを作ったら、ここに置いていい。</div>
+      <div class="creator-sub">
+        Beta=未完でいい。Betashipがマネタイズを握る。<br>
+        クリエイターはコードだけ出せばいい。
+      </div>
+    </div>
+    <button class="creator-btn">ツールを置きたい →</button>
+  </div>
+  <div class="wf-note">
+    <strong>現行維持。</strong> コピーを「クリエイターはコードだけ出せばいい」を前面に出す方向で微調整。<br>
+    クリエイター向けの独立LPは Phase 1以降で検討（今は1ページで両面対応）。
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────
+  SEC 8 : FOOTER
+──────────────────────────────────────── -->
+<div class="wf-section">
+  <div class="wf-label">08 · FOOTER</div>
+  <div class="wf-footer-inner">
+    Betaship · 2026
+    &nbsp;|&nbsp;
+    <a href="/terms.html">利用規約</a>
+    <a href="/privacy.html">プライバシーポリシー</a>
+    <a href="/tokushoho.html">特定商取引法</a>
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────
+  サマリー
+──────────────────────────────────────── -->
+<div style="margin:24px 16px; padding:20px 24px; background:var(--surface); border:1px solid var(--border); border-radius:12px;">
+  <div style="font-size:15px; font-weight:700; margin-bottom:16px; color:var(--accent);">変更サマリー</div>
+  <table style="width:100%; font-size:13px; border-collapse:collapse;">
+    <tr style="border-bottom:1px solid var(--border);">
+      <th style="text-align:left; padding:8px 12px; color:var(--muted2); width:160px;">セクション</th>
+      <th style="text-align:left; padding:8px 12px; color:var(--muted2); width:80px;">状態</th>
+      <th style="text-align:left; padding:8px 12px; color:var(--muted2);">内容</th>
+    </tr>
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:8px 12px;">HEADER</td>
+      <td style="padding:8px 12px; color:var(--accent);">変更</td>
+      <td style="padding:8px 12px; color:var(--muted2);">「料金」「ツールを置く」のナビアンカーを追加</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:8px 12px;">HERO</td>
+      <td style="padding:8px 12px; color:var(--accent);">変更</td>
+      <td style="padding:8px 12px; color:var(--muted2);">ヘッドライン刷新・4案提示。バッジ行追加（無料・1秒ログイン）</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:8px 12px;">TOOLS</td>
+      <td style="padding:8px 12px; color:var(--muted2);">維持</td>
+      <td style="padding:8px 12px; color:var(--muted2);">構造変更なし</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:8px 12px;">WHY BETASHIP</td>
+      <td style="padding:8px 12px; color:var(--teal);">新規</td>
+      <td style="padding:8px 12px; color:var(--muted2);">「なぜBetashipで試すか」3カードを追加</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:8px 12px;">PRICING</td>
+      <td style="padding:8px 12px; color:var(--accent);">変更</td>
+      <td style="padding:8px 12px; color:var(--muted2);">「テスト中」バッジを削除</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:8px 12px;">ANNOUNCE BAND</td>
+      <td style="padding:8px 12px; color:var(--red);">削除候補</td>
+      <td style="padding:8px 12px; color:var(--muted2);">ヒーローと内容重複。オペレーション用途のみ残すか削除</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 12px;">CREATOR CTA</td>
+      <td style="padding:8px 12px; color:var(--accent);">変更</td>
+      <td style="padding:8px 12px; color:var(--muted2);">コピー微調整。構造維持</td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>

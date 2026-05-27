@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>Betaship — 試せるAIツールが集まる場所</title>
   <meta name="description" content="今すぐ試せるAIツールが集まる場所。Beta=未完OK × Ship=出す。">
   <meta property="og:title" content="Betaship — 試せるAIツールが集まる場所">
@@ -80,14 +82,16 @@
 
     .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 
-    .btn-creator-nav {
+    .btn-auth-nav {
       font-size: 13px; font-weight: 600;
-      color: var(--text); text-decoration: none;
+      color: var(--text); background: none; cursor: pointer;
       padding: 6px 14px; border-radius: 7px;
       border: 1px solid var(--border2);
       transition: border-color 0.12s, color 0.12s;
     }
-    .btn-creator-nav:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-auth-nav:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-auth-nav.logged-in { color: var(--muted2); font-size: 12px; }
+    #cr-badge { font-size: 12px; color: var(--muted2); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 4px 10px; white-space: nowrap; display: none; }
 
     .btn-credits-soon {
       font-size: 12px; font-weight: 600;
@@ -349,10 +353,10 @@
 
     /* ─── SHIP HERO ─── */
     .ship-hero {
-      position: relative; height: 340px; overflow: hidden;
+      position: relative; height: 220px; overflow: hidden;
       background: linear-gradient(180deg, #010810 0%, #020c1c 40%, #050d1a 75%, #071828 100%);
       display: flex; align-items: flex-start; justify-content: center;
-      padding-top: 52px;
+      padding-top: 36px;
     }
     .hero-svg {
       position: absolute; inset: 0; width: 100%; height: 100%;
@@ -382,7 +386,7 @@
       font-size: 13px; color: var(--teal); font-weight: 600;
     }
     @media (max-width: 700px) {
-      .ship-hero { height: 280px; padding-top: 36px; }
+      .ship-hero { height: 180px; padding-top: 28px; }
       .hero-headline { font-size: 22px; }
     }
   /* ─── FEEDBACK MODAL ─── */
@@ -520,7 +524,7 @@
     .plan-btn:active { transform: translateY(0); }
     .plan-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .plan-btn-free { background: var(--surface2); color: var(--muted2); }
-    .plan-btn-maker { background: var(--accent); color: #fff; }
+    .plan-btn-plus { background: var(--accent); color: #fff; }
     .plan-btn-pro { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
     .topup-row {
       background: var(--surface); border: 1px solid var(--border2);
@@ -570,6 +574,35 @@
     @media (max-width: 600px) {
       .creator-strip-inner { flex-direction: column; align-items: flex-start; }
     }
+
+    /* ─── CR MODAL ─── */
+    .cr-modal-bg {
+      display: none; position: fixed; inset: 0; z-index: 600;
+      background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 16px;
+    }
+    .cr-modal-bg.open { display: flex; }
+    .cr-modal {
+      background: #16161e; border: 1px solid #2a2a3e;
+      border-radius: 16px; padding: 28px 24px;
+      width: min(460px, 100%); box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    }
+    .cr-modal-title { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+    .cr-modal-sub { font-size: 13px; color: var(--muted2); line-height: 1.6; margin-bottom: 20px; }
+    .cr-input {
+      width: 100%; background: #0e0e12; border: 1px solid #2a2a3e;
+      border-radius: 10px; padding: 12px 14px; color: var(--text);
+      font-size: 13px; font-family: inherit; line-height: 1.6;
+      transition: border-color 0.12s; margin-bottom: 12px; display: block;
+    }
+    .cr-input:focus { outline: none; border-color: var(--accent); }
+    .cr-nav-link {
+      display: inline-block; font-size: 12px; color: var(--muted);
+      background: none; border: none; cursor: pointer;
+      text-decoration: underline; text-underline-offset: 3px;
+      transition: color 0.12s; margin-top: 4px; padding: 0;
+    }
+    .cr-nav-link:hover { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -577,11 +610,11 @@
 <!-- ─── HEADER ─── -->
 <header>
   <a href="/" class="logo">
-    <span class="logo-mark">🧭</span>
     <span class="logo-text"><span>Beta</span>ship</span>
   </a>
   <div class="header-right">
-    <a href="#for-creators" class="btn-creator-nav">ツールを出す</a>
+    <span id="cr-badge"></span>
+    <button id="btn-auth-nav" class="btn-auth-nav" onclick="_authNavClick()">ログイン</button>
   </div>
 </header>
 
@@ -666,8 +699,6 @@
       <!-- Topsails -->
       <path d="M3 -105 L48 -80 L3 -60 Z" fill="#102c40" opacity="0.85"/>
       <path d="M-2 -105 L-48 -80 L-2 -60 Z" fill="#0d2638" opacity="0.8"/>
-      <!-- Flag (teal) -->
-      <path d="M-2 -105 L22 -94 L-2 -83 Z" fill="#0d9488" opacity="0.92"/>
       <!-- Hull -->
       <path d="M-130 80 L-118 100 L118 100 L130 80 Z" fill="#071424"/>
       <path d="M-118 100 Q0 114 118 100 L105 128 Q0 140 -105 128 Z" fill="#050f1e"/>
@@ -696,31 +727,16 @@
     </g>
   </svg>
   <div class="hero-content">
-    <div class="hero-eyebrow">⚓ Betaship</div>
-    <h1 class="hero-headline">作りたての<span>AI</span>を、<br>一緒に航海する</h1>
+    <h1 class="hero-headline">今すぐ試せる<span>AI</span>ツール</h1>
     <div class="hero-badge">
       <span style="width:7px;height:7px;border-radius:50%;background:#0d9488;box-shadow:0 0 8px #0d948870;animation:pulse-dot 2s ease-in-out infinite;flex-shrink:0;display:inline-block;"></span>
-      3 tools aboard
+      3 ツール公開中
     </div>
   </div>
 </div>
 
 <!-- ─── PAGE WRAP ─── -->
 <div class="page-wrap">
-
-  <!-- FILTER PILLS -->
-  <div class="filter-bar" id="filter-pills">
-    <div class="pill active" data-filter="all" onclick="filterCat('all', this)">🗺 全ツール</div>
-    <div class="pill" data-filter="wellness" onclick="filterCat('wellness', this)">🧠 ウェルネス</div>
-    <div class="pill" data-filter="creative" onclick="filterCat('creative', this)">🎨 クリエイティブ</div>
-    <div class="pill" data-filter="productivity" onclick="filterCat('productivity', this)">⚙️ 生産性</div>
-  </div>
-
-  <!-- GRID HEADER -->
-  <div class="grid-header">
-    <div class="grid-label" id="grid-label">aboard のツール</div>
-    <div class="grid-count" id="grid-count">3件</div>
-  </div>
 
   <!-- TOOLS GRID -->
   <div class="tools-grid" id="tools-grid">
@@ -745,11 +761,10 @@
           </div>
           <span class="card-trial">試用: 約5分</span>
         </div>
-        <div class="card-price">無料 / Pro ¥680/月</div>
         <div class="card-cta">
-          <a href="https://moshimo-ai.web.app" target="_blank" class="btn-try-live"
+          <a href="https://moshimo-ai.web.app" class="btn-try-live"
              style="background: #0d9488;"
-             onclick="track('moshimo')">試してみる →</a>
+             onclick="track('moshimo'); _openTool('https://moshimo-ai.web.app', event)">試してみる →</a>
           <button class="btn-feedback" onclick="openFeedback('Moshimo')">💬 感想を送る</button>
         </div>
       </div>
@@ -776,7 +791,6 @@
           </div>
           <span class="card-trial">試用: 約1分</span>
         </div>
-        <div class="card-price">無料 / AI $9</div>
         <div class="card-cta">
           <a href="https://wearld.vercel.app" target="_blank" class="btn-try-live"
              style="background: #9b6cf0;"
@@ -806,11 +820,10 @@
           </div>
           <span class="card-trial">試用: 約5分</span>
         </div>
-        <div class="card-price">無料</div>
         <div class="card-cta">
-          <a href="https://await.web.app" target="_blank" class="btn-try-live"
+          <a href="https://await-1000874026940.asia-northeast1.run.app" class="btn-try-live"
              style="background: #7c3aed;"
-             onclick="track('await')">試してみる →</a>
+             onclick="track('await'); _openTool('https://await-1000874026940.asia-northeast1.run.app', event)">試してみる →</a>
           <button class="btn-feedback" onclick="openFeedback('Await')">💬 感想を送る</button>
         </div>
       </div>
@@ -824,46 +837,46 @@
 <section class="pricing-section" id="pricing">
   <div class="pricing-inner">
     <div class="pricing-head">
-      <div class="pricing-title">クレジットプラン <span class="pricing-test-badge">テスト中</span></div>
-      <div class="pricing-sub">複数ツールをまとめて使える。使った分だけ消費。</div>
+      <div class="pricing-title">もっと使うなら</div>
+      <div class="pricing-sub">気に入ったら、プランに入るとお得に続けられます。</div>
     </div>
 
     <div class="pricing-cards">
       <!-- Free -->
       <div class="plan-card">
         <div class="plan-name">Free</div>
-        <div class="plan-price">$0</div>
-        <div class="plan-cr">50 cr / 月</div>
+        <div class="plan-price">¥0</div>
+        <div class="plan-cr">まず試す</div>
         <ul class="plan-features">
           <li>全ツール利用可</li>
-          <li>月50クレジット</li>
-          <li>追加購入可</li>
+          <li>月50 cr</li>
+          <li>登録不要で試せる</li>
         </ul>
-        <button class="plan-btn plan-btn-free" onclick="startCheckout('free')">まず試す</button>
+        <button class="plan-btn plan-btn-plus" onclick="startCheckout('free')" style="background:var(--teal);">今すぐ使う</button>
       </div>
 
-      <!-- Maker -->
+      <!-- Plus -->
       <div class="plan-card plan-card-featured">
         <div class="plan-badge">おすすめ</div>
-        <div class="plan-name">Maker</div>
-        <div class="plan-price">$5<span class="plan-period">/月</span></div>
-        <div class="plan-cr">600 cr / 月</div>
+        <div class="plan-name">Plus</div>
+        <div class="plan-price">¥680<span class="plan-period">/月</span></div>
+        <div class="plan-cr">ヘビーユーザー向け</div>
         <ul class="plan-features">
           <li>全ツール利用可</li>
-          <li>月600クレジット</li>
+          <li>月600 cr</li>
           <li>追加購入可</li>
         </ul>
-        <button class="plan-btn plan-btn-maker" id="btn-maker" onclick="startCheckout('maker')">Makerになる</button>
+        <button class="plan-btn plan-btn-plus" id="btn-plus" onclick="startCheckout('plus')">Plusになる</button>
       </div>
 
       <!-- Pro -->
       <div class="plan-card">
         <div class="plan-name">Pro</div>
-        <div class="plan-price">$15<span class="plan-period">/月</span></div>
-        <div class="plan-cr">2,500 cr / 月</div>
+        <div class="plan-price">¥1,980<span class="plan-period">/月</span></div>
+        <div class="plan-cr">使い倒したい人向け</div>
         <ul class="plan-features">
           <li>全ツール利用可</li>
-          <li>月2,500クレジット</li>
+          <li>月2,000 cr</li>
           <li>追加購入可</li>
         </ul>
         <button class="plan-btn plan-btn-pro" id="btn-pro" onclick="startCheckout('pro')">Proになる</button>
@@ -874,32 +887,36 @@
     <div class="topup-row">
       <div class="topup-label">クレジットを追加購入（どのプランでも）</div>
       <div class="topup-cards">
-        <button class="topup-btn" id="btn-topup300" onclick="startCheckout('topup300')">+300 cr — $3</button>
-        <button class="topup-btn" id="btn-topup1200" onclick="startCheckout('topup1200')">+1,200 cr — $10</button>
+        <button class="topup-btn" id="btn-topup300" onclick="startCheckout('topup300')">+300 cr — ¥300</button>
+        <button class="topup-btn" id="btn-topup1200" onclick="startCheckout('topup1200')">+1,200 cr — ¥1,000</button>
       </div>
     </div>
 
-    <div class="pricing-note">1 クレジット ≈ 800 トークン。Freeプランでも全ツール試せます。</div>
+    <div class="pricing-note">Freeプランでも全ツール試せます。</div>
   </div>
 </section>
 
+
+
 <!-- ─── CREATOR STRIP ─── -->
-<div class="creator-strip" id="for-creators">
+<div class="creator-strip">
   <div class="creator-strip-inner">
     <div>
-      <div class="creator-strip-title">AIツールを乗せたい方へ</div>
-      <div class="creator-strip-sub">掲載無料・ユーザーの反応データつき。まずDMで話しましょう。</div>
+      <div class="creator-strip-title">AIツールを作ったら、ここに置いていい。</div>
+      <div class="creator-strip-sub">Beta=未完OK。自分のAIツールをBetashipに登録して、使ってもらおう。</div>
     </div>
-    <a href="https://twitter.com/messages/compose?recipient_id=oKamone" target="_blank" class="creator-strip-btn">
-      @oKamone にDM →
-    </a>
+    <button onclick="openCreatorModal()" class="creator-strip-btn">ツールを置きたい →</button>
   </div>
 </div>
 
-
 <!-- ─── FOOTER ─── -->
 <footer>
-  <p>Betaship · 2026 · <a href="https://twitter.com/messages/compose?recipient_id=oKamone" target="_blank">作者にDMする</a></p>
+  <p>Betaship · 2026</p>
+  <p style="margin-top:8px;">
+    <a href="/terms.html">利用規約</a>
+    <a href="/privacy.html">プライバシーポリシー</a>
+    <a href="/tokushoho.html">特定商取引法に基づく表記</a>
+  </p>
 </footer>
 
 <!-- ─── FEEDBACK MODAL ─── -->
@@ -958,6 +975,28 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- ─── CR MODAL ─── -->
+<div class="cr-modal-bg" id="cr-modal-bg">
+  <div class="cr-modal" role="dialog" aria-modal="true">
+    <div id="cr-form">
+      <div class="cr-modal-title">ツールを登録する</div>
+      <div class="cr-modal-sub">Beta=未完OK。名前とURLを教えてください。確認後、Betashipの船に乗せます。</div>
+      <input class="cr-input" id="cr-tool-name" type="text" placeholder="ツール名（例: Moshimo）">
+      <input class="cr-input" id="cr-tool-url" type="url" placeholder="ツールURL（例: https://...）">
+      <input class="cr-input" id="cr-contact" type="text" placeholder="連絡先（X / Threads / メール）— 任意">
+      <div class="fb-actions">
+        <button class="fb-submit" onclick="submitCreatorForm()">登録申請を送る</button>
+        <button class="fb-cancel" onclick="closeCreatorModal()">キャンセル</button>
+      </div>
+    </div>
+    <div class="fb-thanks" id="cr-thanks">
+      <div class="fb-thanks-emoji">⚓</div>
+      <div class="fb-thanks-title">受け取りました</div>
+      <div class="fb-thanks-body">確認後、ご連絡します。<br>一緒に航海しましょう。</div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ─── TOAST ───
 function showToast(msg) {
@@ -1009,18 +1048,87 @@ function filterCat(cat, el) {
 }
 
 // ─── CHECKOUT ───
-const _BSAPI  = 'https://betaship-api-1000874026940.asia-northeast1.run.app';
+const _BSAPI  = '';
 const _SB_URL = 'https://kphfolcpguniaaefcgcw.supabase.co';
 const _SB_KEY = 'sb_publishable_-mJ-zO_4n5ZKqjP53WDXFg_ZkHcdiwe';
 const _PRICES = {
-  maker:     { id: 'price_1TWEmjEm0oKuBhc8A42j0eHQ', mode: 'subscription' },
-  pro:       { id: 'price_1TWEmjEm0oKuBhc8ZhLsgZ17', mode: 'subscription' },
-  topup300:  { id: 'price_1TWEmkEm0oKuBhc8mAztcNlS', mode: 'payment' },
-  topup1200: { id: 'price_1TWEmkEm0oKuBhc8PK44XaXW', mode: 'payment' },
+  plus:     { id: 'price_1TbnNkEm0oKuBhc8HH0UKTL2', mode: 'subscription' },
+  pro:       { id: 'price_1TbnNlEm0oKuBhc80SQrcA3z', mode: 'subscription' },
+  topup300:  { id: 'price_1Tbn29Em0oKuBhc8iQKBmk3A', mode: 'payment' },
+  topup1200: { id: 'price_1Tbn29Em0oKuBhc8FgkGyI4p', mode: 'payment' },
 };
 
+// ─── SUPABASE SINGLETON ───
+const _BS_ORIGIN = 'https://betaship.web.app';
+
+let _sbInstance = null;
 function _sbClient() {
-  return window.supabase.createClient(_SB_URL, _SB_KEY);
+  if (!_sbInstance) _sbInstance = window.supabase.createClient(_SB_URL, _SB_KEY, {
+    auth: { detectSessionInUrl: true, persistSession: true }
+  });
+  return _sbInstance;
+}
+
+// supabase-js の signInWithOAuth は内部URLが壊れる場合があるため
+// Supabase の /auth/v1/authorize に直接リダイレクトする
+function _startGoogleLogin() {
+  const url = new URL(`${_SB_URL}/auth/v1/authorize`);
+  url.searchParams.set('provider', 'google');
+  url.searchParams.set('redirect_to', _BS_ORIGIN + '/');
+  window.location.assign(url.toString());
+}
+
+// ページ読み込み時に onAuthStateChange を一度だけセットアップ
+(function initAuth() {
+  _sbClient().auth.onAuthStateChange((_event, session) => {
+    _renderAuthNav(session);
+  });
+})();
+
+function _renderAuthNav(session) {
+  const btn = document.getElementById('btn-auth-nav');
+  const badge = document.getElementById('cr-badge');
+  if (!btn) return;
+  if (session?.user) {
+    const label = (session.user.email || '').split('@')[0] + ' · ログアウト';
+    btn.textContent = label;
+    btn.classList.add('logged-in');
+    _fetchAndShowCredits(session.access_token);
+  } else {
+    btn.textContent = 'ログイン';
+    btn.classList.remove('logged-in');
+    if (badge) { badge.textContent = '50 cr'; badge.style.display = 'inline-block'; }
+  }
+}
+
+async function _fetchAndShowCredits(jwt) {
+  const badge = document.getElementById('cr-badge');
+  if (!badge) return;
+  try {
+    const res = await fetch(`${_BSAPI}/api/credits`, {
+      headers: { 'Authorization': `Bearer ${jwt}` }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const total = (data.monthly_cr || 0) + (data.topup_cr || 0);
+    badge.textContent = `${total.toLocaleString()} cr`;
+    badge.style.display = 'inline-block';
+  } catch(e) { /* 非表示のまま */ }
+}
+
+async function _updateAuthNav() {
+  const { data: { session } } = await _sbClient().auth.getSession();
+  _renderAuthNav(session);
+}
+
+async function _authNavClick() {
+  const sb = _sbClient();
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) {
+    await sb.auth.signOut();
+  } else {
+    _startGoogleLogin();
+  }
 }
 
 async function startCheckout(plan) {
@@ -1031,21 +1139,17 @@ async function startCheckout(plan) {
   const price = _PRICES[plan];
   if (!price) return;
 
-  const btnId = { maker: 'btn-maker', pro: 'btn-pro', topup300: 'btn-topup300', topup1200: 'btn-topup1200' }[plan];
+  const btnId = { plus: 'btn-plus', pro: 'btn-pro', topup300: 'btn-topup300', topup1200: 'btn-topup1200' }[plan];
   const btn = document.getElementById(btnId);
   if (btn) { btn.disabled = true; btn.textContent = '処理中…'; }
 
   try {
-    const sb = _sbClient();
-    const { data: { session } } = await sb.auth.getSession();
+    const { data: { session } } = await _sbClient().auth.getSession();
 
     if (!session) {
       localStorage.setItem('bs_pending_price', price.id);
       localStorage.setItem('bs_pending_mode',  price.mode);
-      await sb.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.href }
-      });
+      _startGoogleLogin();
       return;
     }
 
@@ -1064,27 +1168,57 @@ async function _doCheckout(jwt, priceId, mode) {
   });
   const json = await res.json();
   if (json.url) { window.location.href = json.url; }
-  else { showToast('チェックアウトを開けませんでした。'); }
+  else {
+    console.error('[checkout] error', res.status, json);
+    showToast(res.status === 401 ? 'ログインが必要です。再度ログインしてください。' : 'チェックアウトを開けませんでした。');
+  }
 }
 
 function _btnLabel(plan) {
-  return { maker: 'Makerになる', pro: 'Proになる', topup300: '+300 cr — $3', topup1200: '+1,200 cr — $10' }[plan] || '申し込む';
+  return { plus: 'Plusになる', pro: 'Proになる', topup300: '+300 cr — $3', topup1200: '+1,200 cr — $10' }[plan] || '申し込む';
 }
 
-// OAuth リダイレクト後の自動チェックアウト
-(async function resumeCheckout() {
+// SSO: ログイン済みならJWTをURLに付けてツールを開く
+async function _openTool(url, ev) {
+  if (ev) ev.preventDefault();
+  const win = window.open('about:blank', '_blank');
+  let finalUrl = url;
+  try {
+    const { data: { session } } = await _sbClient().auth.getSession();
+    if (session?.access_token && session?.refresh_token) {
+      const u = new URL(url);
+      u.searchParams.set('bs_token', session.access_token);
+      u.searchParams.set('bs_refresh', session.refresh_token);
+      finalUrl = u.toString();
+    }
+  } catch(e) { /* fallback */ }
+  if (win) win.location.href = finalUrl;
+  else window.open(finalUrl, '_blank');
+}
+
+// onAuthStateChange がカバーするので _updateAuthNav() の手動呼び出しは不要
+
+// Stripe 購入完了・キャンセル後の処理
+(function handleCheckoutReturn() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('checkout') === 'success') {
+    history.replaceState({}, '', '/');
+    showToast('購入が完了しました。クレジットが追加されました！');
+    _updateAuthNav();
+  }
+})();
+
+// OAuth ログイン後の自動チェックアウト再開
+// onAuthStateChange で SIGNED_IN を検知して実行
+_sbClient().auth.onAuthStateChange(async (event, session) => {
+  if (event !== 'SIGNED_IN') return;
   const pendingPrice = localStorage.getItem('bs_pending_price');
   const pendingMode  = localStorage.getItem('bs_pending_mode');
-  if (!pendingPrice) return;
-
-  const sb = _sbClient();
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) return;
-
+  if (!pendingPrice || !session) return;
   localStorage.removeItem('bs_pending_price');
   localStorage.removeItem('bs_pending_mode');
   await _doCheckout(session.access_token, pendingPrice, pendingMode || 'subscription');
-})();
+});
 
 // ─── ANALYTICS ───
 function track(tool) {
@@ -1150,6 +1284,46 @@ function submitFeedback() {
   document.getElementById('fb-form').style.display = 'none';
   document.getElementById('fb-thanks').style.display = 'block';
   setTimeout(closeFeedback, 2400);
+}
+
+// ─── CREATOR MODAL ───
+function openCreatorModal() {
+  document.getElementById('cr-form').style.display = '';
+  document.getElementById('cr-thanks').style.display = 'none';
+  document.getElementById('cr-tool-name').value = '';
+  document.getElementById('cr-tool-url').value = '';
+  document.getElementById('cr-contact').value = '';
+  document.getElementById('cr-modal-bg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCreatorModal() {
+  document.getElementById('cr-modal-bg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('cr-modal-bg').addEventListener('click', function(e) {
+  if (e.target === this) closeCreatorModal();
+});
+
+function submitCreatorForm() {
+  const name    = document.getElementById('cr-tool-name').value.trim();
+  const url     = document.getElementById('cr-tool-url').value.trim();
+  const contact = document.getElementById('cr-contact').value.trim();
+  if (!name || !url) { showToast('ツール名とURLを入力してください'); return; }
+
+  fetch(GAS_URL, {
+    method: 'POST', mode: 'no-cors',
+    body: JSON.stringify({ type: 'cr_interest', tool: name, comment: url, notify: contact || '（未記入）' })
+  }).catch(() => {});
+
+  const log = JSON.parse(localStorage.getItem('bs_cr_interests') || '[]');
+  log.push({ name, url, contact, at: new Date().toISOString() });
+  localStorage.setItem('bs_cr_interests', JSON.stringify(log));
+
+  document.getElementById('cr-form').style.display = 'none';
+  document.getElementById('cr-thanks').style.display = 'block';
+  setTimeout(closeCreatorModal, 2800);
 }
 
 // ─── OGP IMAGE LOADER ───
