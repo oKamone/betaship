@@ -658,7 +658,6 @@
     <!-- ── Moshimo ── -->
     <div class="tool-card" data-cat="wellness" data-name="moshimo">
       <div class="card-thumb" style="background: linear-gradient(135deg, #0a2e1a 0%, #0e3d24 100%);">
-        <img class="card-thumb-img" src="https://moshimo-ai.web.app/og-image.png" alt="">
         <div class="card-thumb-glow"></div>
         🧠
       </div>
@@ -973,7 +972,19 @@ function submitFeedback() {
 
 // ─── OGP IMAGE LOADER ───
 (async function loadOgImages() {
-  // Wearldは src 直書き済み → load/error だけ処理
+  // 試せるカード（btn-try-live）で card-thumb-img がないものに自動でimg要素を挿入
+  document.querySelectorAll('.tool-card').forEach(card => {
+    const thumb = card.querySelector('.card-thumb');
+    const link  = card.querySelector('a.btn-try-live');
+    if (!thumb || !link || thumb.querySelector('.card-thumb-img')) return;
+    const img = document.createElement('img');
+    img.className = 'card-thumb-img';
+    img.dataset.url = link.href;
+    img.alt = '';
+    thumb.insertBefore(img, thumb.firstChild);
+  });
+
+  // src 直書き済み（og_url が判明しているもの）→ load/error だけ処理
   document.querySelectorAll('.card-thumb-img[src]').forEach(img => {
     if (img.complete) { img.naturalWidth > 0 ? img.classList.add('loaded') : img.remove(); }
     else {
@@ -982,14 +993,14 @@ function submitFeedback() {
     }
   });
 
-  // Reverieなど data-url 指定カード → microlink で og:image を取得
+  // data-url → microlink.io で og:image を取得
   for (const img of document.querySelectorAll('.card-thumb-img[data-url]')) {
     try {
-      const url = img.dataset.url;
+      const url  = img.dataset.url;
       const res  = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
       const json = await res.json();
       const src  = json.data?.image?.url || json.data?.screenshot?.url;
-      if (!src) continue;
+      if (!src) { img.remove(); continue; }
       img.onload  = () => img.classList.add('loaded');
       img.onerror = () => img.remove();
       img.src = src;
