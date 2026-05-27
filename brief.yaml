@@ -90,6 +90,7 @@ products:
     status: live
     url: "https://moshimo-ai.web.app"
     btn_color: "#0d9488"
+    og_url: "https://moshimo-ai.web.app/og-image.png"
     catch: "思考にAIメンターを入れる"
     quote: "「自分がどう考えているか」を、自分より先に知られる体験を作りたかった"
     tags: [自己成長, チャット]
