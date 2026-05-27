@@ -97,21 +97,6 @@ products:
     trial_time: "約5分"
     price: "無料 / Pro ¥680/月"
 
-  - id: reverie
-    name: "Reverie（レヴリー）"
-    emoji: "🎵"
-    cat: creative
-    status: live
-    url: "https://reverie-music.vercel.app"
-    btn_color: "#7c6cf0"
-    og_fetch: true   # microlink.io 経由で OGP 画像を取得
-    thumb_bg: "linear-gradient(135deg, #0e0a2e 0%, #160d3d 100%)"
-    catch: "今の気分に、映画のBGMを"
-    quote: "現実の場面がフィクションと重なる瞬間が好きで、それを音楽で再現したかった"
-    tags: [音楽, 気分]
-    trial_time: "約1分"
-    price: "無料"
-
   - id: wearld
     name: "Wearld（ウェアルド）"
     emoji: "🌌"
