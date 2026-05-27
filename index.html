@@ -630,7 +630,7 @@
     <h1 class="hero-headline">作りたての<span>AI</span>を、<br>一緒に航海する</h1>
     <div class="hero-badge">
       <span style="width:7px;height:7px;border-radius:50%;background:#0d9488;box-shadow:0 0 8px #0d948870;animation:pulse-dot 2s ease-in-out infinite;flex-shrink:0;display:inline-block;"></span>
-      2 tools aboard · ログイン不要
+      3 tools aboard · ログイン不要
     </div>
   </div>
 </div>
@@ -649,7 +649,7 @@
   <!-- GRID HEADER -->
   <div class="grid-header">
     <div class="grid-label" id="grid-label">aboard のツール</div>
-    <div class="grid-count" id="grid-count">7件</div>
+    <div class="grid-count" id="grid-count">4件</div>
   </div>
 
   <!-- TOOLS GRID -->
@@ -664,9 +664,9 @@
       <div class="card-body">
         <div class="card-name-row">
           <div class="card-name">Moshimo（もしも）</div>
-          <span class="card-status s-soon">準備中</span>
+          <span class="card-status s-live"><span class="s-dot"></span>試せる</span>
         </div>
-        <div class="card-catch" style="color: var(--muted2);">思考にAIメンターを入れる</div>
+        <div class="card-catch">思考にAIメンターを入れる</div>
         <div class="card-quote">「自分がどう考えているか」を、自分より先に知られる体験を作りたかった</div>
         <div class="card-meta">
           <div class="card-tags">
@@ -677,8 +677,10 @@
         </div>
         <div class="card-price">無料 / Pro ¥680/月</div>
         <div class="card-cta">
-          <div class="btn-try-soon">準備中</div>
-          <button class="btn-interest" onclick="trackInterest('Moshimo', this)">👋 気になってる</button>
+          <a href="https://moshimo-ai.web.app" target="_blank" class="btn-try-live"
+             style="background: #0d9488;"
+             onclick="track('moshimo')">試してみる →</a>
+          <button class="btn-feedback" onclick="openFeedback('Moshimo')">💬 感想を送る</button>
         </div>
       </div>
     </div>
@@ -745,34 +747,6 @@
       </div>
     </div>
 
-    <!-- ── Gait ── -->
-    <div class="tool-card" data-cat="wellness" data-name="gait">
-      <div class="card-thumb" style="background: linear-gradient(135deg, #071a10 0%, #0a2418 100%); opacity: 0.85;">
-        <div class="card-thumb-glow"></div>
-        🎧
-      </div>
-      <div class="card-body">
-        <div class="card-name-row">
-          <div class="card-name">Gait（ゲイト）</div>
-          <span class="card-status s-soon">準備中</span>
-        </div>
-        <div class="card-catch" style="color: var(--muted2);">歩行BPMで過集中を抜ける</div>
-        <div class="card-quote">過集中は自覚しにくい。音楽が体を動かし、体が脳を引き戻す仕組みが欲しかった</div>
-        <div class="card-meta">
-          <div class="card-tags">
-            <span class="card-tag">マインドフルネス</span>
-            <span class="card-tag">ADHD</span>
-          </div>
-          <span class="card-trial">試用: 約3分</span>
-        </div>
-        <div class="card-price" style="color: var(--muted);">無料（予定）</div>
-        <div class="card-cta">
-          <div class="btn-try-soon">準備中</div>
-          <button class="btn-interest" onclick="trackInterest('Gait', this)">👋 気になってる</button>
-        </div>
-      </div>
-    </div>
-
     <!-- ── Await ── -->
     <div class="tool-card" data-cat="wellness" data-name="await">
       <div class="card-thumb" style="background: linear-gradient(135deg, #0f0a1a 0%, #180f2a 100%); opacity: 0.85;">
@@ -797,62 +771,6 @@
         <div class="card-cta">
           <div class="btn-try-soon">準備中</div>
           <button class="btn-interest" onclick="trackInterest('Await', this)">👋 気になってる</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Qliq ── -->
-    <div class="tool-card" data-cat="productivity" data-name="qliq">
-      <div class="card-thumb" style="background: linear-gradient(135deg, #1a0812 0%, #22101c 100%); opacity: 0.85;">
-        <div class="card-thumb-glow"></div>
-        📋
-      </div>
-      <div class="card-body">
-        <div class="card-name-row">
-          <div class="card-name">Qliq（クリック）</div>
-          <span class="card-status s-soon">準備中</span>
-        </div>
-        <div class="card-catch" style="color: var(--muted2);">クリップボードを複数同時に持つ</div>
-        <div class="card-quote">コピペを繰り返すたびに思った。なんで1個しか持てないの</div>
-        <div class="card-meta">
-          <div class="card-tags">
-            <span class="card-tag">Chrome拡張</span>
-            <span class="card-tag">効率化</span>
-          </div>
-          <span class="card-trial">試用: 約1分</span>
-        </div>
-        <div class="card-price" style="color: var(--muted);">無料（予定）</div>
-        <div class="card-cta">
-          <div class="btn-try-soon">準備中</div>
-          <button class="btn-interest" onclick="trackInterest('Qliq', this)">👋 気になってる</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Saki ── -->
-    <div class="tool-card" data-cat="wellness" data-name="saki">
-      <div class="card-thumb" style="background: linear-gradient(135deg, #1a081a 0%, #220c22 100%); opacity: 0.85;">
-        <div class="card-thumb-glow"></div>
-        ✨
-      </div>
-      <div class="card-body">
-        <div class="card-name-row">
-          <div class="card-name">Saki（サキ）</div>
-          <span class="card-status s-soon">準備中</span>
-        </div>
-        <div class="card-catch" style="color: var(--muted2);">聴いてくれるAIキャラクター</div>
-        <div class="card-quote">答えるだけじゃなく、聴いてる感が出るAIを作りたかった</div>
-        <div class="card-meta">
-          <div class="card-tags">
-            <span class="card-tag">AIキャラクター</span>
-            <span class="card-tag">音声</span>
-          </div>
-          <span class="card-trial">試用: 約3分</span>
-        </div>
-        <div class="card-price" style="color: var(--muted);">無料（予定）</div>
-        <div class="card-cta">
-          <div class="btn-try-soon">準備中</div>
-          <button class="btn-interest" onclick="trackInterest('Saki', this)">👋 気になってる</button>
         </div>
       </div>
     </div>

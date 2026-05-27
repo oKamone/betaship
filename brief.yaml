@@ -78,3 +78,62 @@ marketing:
   x_posting: "週3・12角度（失敗型・問い型・制作型を含む）"
   warning: "宣伝感が出た瞬間に終わり"
   x_auto_post: "2026-05-12確定。再開可能"
+
+# ── カード表示の source of truth ──────────────────────────
+# status: live = 試せる（URLが動いている）/ soon = 準備中
+# registry.yaml の status: 保留 のものはここに載せない
+products:
+  - id: moshimo
+    name: "Moshimo（もしも）"
+    emoji: "🧠"
+    cat: wellness
+    status: live
+    url: "https://moshimo-ai.web.app"
+    btn_color: "#0d9488"
+    catch: "思考にAIメンターを入れる"
+    quote: "「自分がどう考えているか」を、自分より先に知られる体験を作りたかった"
+    tags: [自己成長, チャット]
+    trial_time: "約5分"
+    price: "無料 / Pro ¥680/月"
+
+  - id: reverie
+    name: "Reverie（レヴリー）"
+    emoji: "🎵"
+    cat: creative
+    status: live
+    url: "https://reverie-music.vercel.app"
+    btn_color: "#7c6cf0"
+    og_fetch: true   # microlink.io 経由で OGP 画像を取得
+    thumb_bg: "linear-gradient(135deg, #0e0a2e 0%, #160d3d 100%)"
+    catch: "今の気分に、映画のBGMを"
+    quote: "現実の場面がフィクションと重なる瞬間が好きで、それを音楽で再現したかった"
+    tags: [音楽, 気分]
+    trial_time: "約1分"
+    price: "無料"
+
+  - id: wearld
+    name: "Wearld（ウェアルド）"
+    emoji: "🌌"
+    cat: creative
+    status: live
+    url: "https://wearld.vercel.app"
+    btn_color: "#9b6cf0"
+    og_url: "https://wearld.vercel.app/api/og"   # 直接 OGP 画像 URL
+    thumb_bg: "linear-gradient(135deg, #180a2e 0%, #200d3d 100%)"
+    catch: "どのサイトも別世界に変える"
+    quote: "Webサイトの見た目が変わると、同じコンテンツでも感じ方が変わるのが面白い"
+    tags: [CSS, ブラウザ]
+    trial_time: "約1分"
+    price: "無料 / AI $9"
+
+  - id: await
+    name: "Await（アウェイト）"
+    emoji: "💭"
+    cat: wellness
+    status: soon
+    url: null
+    catch: "会う前に、気になる相手のことをAIと話す"
+    quote: "AIが一緒に知りたがってくれる。話すうちに、もっと会いたくなる"
+    tags: [恋愛・関係, AI対話]
+    trial_time: "約5分"
+    price: "無料（予定）"
