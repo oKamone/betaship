@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Betaship — 骨格図</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #050d1a;
+  --surface: #071828;
+  --surface2: #0a1f32;
+  --border: #0e2a40;
+  --border2: #163650;
+  --text: #d4e8f0;
+  --muted: #3e6078;
+  --muted2: #6a90a8;
+  --accent: #c8a84b;
+  --teal: #0d9488;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  padding-bottom: 80px;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(13,148,136,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13,148,136,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+body > * { position: relative; z-index: 1; }
+
+/* HEADER */
+.page-header {
+  padding: 60px 60px 48px;
+  border-bottom: 1px solid var(--border2);
+  max-width: 1200px; margin: 0 auto;
+}
+.page-tag {
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--teal); font-weight: 700; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.page-tag::before {
+  content: ''; display: block; width: 20px; height: 1px; background: var(--teal);
+}
+.page-title {
+  font-size: clamp(28px, 4vw, 42px); font-weight: 900;
+  letter-spacing: -1.5px; color: #fff; margin-bottom: 12px;
+}
+.page-title em { color: var(--accent); font-style: normal; }
+.page-sub { font-size: 15px; color: var(--muted2); line-height: 1.8; max-width: 560px; }
+
+/* DIAGRAM WRAP */
+.diagram-section {
+  padding: 60px 40px;
+  max-width: 1200px; margin: 0 auto;
+}
+.diagram-wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* ZONE LABELS */
+.zone-bar {
+  display: flex; margin-bottom: 0;
+}
+.zone-cr {
+  background: rgba(200,168,75,0.06);
+  border: 1px solid rgba(200,168,75,0.2);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  padding: 10px 20px;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--accent);
+}
+.zone-bs {
+  background: rgba(13,148,136,0.06);
+  border: 1px solid rgba(13,148,136,0.2);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 10px 20px;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--teal);
+}
+
+/* FEATURE CARDS */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 56px;
+}
+@media (max-width: 800px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+.feat-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 20px 18px;
+}
+.feat-icon { font-size: 20px; margin-bottom: 10px; display: block; }
+.feat-part {
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--teal); font-weight: 700; margin-bottom: 6px;
+}
+.feat-name { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+.feat-desc { font-size: 12px; color: var(--muted2); line-height: 1.7; }
+.feat-status {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 99px; margin-top: 8px;
+}
+.feat-status.live { background: rgba(13,148,136,0.12); color: var(--teal); border: 1px solid rgba(13,148,136,0.2); }
+.feat-status.next { background: rgba(106,144,168,0.08); color: var(--muted2); border: 1px solid rgba(106,144,168,0.15); }
+
+/* CR vs BS split */
+.split-section {
+  max-width: 1200px; margin: 0 auto;
+  padding: 0 40px 60px;
+}
+.split-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+@media (max-width: 700px) { .split-grid { grid-template-columns: 1fr; } }
+.split-card {
+  border-radius: 16px; padding: 28px 24px;
+}
+.split-card.cr-zone {
+  background: rgba(200,168,75,0.05);
+  border: 1px solid rgba(200,168,75,0.2);
+}
+.split-card.bs-zone {
+  background: rgba(13,148,136,0.05);
+  border: 1px solid rgba(13,148,136,0.2);
+}
+.split-label {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  font-weight: 700; margin-bottom: 12px;
+}
+.cr-zone .split-label { color: var(--accent); }
+.bs-zone .split-label { color: var(--teal); }
+.split-heading { font-size: 18px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 14px; }
+.split-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.split-list li {
+  font-size: 13px; color: var(--muted2); padding-left: 14px; position: relative;
+}
+.split-list li::before { content: '—'; position: absolute; left: 0; color: var(--muted); }
+.split-list li strong { color: var(--text); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="page-tag">Betaship — 骨格図</div>
+  <h1 class="page-title">船の骨格に、<em>機能を割り当てる</em></h1>
+  <p class="page-sub">
+    CRは甲板より上を作る。それより下は全部Betashipが用意している。
+    同じ骨格の船に、CRが船長として乗り込み、自分のルートを航海する。
+  </p>
+</div>
+
+<!-- DIAGRAM -->
+<div class="diagram-section">
+
+  <!-- CR ZONE label -->
+  <div style="margin-left:60px;">
+    <div class="zone-cr">▲ CR が作る — ツール体験・世界観・ルート</div>
+  </div>
+
+  <!-- SHIP SVG -->
+  <svg viewBox="0 0 1060 480" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+    <defs>
+      <linearGradient id="hullGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0a2035"/>
+        <stop offset="50%" stop-color="#071828"/>
+        <stop offset="100%" stop-color="#040e1a"/>
+      </linearGradient>
+      <linearGradient id="deckGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0d2545"/>
+        <stop offset="100%" stop-color="#0a1e38"/>
+      </linearGradient>
+      <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#020810"/>
+        <stop offset="100%" stop-color="#050d1a"/>
+      </linearGradient>
+      <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#06182a"/>
+        <stop offset="100%" stop-color="#040e1c"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Sky -->
+    <rect x="0" y="0" width="1060" height="480" fill="url(#skyGrad)"/>
+
+    <!-- Stars -->
+    <circle cx="80" cy="30" r="0.8" fill="#fff" opacity="0.5"/>
+    <circle cx="160" cy="55" r="0.6" fill="#fff" opacity="0.3"/>
+    <circle cx="320" cy="20" r="0.9" fill="#fff" opacity="0.6"/>
+    <circle cx="700" cy="35" r="0.7" fill="#fff" opacity="0.4"/>
+    <circle cx="850" cy="18" r="0.8" fill="#fff" opacity="0.5"/>
+    <circle cx="980" cy="44" r="0.6" fill="#fff" opacity="0.3"/>
+
+    <!-- Water band -->
+    <rect x="0" y="310" width="1060" height="170" fill="url(#waterGrad)"/>
+    <path d="M0 310 Q200 304 400 310 Q600 316 800 310 Q900 306 1060 310" fill="none" stroke="#0d9488" stroke-width="0.8" opacity="0.25"/>
+
+    <!-- ========= SHIP ========= -->
+
+    <!-- DECK LINE zone (y=170 to y=250) — CR builds here -->
+    <!-- This is above the hull, the "deck" is at y=250 -->
+
+    <!-- HULL (Betaship framework — below deck y=250) -->
+    <!-- Main hull body -->
+    <path d="M 200 250 L 200 400 Q 460 435 720 395 L 760 310 L 740 250 L 200 250 Z"
+          fill="url(#hullGrad)" stroke="#163650" stroke-width="1.5"/>
+
+    <!-- Waterline division inside hull (y=310) -->
+    <line x1="200" y1="310" x2="760" y2="310" stroke="#0d9488" stroke-width="1" opacity="0.35" stroke-dasharray="6,4"/>
+
+    <!-- Hull interior division lines -->
+    <line x1="200" y1="355" x2="720" y2="355" stroke="#0e2a40" stroke-width="1" opacity="0.8"/>
+
+    <!-- SUPERSTRUCTURE / BRIDGE (y=130 to y=250) -->
+    <path d="M 240 250 L 240 150 L 490 150 L 490 250 Z"
+          fill="url(#deckGrad)" stroke="#163650" stroke-width="1.5"/>
+    <!-- Bridge windows -->
+    <rect x="260" y="172" width="30" height="20" rx="3" fill="#0d9488" opacity="0.18" stroke="#0d9488" stroke-width="0.8" opacity="0.4"/>
+    <rect x="300" y="172" width="30" height="20" rx="3" fill="#0d9488" opacity="0.12" stroke="#0d9488" stroke-width="0.8" opacity="0.3"/>
+    <rect x="340" y="172" width="30" height="20" rx="3" fill="#c8a84b" opacity="0.1" stroke="#c8a84b" stroke-width="0.8" opacity="0.3"/>
+    <rect x="440" y="172" width="30" height="20" rx="3" fill="#0d9488" opacity="0.12" stroke="#0d9488" stroke-width="0.8" opacity="0.3"/>
+    <!-- Bridge roof detail -->
+    <line x1="240" y1="150" x2="490" y2="150" stroke="#0d9488" stroke-width="1.5" opacity="0.5"/>
+
+    <!-- MAST -->
+    <rect x="348" y="30" width="4" height="222" fill="#122c44"/>
+    <!-- Main sail -->
+    <path d="M 352 42 L 352 238 L 530 180 Z" fill="#0a2235" stroke="#163650" stroke-width="1"/>
+    <!-- Fore sail -->
+    <path d="M 348 72 L 348 238 L 200 210 Z" fill="#0a2235" stroke="#163650" stroke-width="1"/>
+    <!-- Top pennant -->
+    <path d="M 350 32 L 370 42 L 350 52 Z" fill="#c8a84b" opacity="0.7"/>
+
+    <!-- DECK LINE (甲板) — the separation boundary -->
+    <line x1="200" y1="250" x2="760" y2="250" stroke="#c8a84b" stroke-width="2" opacity="0.5"/>
+    <!-- Deck line label -->
+    <text x="196" y="246" text-anchor="end" font-size="9" fill="#c8a84b" opacity="0.7" font-family="-apple-system,sans-serif" font-weight="700">甲板</text>
+
+    <!-- Hull porthole details -->
+    <circle cx="300" cy="280" r="9" fill="none" stroke="#1a3a5c" stroke-width="1.5"/>
+    <circle cx="380" cy="282" r="9" fill="none" stroke="#1a3a5c" stroke-width="1.5"/>
+    <circle cx="460" cy="283" r="9" fill="none" stroke="#1a3a5c" stroke-width="1.5"/>
+    <circle cx="540" cy="282" r="9" fill="none" stroke="#1a3a5c" stroke-width="1.5"/>
+    <circle cx="620" cy="278" r="9" fill="none" stroke="#1a3a5c" stroke-width="1.5"/>
+    <!-- Porthole glows -->
+    <circle cx="380" cy="282" r="5.5" fill="#0d9488" opacity="0.15"/>
+    <circle cx="540" cy="282" r="5.5" fill="#c8a84b" opacity="0.12"/>
+
+    <!-- Bow detail -->
+    <path d="M 720 310 L 760 310 L 740 250" fill="none" stroke="#163650" stroke-width="1"/>
+
+    <!-- ========= LEFT LABELS (Betaship framework) ========= -->
+
+    <!-- Label: DB・ホスティング (keel) -->
+    <line x1="200" y1="390" x2="130" y2="415" stroke="#0d9488" stroke-width="1" opacity="0.4"/>
+    <rect x="20" y="400" width="105" height="44" rx="8" fill="#071828" stroke="#163650" stroke-width="1"/>
+    <text x="72" y="416" text-anchor="middle" font-size="9" font-weight="700" fill="#0d9488" font-family="-apple-system,sans-serif">竜骨・船底</text>
+    <text x="72" y="430" text-anchor="middle" font-size="9" fill="#6a90a8" font-family="-apple-system,sans-serif">DB・ホスティング</text>
+    <text x="72" y="440" text-anchor="middle" font-size="8" fill="#3e6078" font-family="-apple-system,sans-serif">基盤インフラ</text>
+
+    <!-- Label: セキュリティ (lower hull) -->
+    <line x1="200" y1="355" x2="120" y2="355" stroke="#0d9488" stroke-width="1" opacity="0.4"/>
+    <rect x="10" y="336" width="105" height="38" rx="8" fill="#071828" stroke="#163650" stroke-width="1"/>
+    <text x="62" y="352" text-anchor="middle" font-size="9" font-weight="700" fill="#0d9488" font-family="-apple-system,sans-serif">船底部</text>
+    <text x="62" y="365" text-anchor="middle" font-size="9" fill="#6a90a8" font-family="-apple-system,sans-serif">セキュリティ・RLS</text>
+
+    <!-- Label: Auth・SSO (mid hull, at waterline) -->
+    <line x1="210" y1="282" x2="120" y2="282" stroke="#0d9488" stroke-width="1" opacity="0.4"/>
+    <rect x="10" y="265" width="105" height="38" rx="8" fill="#071828" stroke="#163650" stroke-width="1"/>
+    <text x="62" y="280" text-anchor="middle" font-size="9" font-weight="700" fill="#0d9488" font-family="-apple-system,sans-serif">船体中層</text>
+    <text x="62" y="294" text-anchor="middle" font-size="9" fill="#6a90a8" font-family="-apple-system,sans-serif">認証・Auth・SSO</text>
+
+    <!-- ========= RIGHT LABELS ========= -->
+
+    <!-- Label: Stripe・Credits (upper hull, between deck and waterline) -->
+    <line x1="740" y1="278" x2="820" y2="265" stroke="#0d9488" stroke-width="1" opacity="0.4"/>
+    <rect x="825" y="250" width="115" height="38" rx="8" fill="#071828" stroke="#163650" stroke-width="1"/>
+    <text x="882" y="266" text-anchor="middle" font-size="9" font-weight="700" fill="#0d9488" font-family="-apple-system,sans-serif">船体上層</text>
+    <text x="882" y="280" text-anchor="middle" font-size="9" fill="#6a90a8" font-family="-apple-system,sans-serif">Stripe・クレジット</text>
+
+    <!-- Label: Analytics / Dashboard (bridge) -->
+    <line x1="490" y1="195" x2="820" y2="185" stroke="#0d9488" stroke-width="1" opacity="0.35" stroke-dasharray="4,3"/>
+    <rect x="825" y="168" width="115" height="38" rx="8" fill="#071828" stroke="#163650" stroke-width="1"/>
+    <text x="882" y="183" text-anchor="middle" font-size="9" font-weight="700" fill="#0d9488" font-family="-apple-system,sans-serif">操舵室</text>
+    <text x="882" y="197" text-anchor="middle" font-size="9" fill="#6a90a8" font-family="-apple-system,sans-serif">分析・ダッシュボード</text>
+
+    <!-- Label: CR tools (deck area) — ACCENT COLOR, this is CR's zone -->
+    <line x1="600" y1="240" x2="820" y2="110" stroke="#c8a84b" stroke-width="1" opacity="0.35" stroke-dasharray="4,3"/>
+    <rect x="825" y="92" width="115" height="38" rx="8" fill="#0d1a0c" stroke="rgba(200,168,75,0.35)" stroke-width="1"/>
+    <text x="882" y="108" text-anchor="middle" font-size="9" font-weight="700" fill="#c8a84b" font-family="-apple-system,sans-serif">甲板</text>
+    <text x="882" y="122" text-anchor="middle" font-size="9" fill="#a07830" font-family="-apple-system,sans-serif">CRのツール体験</text>
+
+    <!-- Label: Sails (mast area) — CR's expression -->
+    <line x1="400" y1="120" x2="820" y2="38" stroke="#c8a84b" stroke-width="1" opacity="0.3" stroke-dasharray="4,3"/>
+    <rect x="825" y="20" width="115" height="38" rx="8" fill="#0d1a0c" stroke="rgba(200,168,75,0.25)" stroke-width="1"/>
+    <text x="882" y="36" text-anchor="middle" font-size="9" font-weight="700" fill="#c8a84b" font-family="-apple-system,sans-serif">帆・マスト</text>
+    <text x="882" y="50" text-anchor="middle" font-size="9" fill="#a07830" font-family="-apple-system,sans-serif">CRの世界観・ルート</text>
+
+    <!-- ========= BOUNDARY LINE LABEL ========= -->
+    <!-- Bracket showing "CR above / Betaship below" -->
+    <line x1="160" y1="250" x2="160" y2="410" stroke="#0d9488" stroke-width="1.5" opacity="0.3"/>
+    <line x1="155" y1="250" x2="165" y2="250" stroke="#c8a84b" stroke-width="2" opacity="0.6"/>
+    <line x1="155" y1="410" x2="165" y2="410" stroke="#0d9488" stroke-width="2" opacity="0.4"/>
+
+    <!-- Phase 1 note -->
+    <rect x="820" y="300" width="115" height="30" rx="6" fill="#071828" stroke="#163650" stroke-width="1"/>
+    <text x="877" y="312" text-anchor="middle" font-size="8" fill="#3e6078" font-family="-apple-system,sans-serif" font-weight="700">Phase 1</text>
+    <text x="877" y="323" text-anchor="middle" font-size="8" fill="#3e6078" font-family="-apple-system,sans-serif">収益分配・CR管理</text>
+    <line x1="760" y1="370" x2="820" y2="315" stroke="#3e6078" stroke-width="0.8" opacity="0.4" stroke-dasharray="3,3"/>
+
+  </svg>
+
+  <!-- BETASHIP ZONE label -->
+  <div style="margin-left:60px;">
+    <div class="zone-bs">▼ Betaship が用意する — 骨格・インフラ・決済・認証</div>
+  </div>
+
+</div>
+
+<!-- FEATURE DETAIL -->
+<div class="split-section">
+
+  <!-- Feature grid -->
+  <div style="margin-bottom:16px;">
+    <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:10px;">骨格の詳細</div>
+    <div style="font-size:22px;font-weight:900;letter-spacing:-0.5px;margin-bottom:6px;">Betashipが用意するもの</div>
+    <div style="font-size:14px;color:var(--muted2);">CRはこれをゼロから作らなくていい。</div>
+  </div>
+
+  <div class="features-grid" style="margin-bottom:48px;">
+    <div class="feat-card">
+      <span class="feat-icon">🔐</span>
+      <div class="feat-part">船体中層</div>
+      <div class="feat-name">認証（Auth）</div>
+      <div class="feat-desc">Google OAuth。ログイン・セッション管理。CRは実装不要。</div>
+      <div class="feat-status live">稼働中</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🧭</span>
+      <div class="feat-part">船体中層</div>
+      <div class="feat-name">SSO</div>
+      <div class="feat-desc">一度ログインすれば艦隊のどの船でもシームレスに使える。</div>
+      <div class="feat-status live">稼働中</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">💳</span>
+      <div class="feat-part">船体上層</div>
+      <div class="feat-name">決済（Stripe）</div>
+      <div class="feat-desc">サブスク・単発購入。CRはStripeのコードを書かない。</div>
+      <div class="feat-status live">稼働中</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🪙</span>
+      <div class="feat-part">船体上層</div>
+      <div class="feat-name">クレジット管理</div>
+      <div class="feat-desc">艦隊共通通貨。CSはひとつのクレジットでどの船も使える。</div>
+      <div class="feat-status live">稼働中</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🛡️</span>
+      <div class="feat-part">船底部</div>
+      <div class="feat-name">セキュリティ・RLS</div>
+      <div class="feat-desc">船ごとにデータが分離。他の船のデータは見えない設計。</div>
+      <div class="feat-status live">稼働中</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🔭</span>
+      <div class="feat-part">操舵室</div>
+      <div class="feat-name">アナリティクス</div>
+      <div class="feat-desc">どのツールが何回使われたか。航海記録として残る。</div>
+      <div class="feat-status live">稼働中</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">📡</span>
+      <div class="feat-part">操舵室</div>
+      <div class="feat-name">CRダッシュボード</div>
+      <div class="feat-desc">自船の利用状況・収益・CSの声を一覧できる場所。</div>
+      <div class="feat-status next">Phase 1</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">⚖️</span>
+      <div class="feat-part">竜骨</div>
+      <div class="feat-name">収益分配</div>
+      <div class="feat-desc">使用量ベースでCR・Betashipに粗利を自動分配。</div>
+      <div class="feat-status next">Phase 1</div>
+    </div>
+  </div>
+
+  <!-- CR vs BS split -->
+  <div class="split-grid">
+    <div class="split-card cr-zone">
+      <div class="split-label">CR が作る（甲板より上）</div>
+      <div class="split-heading">プロダクトの体験・世界観</div>
+      <ul class="split-list">
+        <li><strong>ツールのUI・UX</strong> — 何を見せるか、どう動くか</li>
+        <li><strong>AIのロジック</strong> — どんな体験を提供するか</li>
+        <li><strong>世界観・トーン</strong> — 船のデザインと航路</li>
+        <li><strong>CSへの価値提案</strong> — なぜ乗るべきか</li>
+      </ul>
+    </div>
+    <div class="split-card bs-zone">
+      <div class="split-label">Betaship が用意する（骨格）</div>
+      <div class="split-heading">インフラ・決済・セキュリティ</div>
+      <ul class="split-list">
+        <li><strong>認証・SSO</strong> — ログインは一回でいい</li>
+        <li><strong>Stripe・クレジット</strong> — 課金は全部まかせる</li>
+        <li><strong>セキュリティ・RLS</strong> — データ保護はデフォルト</li>
+        <li><strong>DB・ホスティング</strong> — インフラは考えなくていい</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="page-title">— Betaship</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #21262d;
+    --accent: #0d9488; --text: #e6edf3; --muted: #8b949e;
+    --user-bg: #0d3a36; --ai-bg: #161b22;
+    --red: #f85149;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── Header ── */
+  .hd {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px; border-bottom: 1px solid var(--border);
+    flex-shrink: 0; gap: 12px;
+  }
+  .hd-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .back { color: var(--muted); text-decoration: none; font-size: 13px; flex-shrink: 0; }
+  .back:hover { color: var(--text); }
+  .tool-name { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hd-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .cr-badge {
+    font-size: 12px; font-weight: 700; color: var(--accent);
+    background: rgba(13,148,136,.12); padding: 3px 10px; border-radius: 20px;
+  }
+  .auth-btn {
+    font-size: 13px; padding: 6px 14px; border: 1px solid var(--border);
+    border-radius: 8px; background: none; color: var(--muted); cursor: pointer;
+  }
+  .auth-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .auth-btn.in { color: var(--text); }
+
+  /* ── Login gate ── */
+  .gate {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px; text-align: center; padding: 40px;
+  }
+  .gate p { color: var(--muted); font-size: 15px; }
+  .gate-btn {
+    background: var(--accent); color: #fff; border: none; border-radius: 10px;
+    padding: 12px 28px; font-size: 15px; font-weight: 700; cursor: pointer;
+  }
+  .gate-hint { font-size: 13px; color: var(--muted); }
+
+  /* ── Chat ── */
+  .chat {
+    flex: 1; overflow-y: auto; padding: 20px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .msg { display: flex; }
+  .msg.user { justify-content: flex-end; }
+  .bubble {
+    max-width: 75%; padding: 12px 16px; border-radius: 12px;
+    font-size: 15px; line-height: 1.65; white-space: pre-wrap; word-break: break-word;
+  }
+  .msg.user .bubble { background: var(--user-bg); border-bottom-right-radius: 4px; }
+  .msg.ai   .bubble { background: var(--ai-bg); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .msg.ai .bubble.loading { color: var(--muted); animation: blink 1.2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .cr-note { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .msg.user .cr-note { text-align: right; }
+  .err-msg { text-align: center; font-size: 14px; color: var(--red); padding: 8px; }
+  .err-msg a { color: var(--accent); }
+
+  /* ── Input ── */
+  .input-wrap { padding: 14px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
+  .input-row { display: flex; gap: 10px; max-width: 720px; margin: 0 auto; }
+  textarea {
+    flex: 1; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 15px;
+    font-family: inherit; resize: none; min-height: 44px; max-height: 120px;
+    overflow-y: auto; line-height: 1.5;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  .send {
+    background: var(--accent); color: #fff; border: none; border-radius: 10px;
+    padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+    align-self: flex-end; flex-shrink: 0;
+  }
+  .send:hover { background: #0b8276; }
+  .send:disabled { opacity: .5; cursor: not-allowed; }
+
+  @media (max-width:600px) {
+    .bubble { max-width: 90%; }
+    .chat { padding: 14px; }
+    .hd { padding: 10px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-left">
+    <a href="/" class="back">← Betaship</a>
+    <span class="tool-name" id="tool-name">読み込み中...</span>
+  </div>
+  <div class="hd-right">
+    <span class="cr-badge" id="cr-badge" style="display:none"></span>
+    <button class="auth-btn" id="btn-auth" onclick="_handleAuth()">ログイン</button>
+  </div>
+</header>
+
+<div class="gate" id="gate" style="display:none">
+  <p id="gate-desc">このツールを使うには Betaship へのログインが必要です。</p>
+  <button class="gate-btn" onclick="_loginGoogle()">Google でログイン（無料）</button>
+  <p class="gate-hint">ログインで 50 cr を無料取得。全ツールで使えます。</p>
+</div>
+
+<div class="chat" id="chat" style="display:none"></div>
+
+<div class="input-wrap" id="input-wrap" style="display:none">
+  <div class="input-row">
+    <textarea id="msg-box" placeholder="メッセージを入力…" rows="1"
+      onkeydown="_onKey(event)" oninput="_resize(this)"></textarea>
+    <button class="send" id="send-btn" onclick="_send()">送信</button>
+  </div>
+</div>
+
+<script>
+const _SB_URL  = 'https://kphfolcpguniaaefcgcw.supabase.co';
+const _SB_KEY  = 'sb_publishable_-mJ-zO_4n5ZKqjP53WDXFg_ZkHcdiwe';
+const _ORIGIN  = 'https://betaship.web.app';
+const _PID     = location.pathname.split('/tools/')[1]?.split('/')[0] || '';
+
+let _cfg = {}, _session = null, _msgs = [], _busy = false;
+
+// ── Supabase ──
+let _sb = null;
+function _client() {
+  if (!_sb) _sb = supabase.createClient(_SB_URL, _SB_KEY, {
+    auth: { detectSessionInUrl: true, persistSession: true }
+  });
+  return _sb;
+}
+function _loginGoogle() {
+  const u = new URL(`${_SB_URL}/auth/v1/authorize`);
+  u.searchParams.set('provider', 'google');
+  u.searchParams.set('redirect_to', _ORIGIN + location.pathname);
+  location.assign(u.toString());
+}
+function _handleAuth() {
+  _session ? _client().auth.signOut().then(() => location.reload()) : _loginGoogle();
+}
+
+// ── Boot ──
+async function _boot() {
+  try {
+    const r = await fetch(`/api/config?product=${_PID}`);
+    _cfg = await r.json();
+    document.getElementById('tool-name').textContent = _cfg.display_name || _PID;
+    document.title = (_cfg.display_name || _PID) + ' — Betaship';
+  } catch(e) {
+    document.getElementById('tool-name').textContent = _PID;
+  }
+
+  const { data: { session } } = await _client().auth.getSession();
+  _session = session;
+  _render();
+
+  _client().auth.onAuthStateChange((_, s) => { _session = s; _render(); });
+}
+
+function _render() {
+  const btn   = document.getElementById('btn-auth');
+  const badge = document.getElementById('cr-badge');
+  const gate  = document.getElementById('gate');
+  const chat  = document.getElementById('chat');
+  const inp   = document.getElementById('input-wrap');
+
+  if (_session?.user) {
+    btn.textContent = 'ログアウト'; btn.classList.add('in');
+    gate.style.display = 'none';
+    chat.style.display = 'flex'; inp.style.display = 'block';
+    _loadCredits();
+  } else if (!_cfg.billing_active || _cfg.free_mode) {
+    btn.textContent = 'ログイン'; btn.classList.remove('in');
+    gate.style.display = 'none';
+    chat.style.display = 'flex'; inp.style.display = 'block';
+    badge.textContent = '無料で試せる'; badge.style.display = 'inline-block';
+  } else {
+    btn.textContent = 'ログイン'; btn.classList.remove('in');
+    gate.style.display = 'flex';
+    chat.style.display = 'none'; inp.style.display = 'none';
+    badge.textContent = '50 cr'; badge.style.display = 'inline-block';
+  }
+
+  if ((chat.style.display === 'flex') && _msgs.length === 0) _welcome();
+}
+
+async function _loadCredits() {
+  if (!_session) return;
+  try {
+    const r = await fetch('/api/credits', {
+      headers: { Authorization: `Bearer ${_session.access_token}` }
+    });
+    const d = await r.json();
+    const b = document.getElementById('cr-badge');
+    b.textContent = `${d.total_cr} cr`; b.style.display = 'inline-block';
+  } catch(e) {}
+}
+
+// ── Messages ──
+function _welcome() {
+  if (_cfg.welcome_message) _addBubble('ai', _cfg.welcome_message);
+}
+
+function _addBubble(role, text, cr) {
+  const chat = document.getElementById('chat');
+  const wrap = document.createElement('div');
+  wrap.className = `msg ${role}`;
+  const bub = document.createElement('div');
+  bub.className = 'bubble'; bub.textContent = text;
+  wrap.appendChild(bub);
+  if (cr) {
+    const note = document.createElement('div');
+    note.className = 'cr-note'; note.textContent = `${cr} cr`;
+    wrap.appendChild(note);
+  }
+  chat.appendChild(wrap);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function _addLoading() {
+  const chat = document.getElementById('chat');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ai'; wrap.id = '_ld';
+  const bub = document.createElement('div');
+  bub.className = 'bubble loading'; bub.textContent = '…';
+  wrap.appendChild(bub); chat.appendChild(wrap);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function _removeLoading() { document.getElementById('_ld')?.remove(); }
+
+function _addError(html) {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = 'err-msg'; div.innerHTML = html;
+  chat.appendChild(div); chat.scrollTop = chat.scrollHeight;
+}
+
+// ── Send ──
+async function _send() {
+  if (_busy) return;
+  const box = document.getElementById('msg-box');
+  const text = box.value.trim();
+  if (!text) return;
+
+  box.value = ''; _resize(box);
+  _busy = true; document.getElementById('send-btn').disabled = true;
+
+  _msgs.push({ role: 'user', content: text });
+  _addBubble('user', text);
+  _addLoading();
+
+  const headers = { 'Content-Type': 'application/json' };
+  if (_session) headers.Authorization = `Bearer ${_session.access_token}`;
+
+  try {
+    const res = await fetch('/api/ai', {
+      method: 'POST', headers,
+      body: JSON.stringify({
+        service:    _PID,
+        messages:   _msgs,
+        model:      _cfg.model || 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+      })
+    });
+    _removeLoading();
+
+    if (res.status === 402) {
+      _addError('クレジットが不足しています。<a href="/#pricing">プランを確認する →</a>');
+    } else if (res.status === 429) {
+      _addError('本日の無料利用上限に達しました。<a href="/">ログインして続ける →</a>');
+    } else if (!res.ok) {
+      _addError('エラーが発生しました。もう一度お試しください。');
+    } else {
+      const d = await res.json();
+      _msgs.push({ role: 'assistant', content: d.content });
+      _addBubble('ai', d.content, d.cr_used);
+      if (_session) _loadCredits();
+    }
+  } catch(e) {
+    _removeLoading();
+    _addError('接続エラーが発生しました。ページを再読み込みしてください。');
+  }
+
+  _busy = false;
+  document.getElementById('send-btn').disabled = false;
+  document.getElementById('msg-box').focus();
+}
+
+function _onKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); _send(); } }
+function _resize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+
+_boot();
+</script>
+</body>
+</html>

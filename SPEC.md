@@ -38,7 +38,7 @@ output/betaship/
 |-----------|----------|-----|
 | Reverie | 試せる | https://reverie-music.vercel.app |
 | Wearld | 試せる | https://wearld.vercel.app |
-| Moshimo | 準備中（Renderスリープ中） | https://moshimo.onrender.com |
+| Moshimo | 稼働中 | https://moshimo-ai.web.app |
 | Await | 準備中 | — |
 | Gait | 準備中 | — |
 

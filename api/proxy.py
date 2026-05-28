@@ -151,7 +151,7 @@ def ai_proxy():
     cfg_data = {}
     try:
         cfg_row = _sb.schema("betaship").table("product_config").select(
-            "free_mode,billing_active,free_daily_limit"
+            "free_mode,billing_active,free_daily_limit,system_prompt,model,hosted"
         ).eq("product_id", service).maybe_single().execute()
         cfg_data = cfg_row.data or {}
     except Exception:
@@ -162,6 +162,14 @@ def ai_proxy():
     free_daily_limit = int(cfg_data.get("free_daily_limit") or 10)
     skip_credits    = free_mode or not billing_active
 
+    # hosted tool: system_prompt を DB から自動注入（クライアントには渡さない）
+    if not system and cfg_data.get("hosted") and cfg_data.get("system_prompt"):
+        system = cfg_data["system_prompt"]
+
+    # hosted tool のデフォルトモデルを適用
+    if not body.get("model") and cfg_data.get("model"):
+        model = cfg_data["model"]
+
     if not uid:
         # 非ログイン → IPレート制限
         ip = _get_client_ip(request)
@@ -171,10 +179,11 @@ def ai_proxy():
                 "message": f"本日の無料利用回数（{free_daily_limit}回）に達しました。"
             }), 429
 
-    if not skip_credits:
+    cr_row = None
+    if not skip_credits and uid:
         # 残高チェック（最低1crあれば続行）
         cr_row = _sb.schema("betaship").table("credits").select("monthly_cr,topup_cr").eq("user_id", uid).maybe_single().execute()
-        if not cr_row.data:
+        if not (cr_row and cr_row.data):
             # 初回利用: freeプランとして自動プロビジョニング
             _sb.schema("betaship").table("subscriptions").upsert({"user_id": uid, "plan": "free"}).execute()
             plan_row = _sb.schema("betaship").table("plan_config").select("monthly_cr").eq("plan", "free").maybe_single().execute()
@@ -203,7 +212,8 @@ def ai_proxy():
     tokens_out = resp.usage.output_tokens
     cr_used    = max(1, (tokens_in + tokens_out * 3) // _tokens_per_cr(model))
 
-    if not skip_credits:
+    current_plan = "free"
+    if not skip_credits and uid and cr_row:
         # monthly_cr → topup_cr の順に消費
         cr = (cr_row.data or {})
         monthly = cr.get("monthly_cr", 0)
@@ -214,6 +224,26 @@ def ai_proxy():
             _sb.schema("betaship").table("credits").update({"monthly_cr": 0, "topup_cr": topup - (cr_used - monthly)}).eq("user_id", uid).execute()
         else:
             _sb.schema("betaship").table("credits").update({"topup_cr": topup - cr_used}).eq("user_id", uid).execute()
+        try:
+            sub = _sb.schema("betaship").table("subscriptions").select("plan").eq("user_id", uid).maybe_single().execute()
+            current_plan = (sub.data or {}).get("plan", "free")
+        except Exception:
+            pass
+
+    # 呼び出しログ（失敗しても無視）
+    try:
+        _sb.schema("betaship").table("ai_calls").insert({
+            "user_id":    uid,
+            "service":    service,
+            "tool":       tool,
+            "model":      model,
+            "tokens_in":  tokens_in,
+            "tokens_out": tokens_out,
+            "cr_used":    cr_used,
+            "plan":       current_plan,
+        }).execute()
+    except Exception:
+        pass
 
     return jsonify({
         "content":    resp.content[0].text if resp.content else "",
@@ -413,13 +443,19 @@ def get_product_config():
         return jsonify({"error": "product required"}), 400
     try:
         row = _sb.schema("betaship").table("product_config").select(
-            "product_id,free_mode,billing_active,maintenance_mode,free_daily_limit"
+            "product_id,free_mode,billing_active,maintenance_mode,free_daily_limit,"
+            "display_name,description,welcome_message,model,hosted"
         ).eq("product_id", product_id).maybe_single().execute()
         if row.data:
             return jsonify(row.data)
     except Exception:
         pass
-    return jsonify({"product_id": product_id, "free_daily_limit": 5, "free_mode": False, "maintenance_mode": False, "billing_active": False})
+    return jsonify({
+        "product_id": product_id, "free_daily_limit": 5, "free_mode": False,
+        "maintenance_mode": False, "billing_active": False,
+        "display_name": "", "description": "", "welcome_message": "",
+        "model": "claude-haiku-4-5-20251001", "hosted": False,
+    })
 
 
 # --------------------------------------------------------
@@ -512,6 +548,67 @@ def admin_create_coupon():
         return jsonify({"ok": True, "coupon_id": coupon.id})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# --------------------------------------------------------
+# GET /api/admin/analytics  — アナリティクスデータ
+# --------------------------------------------------------
+@app.route("/api/admin/analytics", methods=["GET"])
+@_require_admin
+def admin_analytics():
+    days = int(request.args.get("days", 7))
+    since = (datetime.now(timezone.utc) - __import__("datetime").timedelta(days=days)).isoformat()
+
+    rows = _sb.schema("betaship").table("ai_calls").select(
+        "service,model,plan,tokens_in,tokens_out,cr_used,user_id,ts"
+    ).gte("ts", since).execute()
+    data = rows.data or []
+
+    by_service: dict = {}
+    for r in data:
+        svc = r.get("service", "unknown")
+        s = by_service.setdefault(svc, {"calls": 0, "cr": 0, "users": set()})
+        s["calls"] += 1
+        s["cr"]    += r.get("cr_used", 0)
+        if r.get("user_id"):
+            s["users"].add(r["user_id"])
+    for v in by_service.values():
+        v["users"] = len(v["users"])
+
+    by_model: dict = {}
+    for r in data:
+        m = r.get("model", "unknown")
+        by_model[m] = by_model.get(m, 0) + 1
+
+    by_plan: dict = {}
+    for r in data:
+        p = r.get("plan", "free")
+        by_plan[p] = by_plan.get(p, 0) + 1
+
+    daily: dict = {}
+    for r in data:
+        d = (r.get("ts") or "")[:10]
+        if d:
+            daily[d] = daily.get(d, 0) + 1
+
+    return jsonify({
+        "days": days,
+        "total_calls":   len(data),
+        "total_cr":      sum(r.get("cr_used", 0) for r in data),
+        "unique_users":  len({r["user_id"] for r in data if r.get("user_id")}),
+        "by_service":    by_service,
+        "by_model":      by_model,
+        "by_plan":       by_plan,
+        "daily":         dict(sorted(daily.items())),
+    })
+
+
+# --------------------------------------------------------
+# GET /tools/<product_id>  — hosted chat UI 配信
+# --------------------------------------------------------
+@app.route("/tools/<product_id>")
+def tool_page(product_id):
+    return send_file(os.path.join(os.path.dirname(__file__), "tool.html"))
 
 
 # --------------------------------------------------------

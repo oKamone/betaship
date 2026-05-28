@@ -76,6 +76,19 @@
       var client = sb.createClient(SB_URL, SB_KEY, {
         auth: { persistSession: true, detectSessionInUrl: false }
       });
+
+      // SSO: bs_token が URL にあればセッションを確立してから URL をクリーン
+      var _p = new URLSearchParams(location.search);
+      var _bt = _p.get('bs_token'), _br = _p.get('bs_refresh');
+      if (_bt && _br) {
+        try {
+          await client.auth.setSession({ access_token: _bt, refresh_token: _br });
+          var _u = new URL(location.href);
+          _u.searchParams.delete('bs_token'); _u.searchParams.delete('bs_refresh');
+          history.replaceState({}, '', _u);
+        } catch (_) {}
+      }
+
       var { data } = await client.auth.getSession();
       var session = data && data.session;
 

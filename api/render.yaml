@@ -30,6 +30,6 @@ services:
       - key: APP_BASE_URL
         value: https://betaship.web.app
       - key: ALLOWED_ORIGINS
-        value: https://moshimo.onrender.com,https://wearld.vercel.app,https://reverie-music.vercel.app,https://betaship.web.app
+        value: https://moshimo-ai.web.app,https://await-ai.web.app,https://wearld.vercel.app,https://reverie-music.vercel.app,https://betaship.web.app
       - key: KEEPALIVE_URL
         sync: false

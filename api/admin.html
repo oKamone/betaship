@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Betaship Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f11;color:#e8e8e8;min-height:100vh}
@@ -12,6 +13,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .dot{width:8px;height:8px;border-radius:50%;background:#3a3a40}
 .dot.ok{background:#22c55e}
 .dot.err{background:#ef4444}
+.tabs{display:flex;gap:0;border-bottom:1px solid #2a2a30;background:#18181c;padding:0 24px}
+.tab{font-size:13px;font-weight:600;padding:10px 16px;cursor:pointer;color:#666;border-bottom:2px solid transparent;transition:color .15s}
+.tab.active{color:#e8e8e8;border-bottom-color:#6366f1}
+.tab:hover{color:#aaa}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
 .main{padding:24px;max-width:960px}
 h2{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#888;margin:28px 0 12px}
 .card{background:#18181c;border:1px solid #2a2a30;border-radius:10px;overflow:hidden}
@@ -68,8 +75,14 @@ tr:last-child td{border-bottom:none}
     <span style="font-size:12px;color:#555;margin-left:auto" id="apiUrl"></span>
     <button class="btn btn-off" onclick="doLogout()" style="margin-left:8px">ログアウト</button>
   </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('overview')">概要</div>
+    <div class="tab" onclick="switchTab('analytics')">アナリティクス</div>
+  </div>
 
   <div class="main">
+    <!-- 概要タブ -->
+    <div id="pane-overview" class="tab-pane active">
     <div class="stat-row">
       <div class="stat"><div class="lbl">ユーザー数</div><div class="val" id="statUsers">—</div></div>
       <div class="stat"><div class="lbl">Stripe</div><div class="val" id="statStripe">—</div></div>
@@ -124,6 +137,50 @@ tr:last-child td{border-bottom:none}
       <button class="btn btn-on" onclick="activateBilling()">課金有効化</button>
       <span id="activateMsg" style="font-size:12px;color:#888"></span>
     </div>
+    </div><!-- /pane-overview -->
+
+    <!-- アナリティクスタブ -->
+    <div id="pane-analytics" class="tab-pane">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <select id="anaDays" style="background:#18181c;border:1px solid #3a3a40;color:#e8e8e8;padding:7px 12px;border-radius:6px;font-size:13px">
+          <option value="7">過去 7 日</option>
+          <option value="14">過去 14 日</option>
+          <option value="30">過去 30 日</option>
+        </select>
+        <button class="btn btn-off" onclick="loadAnalytics()">更新</button>
+        <span id="anaTs" style="font-size:11px;color:#444;margin-left:8px"></span>
+      </div>
+
+      <div class="stat-row" style="margin-bottom:20px">
+        <div class="stat"><div class="lbl">総呼び出し数</div><div class="val" id="anaTotalCalls">—</div></div>
+        <div class="stat"><div class="lbl">総CR消費</div><div class="val" id="anaTotalCr">—</div></div>
+        <div class="stat"><div class="lbl">ユニークユーザー</div><div class="val" id="anaUsers">—</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card" style="grid-column:span 2;padding:16px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555;margin-bottom:12px">日別呼び出し数</div>
+          <canvas id="anaDailyChart" height="80"></canvas>
+        </div>
+        <div class="card" style="padding:16px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555;margin-bottom:12px">サービス別 呼び出し数</div>
+          <canvas id="anaSvcChart"></canvas>
+        </div>
+        <div class="card" style="padding:16px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555;margin-bottom:12px">モデル別 呼び出し数</div>
+          <canvas id="anaModelChart"></canvas>
+        </div>
+        <div class="card" style="padding:16px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555;margin-bottom:12px">サービス別 CR消費</div>
+          <canvas id="anaCrChart"></canvas>
+        </div>
+        <div class="card" style="padding:16px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555;margin-bottom:12px">プラン別 呼び出し数</div>
+          <canvas id="anaPlanChart"></canvas>
+        </div>
+      </div>
+    </div><!-- /pane-analytics -->
+
   </div>
 </div>
 
@@ -267,6 +324,84 @@ function runHealthCheck() {
 function refreshStatus() {
   fetch(`${_base}/api/admin/status`, { headers: { Authorization: `Bearer ${_token}` } })
     .then(r => r.json()).then(renderStatus);
+}
+
+// ---- タブ切り替え ----
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', ['overview','analytics'][i] === name);
+  });
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('pane-' + name).classList.add('active');
+  if (name === 'analytics') loadAnalytics();
+}
+
+// ---- アナリティクス ----
+const ANA_COLORS = ['#6366f1','#22c55e','#fb923c','#38bdf8','#a78bfa','#f472b6'];
+let _anaCharts = {};
+
+function destroyChart(id) {
+  if (_anaCharts[id]) { _anaCharts[id].destroy(); delete _anaCharts[id]; }
+}
+
+function loadAnalytics() {
+  const days = document.getElementById('anaDays').value;
+  fetch(`${_base}/api/admin/analytics?days=${days}`, { headers: { Authorization: `Bearer ${_token}` } })
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('anaTotalCalls').textContent = d.total_calls.toLocaleString();
+      document.getElementById('anaTotalCr').textContent    = d.total_cr.toLocaleString();
+      document.getElementById('anaUsers').textContent      = d.unique_users.toLocaleString();
+      document.getElementById('anaTs').textContent         = '最終更新: ' + new Date().toLocaleTimeString('ja');
+
+      const gridColor = 'rgba(255,255,255,0.06)';
+      const axisOpts = {
+        x: { ticks:{color:'#666'}, grid:{color:gridColor} },
+        y: { ticks:{color:'#666'}, grid:{color:gridColor} },
+      };
+
+      // 日別
+      destroyChart('daily');
+      _anaCharts['daily'] = new Chart(document.getElementById('anaDailyChart'), {
+        type: 'bar',
+        data: { labels: Object.keys(d.daily), datasets:[{ label:'呼び出し数', data:Object.values(d.daily), backgroundColor:'#6366f188', borderColor:'#6366f1', borderWidth:1 }] },
+        options: { plugins:{legend:{display:false}}, scales: axisOpts }
+      });
+
+      const svcLabels = Object.keys(d.by_service);
+      const svcCalls  = svcLabels.map(k => d.by_service[k].calls);
+      const svcCr     = svcLabels.map(k => d.by_service[k].cr);
+      const hOpts = { indexAxis:'y', plugins:{legend:{display:false}},
+        scales:{ x:{ticks:{color:'#666'},grid:{color:gridColor}}, y:{ticks:{color:'#888'},grid:{color:'transparent'}} } };
+
+      // サービス別 calls
+      destroyChart('svc');
+      _anaCharts['svc'] = new Chart(document.getElementById('anaSvcChart'), {
+        type:'bar', data:{ labels:svcLabels, datasets:[{ data:svcCalls, backgroundColor:ANA_COLORS }] }, options: hOpts
+      });
+
+      // モデル別
+      destroyChart('model');
+      _anaCharts['model'] = new Chart(document.getElementById('anaModelChart'), {
+        type:'doughnut',
+        data:{ labels:Object.keys(d.by_model), datasets:[{ data:Object.values(d.by_model), backgroundColor:ANA_COLORS, borderWidth:0 }] },
+        options:{ plugins:{ legend:{ labels:{ color:'#888', boxWidth:12 } } } }
+      });
+
+      // サービス別 CR
+      destroyChart('cr');
+      _anaCharts['cr'] = new Chart(document.getElementById('anaCrChart'), {
+        type:'bar', data:{ labels:svcLabels, datasets:[{ data:svcCr, backgroundColor:ANA_COLORS }] }, options: hOpts
+      });
+
+      // プラン別
+      destroyChart('plan');
+      _anaCharts['plan'] = new Chart(document.getElementById('anaPlanChart'), {
+        type:'doughnut',
+        data:{ labels:Object.keys(d.by_plan), datasets:[{ data:Object.values(d.by_plan), backgroundColor:['#22c55e','#fb923c','#a78bfa'], borderWidth:0 }] },
+        options:{ plugins:{ legend:{ labels:{ color:'#888', boxWidth:12 } } } }
+      });
+    });
 }
 </script>
 </body>

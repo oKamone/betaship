@@ -192,6 +192,29 @@ CREATE TABLE IF NOT EXISTS betaship.product_config (
 ALTER TABLE betaship.product_config ADD COLUMN IF NOT EXISTS billing_active BOOLEAN NOT NULL DEFAULT false;
 ALTER TABLE betaship.product_config ADD COLUMN IF NOT EXISTS product_url TEXT DEFAULT '';
 
+-- Level 2: hosted chat 対応（既にテーブルが存在する場合）
+ALTER TABLE betaship.product_config ADD COLUMN IF NOT EXISTS display_name    TEXT    DEFAULT '';
+ALTER TABLE betaship.product_config ADD COLUMN IF NOT EXISTS description     TEXT    DEFAULT '';
+ALTER TABLE betaship.product_config ADD COLUMN IF NOT EXISTS system_prompt   TEXT    DEFAULT '';
+ALTER TABLE betaship.product_config ADD COLUMN IF NOT EXISTS welcome_message TEXT    DEFAULT '';
+ALTER TABLE betaship.product_config ADD COLUMN IF NOT EXISTS model           TEXT    DEFAULT 'claude-haiku-4-5-20251001';
+ALTER TABLE betaship.product_config ADD COLUMN IF NOT EXISTS hosted          BOOLEAN NOT NULL DEFAULT false;
+
+-- Moshimo・Await を hosted に設定（system_prompt はオーナーが後で更新する）
+UPDATE betaship.product_config SET
+  display_name    = 'Moshimo（もしも）',
+  description     = '思考にAIメンターを入れる',
+  welcome_message = 'こんにちは。「もしも〇〇だったら？」から始めてみてください。',
+  hosted          = true
+WHERE product_id = 'moshimo';
+
+UPDATE betaship.product_config SET
+  display_name    = 'Await（アウェイト）',
+  description     = '会う前に、気になる相手のことをAIと話す',
+  welcome_message = 'これから会う人のこと、一緒に考えましょう。どんな人ですか？',
+  hosted          = true
+WHERE product_id = 'await';
+
 INSERT INTO betaship.product_config (product_id, free_daily_limit, product_url) VALUES
   ('moshimo', 5, 'https://moshimo.onrender.com'),
   ('wearld',  5, 'https://wearld.vercel.app'),
