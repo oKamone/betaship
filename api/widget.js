@@ -17,6 +17,16 @@
     if (m) { m.style.display = 'flex'; }
   };
 
+  window.bsShow = function () {
+    var b = document.getElementById('_bs-badge');
+    if (b) { b.style.display = 'inline-flex'; }
+  };
+
+  window.bsHide = function () {
+    var b = document.getElementById('_bs-badge');
+    if (b) { b.style.display = 'none'; }
+  };
+
   // ── 底部バッジ（ブランドリンク）──────────────────────────────
   function createBadge() {
     var el = document.createElement('a');
