@@ -1183,6 +1183,31 @@ async function _openTool(url, ev) {
   else window.open(finalUrl, '_blank');
 }
 
+// return_to リダイレクト: bs_token を付けて子サービスに戻す
+function _redirectWithSSO(returnTo, session) {
+  try {
+    const u = new URL(returnTo);
+    u.searchParams.set('bs_token', session.access_token);
+    u.searchParams.set('bs_refresh', session.refresh_token);
+    location.href = u.toString();
+  } catch(e) { location.href = returnTo; }
+}
+
+// return_to: 子サービスからのリダイレクト処理（ログイン済みなら即リダイレクト）
+(async function handleReturnTo() {
+  const params = new URLSearchParams(location.search);
+  const returnTo = params.get('return_to');
+  if (!returnTo) return;
+  localStorage.setItem('bs_pending_return_to', returnTo);
+  try {
+    const { data: { session } } = await _sbClient().auth.getSession();
+    if (session?.access_token && session?.refresh_token) {
+      localStorage.removeItem('bs_pending_return_to');
+      _redirectWithSSO(returnTo, session);
+    }
+  } catch(e) { /* ログイン画面をそのまま表示 */ }
+})();
+
 // onAuthStateChange がカバーするので _updateAuthNav() の手動呼び出しは不要
 
 // Inbound SSO: 外部ツール（Moshimo等）から bs_token が来たらセッションを確立
@@ -1210,16 +1235,21 @@ async function _openTool(url, ev) {
   }
 })();
 
-// OAuth ログイン後の自動チェックアウト再開
-// onAuthStateChange で SIGNED_IN を検知して実行
+// OAuth ログイン後: チェックアウト再開 or 子サービスへ return_to リダイレクト
 _sbClient().auth.onAuthStateChange(async (event, session) => {
-  if (event !== 'SIGNED_IN') return;
-  const pendingPrice = localStorage.getItem('bs_pending_price');
-  const pendingMode  = localStorage.getItem('bs_pending_mode');
-  if (!pendingPrice || !session) return;
-  localStorage.removeItem('bs_pending_price');
-  localStorage.removeItem('bs_pending_mode');
-  await _doCheckout(session.access_token, pendingPrice, pendingMode || 'subscription');
+  if (event !== 'SIGNED_IN' || !session) return;
+  const pendingPrice  = localStorage.getItem('bs_pending_price');
+  const pendingMode   = localStorage.getItem('bs_pending_mode');
+  const pendingReturn = localStorage.getItem('bs_pending_return_to');
+  if (pendingPrice) {
+    localStorage.removeItem('bs_pending_price');
+    localStorage.removeItem('bs_pending_mode');
+    localStorage.removeItem('bs_pending_return_to');
+    await _doCheckout(session.access_token, pendingPrice, pendingMode || 'subscription');
+  } else if (pendingReturn) {
+    localStorage.removeItem('bs_pending_return_to');
+    _redirectWithSSO(pendingReturn, session);
+  }
 });
 
 // ─── ANALYTICS ───

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Betaship ブラウザQA 結果</title>
+<style>
+  body{font-family:-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;margin:0;padding:24px}
+  h1{font-size:20px;color:#f8fafc;margin-bottom:4px}
+  .sub{color:#64748b;font-size:13px;margin-bottom:24px}
+  .summary{display:flex;gap:12px;margin-bottom:24px}
+  .card{background:#1e293b;border-radius:10px;padding:16px 24px;text-align:center;min-width:100px}
+  .card .num{font-size:32px;font-weight:800}
+  .card .label{font-size:11px;color:#64748b;margin-top:4px}
+  .card.pass .num{color:#0d9488} .card.fail .num{color:#e53e3e} .card.warn .num{color:#c8a84b}
+  table{width:100%;border-collapse:collapse;background:#1e293b;border-radius:10px;overflow:hidden}
+  th{background:#0f172a;color:#64748b;font-size:11px;text-align:left;padding:10px 14px}
+  td{padding:12px 14px;border-top:1px solid #1e293b;font-size:13px}
+  tr:hover td{background:#243044}
+  .screenshots{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+  .ss{background:#1e293b;border-radius:8px;padding:12px}
+  .ss h3{font-size:12px;color:#64748b;margin:0 0 8px}
+  .ss img{max-width:300px;border-radius:4px;border:1px solid #334155}
+</style>
+</head>
+<body>
+<h1>Betaship ブラウザQA 結果</h1>
+<div class="sub">実行日時: 2026-05-29 02:21 JST（手動項目のブラウザ自動化）</div>
+<div class="summary">
+  <div class="card pass"><div class="num">7</div><div class="label">PASS</div></div>
+  <div class="card fail"><div class="num">0</div><div class="label">FAIL</div></div>
+  <div class="card warn"><div class="num">0</div><div class="label">SKIP/WARN</div></div>
+</div>
+<table>
+  <thead><tr><th></th><th>ID</th><th>テスト内容</th><th>詳細</th></tr></thead>
+  <tbody>
+        <tr>
+          <td style="color:#0d9488;font-weight:700">✅</td>
+          <td style="font-family:monospace;color:#94a3b8">M-1a</td>
+          <td>widget chip が表示される</td>
+          <td style="color:#64748b;font-size:12px">text='ログイン'</td>
+        </tr>
+        <tr>
+          <td style="color:#0d9488;font-weight:700">✅</td>
+          <td style="font-family:monospace;color:#94a3b8">M-1b</td>
+          <td>未ログイン時は「ログイン」チップが表示される</td>
+          <td style="color:#64748b;font-size:12px">actual='ログイン'</td>
+        </tr>
+        <tr>
+          <td style="color:#0d9488;font-weight:700">✅</td>
+          <td style="font-family:monospace;color:#94a3b8">M-1c</td>
+          <td>widget badge（Betashipロゴ）が表示される</td>
+          <td style="color:#64748b;font-size:12px"></td>
+        </tr>
+        <tr>
+          <td style="color:#0d9488;font-weight:700">✅</td>
+          <td style="font-family:monospace;color:#94a3b8">M-2a</td>
+          <td>認証済み時にクレジット残高 or プランが chip に表示される</td>
+          <td style="color:#64748b;font-size:12px">text='●
+Free'</td>
+        </tr>
+        <tr>
+          <td style="color:#0d9488;font-weight:700">✅</td>
+          <td style="font-family:monospace;color:#94a3b8">M-3</td>
+          <td>evil.com への return_to がブロックされる</td>
+          <td style="color:#64748b;font-size:12px">リダイレクト先: https://betaship.web.app/?return_to=https://evil.com/steal</td>
+        </tr>
+        <tr>
+          <td style="color:#0d9488;font-weight:700">✅</td>
+          <td style="font-family:monospace;color:#94a3b8">M-4a</td>
+          <td>Plus プランの Checkout URL が生成される</td>
+          <td style="color:#64748b;font-size:12px">url=https://checkout.stripe.com/c/pay/cs_test_a17qEsz2gBK7n06xP4...</td>
+        </tr>
+        <tr>
+          <td style="color:#0d9488;font-weight:700">✅</td>
+          <td style="font-family:monospace;color:#94a3b8">M-4b</td>
+          <td>Stripe Checkout UI が表示される</td>
+          <td style="color:#64748b;font-size:12px">title='Moshimo サンドボックス'</td>
+        </tr></tbody>
+</table>
+<div class="screenshots">
+  <div class="ss"><h3>M-1: 未ログイン状態</h3><img src="/tmp/m1_unauth.png" onerror="this.style.display='none'"></div>
+  <div class="ss"><h3>M-2: 認証済み状態</h3><img src="/tmp/m2_auth.png" onerror="this.style.display='none'"></div>
+  <div class="ss"><h3>M-4: Stripe Checkout</h3><img src="/tmp/m4_checkout.png" onerror="this.style.display='none'"></div>
+</div>
+</body>
+</html>

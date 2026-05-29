@@ -37,7 +37,7 @@ def main():
             # Betaship subscriptionsに登録（betashipスキーマ）
             betaship.schema("betaship").table("subscriptions").upsert({
                 "user_id": uid,
-                "plan": "maker",
+                "plan": "plus",
                 "stripe_customer_id": u.get("stripe_customer_id"),
                 "stripe_subscription_id": u.get("stripe_subscription_id"),
             }).execute()

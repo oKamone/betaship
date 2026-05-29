@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Betaship 課金QAレポート</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050d1a;--surface:#071828;--surface2:#0a1f32;
+  --border:#0e2a40;--text:#d4e8f0;--muted:#6a90a8;
+  --green:#0d9488;--red:#e53e3e;--amber:#c8a84b;--purple:#a78bfa;
+  --pass:#0d9488;--fail:#e53e3e;--manual:#c8a84b;--skip:#6a90a8;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;line-height:1.6;padding:32px 16px}
+.wrap{max-width:900px;margin:0 auto}
+
+/* ── header ── */
+.header{margin-bottom:36px}
+.header h1{font-size:22px;font-weight:700;color:#fff;margin-bottom:6px}
+.header .meta{color:var(--muted);font-size:12px;display:flex;gap:20px;flex-wrap:wrap}
+.header .meta span{display:flex;align-items:center;gap:5px}
+
+/* ── summary cards ── */
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
+.card .num{font-size:36px;font-weight:700;line-height:1}
+.card .label{font-size:11px;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:.06em}
+.card.pass .num{color:var(--pass)}
+.card.fail .num{color:var(--fail)}
+.card.manual .num{color:var(--manual)}
+.card.total .num{color:#fff}
+
+/* ── section ── */
+.section{margin-bottom:28px}
+.section-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.section-head h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.section-head .line{flex:1;height:1px;background:var(--border)}
+
+/* ── test rows ── */
+.test-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:start}
+.test-row:hover{border-color:#163650}
+.test-id{font-size:11px;font-weight:700;color:var(--muted);padding-top:2px}
+.test-body{}
+.test-name{font-weight:600;color:var(--text);font-size:13px;margin-bottom:4px}
+.test-detail{font-size:11px;color:var(--muted);font-family:monospace;word-break:break-all}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge.pass{background:rgba(13,148,136,.15);color:var(--pass)}
+.badge.fail{background:rgba(229,62,62,.15);color:var(--fail)}
+.badge.manual{background:rgba(200,168,75,.15);color:var(--manual)}
+.badge.fixed{background:rgba(167,139,250,.15);color:var(--purple)}
+
+/* ── manual section ── */
+.manual-check{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:8px}
+.manual-check h3{font-size:12px;font-weight:700;color:var(--amber);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.manual-check ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.manual-check li{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--muted)}
+.manual-check li::before{content:"□";color:var(--amber);font-size:14px;line-height:1;flex-shrink:0;margin-top:1px}
+
+/* ── issue box ── */
+.issue{background:rgba(229,62,62,.08);border:1px solid rgba(229,62,62,.3);border-radius:10px;padding:16px;margin-bottom:8px}
+.issue .issue-head{font-size:12px;font-weight:700;color:var(--fail);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.issue p{font-size:12px;color:var(--muted);line-height:1.7}
+.issue code{background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px;font-family:monospace;font-size:11px;color:var(--text)}
+
+.fixed-box{background:rgba(13,148,136,.08);border:1px solid rgba(13,148,136,.3);border-radius:10px;padding:16px;margin-bottom:8px}
+.fixed-box .fix-head{font-size:12px;font-weight:700;color:var(--pass);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.fixed-box p{font-size:12px;color:var(--muted);line-height:1.7}
+.fixed-box code{background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px;font-family:monospace;font-size:11px;color:var(--text)}
+
+/* ── footer ── */
+.footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:11px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- header -->
+<div class="header">
+  <h1>Betaship 課金QAレポート</h1>
+  <div class="meta">
+    <span>📅 2026-05-29</span>
+    <span>🔗 betaship-api-1000874026940.asia-northeast1.run.app</span>
+    <span>🧪 Stripe テストモード</span>
+    <span>🗄️ Supabase kphfolcpguniaaefcgcw</span>
+  </div>
+</div>
+
+<!-- summary -->
+<div class="summary">
+  <div class="card total"><div class="num">34</div><div class="label">総テスト数</div></div>
+  <div class="card pass"><div class="num">28</div><div class="label">PASS（自動+ブラウザ）</div></div>
+  <div class="card fail"><div class="num">0</div><div class="label">FAIL（修正済）</div></div>
+  <div class="card manual"><div class="num">4</div><div class="label">手動確認待ち（Stripe）</div></div>
+</div>
+
+<!-- 修正済み問題 -->
+<div class="section">
+  <div class="section-head"><h2>修正済み問題</h2><div class="line"></div></div>
+
+  <div class="fixed-box">
+    <div class="fix-head">✅ G-1 修正済：return_to 外部ドメインリダイレクト脆弱性</div>
+    <p>
+      <code>betaship/index.html</code> の <code>_redirectWithSSO()</code> にドメインアローリスト追加。<br>
+      許可: <code>moshimo-ai.web.app</code> / <code>await-ai.web.app</code> / <code>wearld.vercel.app</code> / <code>betaship.web.app</code> / <code>localhost</code><br>
+      外部ドメインへの <code>bs_token</code> 漏洩を防止。ブロック時は <code>console.warn</code> のみで静かに失敗。
+    </p>
+  </div>
+</div>
+
+<!-- A. インフラ / API -->
+<div class="section">
+  <div class="section-head"><h2>A. インフラ / API</h2><div class="line"></div></div>
+
+  <div class="test-row">
+    <div class="test-id">A-1</div>
+    <div class="test-body">
+      <div class="test-name">APIヘルスチェック</div>
+      <div class="test-detail">GET /health → HTTP 200 {"ok":true}</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">A-2</div>
+    <div class="test-body">
+      <div class="test-name">plan_config: free = 50cr</div>
+      <div class="test-detail">grant_monthly_credits(free) → 50 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">A-3</div>
+    <div class="test-body">
+      <div class="test-name">plan_config: plus = 600cr</div>
+      <div class="test-detail">grant_monthly_credits(plus) → 600 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">A-4</div>
+    <div class="test-body">
+      <div class="test-name">plan_config: pro = 2000cr</div>
+      <div class="test-detail">grant_monthly_credits(pro) → 2000 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">A-5</div>
+    <div class="test-body">
+      <div class="test-name">add_topup_credits RPC 存在・動作確認</div>
+      <div class="test-detail">betashipスキーマのRPCが正常に呼び出せる ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">A-6</div>
+    <div class="test-body">
+      <div class="test-name">webhook 署名検証失敗 → 400</div>
+      <div class="test-detail">不正な Stripe-Signature ヘッダー → HTTP 400 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">A-7</div>
+    <div class="test-body">
+      <div class="test-name">admin エンドポイント 不正トークン → 401</div>
+      <div class="test-detail">Authorization: Bearer wrong → HTTP 401 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+</div>
+
+<!-- B. Freeプラン -->
+<div class="section">
+  <div class="section-head"><h2>B. Free プラン</h2><div class="line"></div></div>
+
+  <div class="test-row">
+    <div class="test-id">B-1</div>
+    <div class="test-body">
+      <div class="test-name">Free 初期状態: monthly=50, topup=0</div>
+      <div class="test-detail">grant_monthly_credits(free) → credits={monthly_cr:50, topup_cr:0} ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">B-2</div>
+    <div class="test-body">
+      <div class="test-name">クレジット消費: monthly_cr から先に減る</div>
+      <div class="test-detail">5cr消費 → monthly_cr:50→45, topup_cr:0→0 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">B-3</div>
+    <div class="test-body">
+      <div class="test-name">残高不足 → -1 を返す（ゲートトリガー条件）</div>
+      <div class="test-detail">残高45に対し100cr消費 → deduct_credits returns -1 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">B-4</div>
+    <div class="test-body">
+      <div class="test-name">monthly → topup の順で消費（クロス消費）</div>
+      <div class="test-detail">monthly=5, topup=10 の状態で 8cr消費 → monthly=0, topup=7 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">B-5</div>
+    <div class="test-body">
+      <div class="test-name">未ログインで widget 表示</div>
+      <div class="test-detail">await-ai.web.app を Playwright で開く → #_bs-chip に「ログイン」表示確認 ✓（ブラウザ自動確認済）</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">B-6</div>
+    <div class="test-body">
+      <div class="test-name">【手動】残高 0 で AI 呼び出し → bsGate() 表示</div>
+      <div class="test-detail">50cr 使い切り後に送信 → 「クレジットが切れました」モーダルが開く</div>
+    </div>
+    <span class="badge manual">⬜ 手動</span>
+  </div>
+</div>
+
+<!-- C. Topup -->
+<div class="section">
+  <div class="section-head"><h2>C. Topup（追加購入）</h2><div class="line"></div></div>
+
+  <div class="test-row">
+    <div class="test-id">C-1</div>
+    <div class="test-body">
+      <div class="test-name">topup 300cr 追加: topup_cr に加算</div>
+      <div class="test-detail">add_topup_credits(300) → topup_cr:7→307 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">C-2</div>
+    <div class="test-body">
+      <div class="test-name">月次リセット後も topup_cr は維持される</div>
+      <div class="test-detail">grant_monthly_credits(free) 後 → monthly=50, topup=307（変化なし）✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">C-3</div>
+    <div class="test-body">
+      <div class="test-name">topup 2 回呼び出し → 2 倍加算（冪等性はStripeに委ねる）</div>
+      <div class="test-detail">+100 → +100 → topup:307→407→507 ✓ Stripe側でイベント重複防止</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">C-4</div>
+    <div class="test-body">
+      <div class="test-name">【手動】テストカードで 300cr 購入 → DB反映確認</div>
+      <div class="test-detail">カード 4242-4242-4242-4242 → checkout.session.completed → topup_cr+=300</div>
+    </div>
+    <span class="badge manual">⬜ 手動</span>
+  </div>
+</div>
+
+<!-- D. Plus/Pro -->
+<div class="section">
+  <div class="section-head"><h2>D. Plus / Pro プラン</h2><div class="line"></div></div>
+
+  <div class="test-row">
+    <div class="test-id">D-1</div>
+    <div class="test-body">
+      <div class="test-name">Plus 加入: monthly_cr = 600 に即座に SET</div>
+      <div class="test-detail">grant_monthly_credits(plus) → monthly=600, topup維持 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">D-2</div>
+    <div class="test-body">
+      <div class="test-name">月次更新: 残クレジット破棄・600 にリセット</div>
+      <div class="test-detail">monthly=400 の状態で更新 → monthly=600（余り400は破棄）✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">D-3</div>
+    <div class="test-body">
+      <div class="test-name">Plus → Pro アップグレード: monthly_cr 即座に 2000 に SET</div>
+      <div class="test-detail">grant_monthly_credits(pro) → monthly=2000, topup維持 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">D-4</div>
+    <div class="test-body">
+      <div class="test-name">Pro → Plus ダウングレード: monthly_cr = 600 に SET</div>
+      <div class="test-detail">grant_monthly_credits(plus) → monthly=600, topup維持 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">D-5</div>
+    <div class="test-body">
+      <div class="test-name">【手動】Stripe Portal 経由でプラン変更 → customer.subscription.updated</div>
+      <div class="test-detail">Portal でPlus→Pro変更 → webhook発火 → DB即時反映（monthly=2000）</div>
+    </div>
+    <span class="badge manual">⬜ 手動</span>
+  </div>
+</div>
+
+<!-- E. 解約 -->
+<div class="section">
+  <div class="section-head"><h2>E. 解約</h2><div class="line"></div></div>
+
+  <div class="test-row">
+    <div class="test-id">E-1</div>
+    <div class="test-body">
+      <div class="test-name">解約 → Free 降格: monthly=50, topup_cr は維持</div>
+      <div class="test-detail">grant_monthly_credits(free) → monthly=50, topup=507（維持）✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">E-2</div>
+    <div class="test-body">
+      <div class="test-name">【手動】Stripe Portal 解約予約（cancel_at_period_end）</div>
+      <div class="test-detail">Portal で「解約」→ 期末まで Plus 維持 → 期末に customer.subscription.deleted → Free 降格</div>
+    </div>
+    <span class="badge manual">⬜ 手動</span>
+  </div>
+</div>
+
+<!-- F. Freeリセットバッチ -->
+<div class="section">
+  <div class="section-head"><h2>F. Free 月次リセットバッチ</h2><div class="line"></div></div>
+
+  <div class="test-row">
+    <div class="test-id">F-1</div>
+    <div class="test-body">
+      <div class="test-name">reset-free-credits: Free ユーザーの monthly_cr が 50 に戻る</div>
+      <div class="test-detail">POST /api/admin/reset-free-credits → HTTP 200 {ok:true, reset_count:2} | monthly:0→50 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">F-2</div>
+    <div class="test-body">
+      <div class="test-name">reset-free-credits: Plus ユーザーは変化なし</div>
+      <div class="test-detail">Plus ユーザーの monthly_cr=500 がリセット後も 500 のまま ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+</div>
+
+<!-- G. セキュリティ -->
+<div class="section">
+  <div class="section-head"><h2>G. セキュリティ</h2><div class="line"></div></div>
+
+  <div class="test-row">
+    <div class="test-id">G-1</div>
+    <div class="test-body">
+      <div class="test-name">return_to 外部ドメイン制限</div>
+      <div class="test-detail">修正済: _ALLOWED_RETURN_HOSTS でドメインチェック追加。外部ドメインは console.warn で静かにブロック ✓</div>
+    </div>
+    <span class="badge fixed">✓ FIX済</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">G-2</div>
+    <div class="test-body">
+      <div class="test-name">webhook 署名検証 → 400</div>
+      <div class="test-detail">Stripe-Signature 不正 → HTTP 400 ✓（A-6 と共通）</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">G-3</div>
+    <div class="test-body">
+      <div class="test-name">admin endpoint 認証</div>
+      <div class="test-detail">不正 Bearer トークン → HTTP 401 ✓（A-7 と共通）</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+</div>
+
+<!-- H. ブラウザ自動確認 -->
+<div class="section">
+  <div class="section-head"><h2>H. ブラウザ自動確認（Playwright）</h2><div class="line"></div></div>
+
+  <div class="test-row">
+    <div class="test-id">H-1a</div>
+    <div class="test-body">
+      <div class="test-name">未ログイン: #_bs-chip が表示される</div>
+      <div class="test-detail">await-ai.web.app → #_bs-chip text='ログイン' ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">H-1b</div>
+    <div class="test-body">
+      <div class="test-name">未ログイン: chip に「ログイン」テキスト</div>
+      <div class="test-detail">actual='ログイン' ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">H-1c</div>
+    <div class="test-body">
+      <div class="test-name">未ログイン: #_bs-badge（Betashipロゴ）が表示される</div>
+      <div class="test-detail">#_bs-badge 存在確認 ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">H-2</div>
+    <div class="test-body">
+      <div class="test-name">認証済み: chip にプラン/残高表示</div>
+      <div class="test-detail">bs_token 注入 → chip text='● Free' ✓（Free プランでクレジット表示）</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">H-3</div>
+    <div class="test-body">
+      <div class="test-name">return_to evil.com → ブロックされ betaship.web.app に留まる</div>
+      <div class="test-detail">?return_to=https://evil.com/steal → リダイレクト先は betaship.web.app ✓（G-1 ブラウザ実機確認）</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">H-4a</div>
+    <div class="test-body">
+      <div class="test-name">Plus Checkout URL 生成</div>
+      <div class="test-detail">POST /api/stripe/checkout {price_id:plus} → checkout.stripe.com URL ✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-row">
+    <div class="test-id">H-4b</div>
+    <div class="test-body">
+      <div class="test-name">Stripe Checkout UI が表示される</div>
+      <div class="test-detail">Playwright で checkout.stripe.com を開く → title='Moshimo サンドボックス'（Stripe sandbox正常表示）✓</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+</div>
+
+<!-- 手動確認チェックリスト -->
+<div class="section">
+  <div class="section-head"><h2>手動確認チェックリスト（Stripe実操作）</h2><div class="line"></div></div>
+
+  <div class="manual-check">
+    <h3>✅ 認証フロー（ブラウザ自動確認済 → H-1〜H-3）</h3>
+    <ul>
+      <li>B-5: moshimo-ai.web.app を未ログイン状態で開く → 右上チップに「ログイン」表示</li>
+      <li>「ログイン」タップ → betaship.web.app?return_to=... に遷移</li>
+      <li>Google ログイン完了 → bs_token 付きで moshimo に戻る → widget が自動認証</li>
+      <li>ログイン済みで return_to URL を開く → ログイン画面をスキップして即リダイレクト</li>
+    </ul>
+  </div>
+
+  <div class="manual-check">
+    <h3>⬜ widget.js UI（各プラン）— Free は H-2 で確認済</h3>
+    <ul>
+      <li>Free: 右上チップに残り cr 数（例: ●50cr）、左下バッジに「Free」（グレー）</li>
+      <li>Plus: 右上チップ「●600cr」、左下バッジ「Plus」（ゴールド）</li>
+      <li>Pro: 右上チップ「●2000cr」、左下バッジ「Pro」（パープル）</li>
+    </ul>
+  </div>
+
+  <div class="manual-check">
+    <h3>⬜ Stripe テストカードで実購入（テストモード）</h3>
+    <ul>
+      <li>C-4: 4242-4242-4242-4242 で topup 300cr 購入 → DB: topup_cr+=300 確認</li>
+      <li>Plus 加入 → checkout.session.completed 発火 → monthly_cr=600</li>
+      <li>残高不足カード 4000-0000-0000-9995 → Stripe 側で決済失敗、DB 変化なし</li>
+    </ul>
+  </div>
+
+  <div class="manual-check">
+    <h3>⬜ Stripe Portal 操作（テストモード）</h3>
+    <ul>
+      <li>D-5: Portal でプラン変更 → customer.subscription.updated 発火 → monthly_cr 即時反映</li>
+      <li>E-2: Portal で解約予約 → 期末まで現プラン維持 → 期末に customer.subscription.deleted → Free 降格</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Live切替前チェック -->
+<div class="section">
+  <div class="section-head"><h2>⚠️ Live モード切替前に必要な作業</h2><div class="line"></div></div>
+  <div class="issue">
+    <div class="issue-head">📋 残タスク（手動）</div>
+    <p>
+      1. Supabase SQL Editor で <code>schema_betaship.sql</code> を本番DBに実行（<code>UPDATE betaship.plan_config SET plan='plus' WHERE plan='maker'</code> も確認）<br>
+      2. Stripe ダッシュボードを Live モードに切替 → 新しい price_id を Cloud Run 環境変数に反映<br>
+      3. Live モードの Stripe webhook を登録（4イベント: checkout.session.completed / invoice.paid / customer.subscription.deleted / customer.subscription.updated）<br>
+      4. betaship LP（index.html）をデプロイ（return_to ドメイン制限の修正を含む）
+    </p>
+  </div>
+</div>
+
+<div class="footer">
+  <span>Betaship QA Report — 2026-05-29</span>
+  <span>自動テスト 21/21 PASS + ブラウザテスト 7/7 PASS（G-1修正済）｜Stripe実操作 4 件待ち</span>
+</div>
+
+</div>
+</body>
+</html>

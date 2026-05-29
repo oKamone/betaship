@@ -490,9 +490,8 @@
     .pricing-head { text-align: center; margin-bottom: 40px; }
     .pricing-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
     .pricing-sub { font-size: 14px; color: var(--muted2); }
-    .pricing-notice { font-size: 13px; color: var(--muted2); text-align: center; margin-bottom: 20px; }
     .pricing-cards {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 28px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px;
     }
     @media (max-width: 640px) { .pricing-cards { grid-template-columns: 1fr; } }
     .plan-card {
@@ -842,9 +841,20 @@
       <div class="pricing-sub">気に入ったら、プランに入るとお得に続けられます。</div>
     </div>
 
-    <div class="pricing-notice">全ツール利用可。差はクレジット量のみ。</div>
-
     <div class="pricing-cards">
+      <!-- Free -->
+      <div class="plan-card">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">¥0</div>
+        <div class="plan-cr">まず試す</div>
+        <ul class="plan-features">
+          <li>全ツール利用可</li>
+          <li>月50 cr</li>
+          <li>登録不要で試せる</li>
+        </ul>
+        <button class="plan-btn plan-btn-plus" onclick="startCheckout('free')" style="background:var(--teal);">今すぐ使う</button>
+      </div>
+
       <!-- Plus -->
       <div class="plan-card plan-card-featured">
         <div class="plan-badge">おすすめ</div>
@@ -852,6 +862,7 @@
         <div class="plan-price">¥680<span class="plan-period">/月</span></div>
         <div class="plan-cr">ヘビーユーザー向け</div>
         <ul class="plan-features">
+          <li>全ツール利用可</li>
           <li>月600 cr</li>
           <li>追加購入可</li>
         </ul>
@@ -864,6 +875,7 @@
         <div class="plan-price">¥1,980<span class="plan-period">/月</span></div>
         <div class="plan-cr">使い倒したい人向け</div>
         <ul class="plan-features">
+          <li>全ツール利用可</li>
           <li>月2,000 cr</li>
           <li>追加購入可</li>
         </ul>
@@ -880,6 +892,7 @@
       </div>
     </div>
 
+    <div class="pricing-note">Freeプランでも全ツール試せます。</div>
   </div>
 </section>
 
@@ -1184,21 +1197,6 @@ async function _openTool(url, ev) {
 }
 
 // onAuthStateChange がカバーするので _updateAuthNav() の手動呼び出しは不要
-
-// Inbound SSO: 外部ツール（Moshimo等）から bs_token が来たらセッションを確立
-(async function handleInboundSSO() {
-  const params = new URLSearchParams(location.search);
-  const bt = params.get('bs_token');
-  const br = params.get('bs_refresh');
-  if (!bt || !br) return;
-  try {
-    await _sbClient().auth.setSession({ access_token: bt, refresh_token: br });
-    const u = new URL(location.href);
-    u.searchParams.delete('bs_token');
-    u.searchParams.delete('bs_refresh');
-    history.replaceState({}, '', u);
-  } catch(_) {}
-})();
 
 // Stripe 購入完了・キャンセル後の処理
 (function handleCheckoutReturn() {

@@ -38,14 +38,14 @@ output/betaship/
 |-----------|----------|-----|
 | Reverie | 試せる | https://reverie-music.vercel.app |
 | Wearld | 試せる | https://wearld.vercel.app |
-| Moshimo | 稼働中 | https://moshimo-ai.web.app |
+| Moshimo | 準備中（Renderスリープ中） | https://moshimo.onrender.com |
 | Await | 準備中 | — |
 | Gait | 準備中 | — |
 
 ## デプロイ方法（コスト0）
 
 → `DEPLOY.md` を参照
-→ 公開URL: https://betaship.web.app/
+→ 公開URL: https://okamone.github.io/betaship/
 
 ## フィードバック収集
 

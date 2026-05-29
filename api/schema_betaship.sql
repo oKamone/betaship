@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS betaship.plan_config (
 
 INSERT INTO betaship.plan_config (plan, monthly_cr, price_usd) VALUES
   ('free',   50,    0.00),
-  ('maker',  600,   5.00),
+  ('plus',   600,   5.00),
   ('pro',    2500,  15.00)
 ON CONFLICT (plan) DO NOTHING;
 

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Betaship — カスタマージャーニーマップ</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #050d1a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+    color: #d4e8f0;
+    padding: 48px 32px 120px;
+    min-width: 1200px;
+  }
+
+  .header { margin-bottom: 48px; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .header .meta { font-size: 12px; color: #2e4a5e; }
+  .header .spec-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .spec-pill {
+    background: #071828; border: 1px solid #0e2a40;
+    border-radius: 6px; padding: 5px 12px;
+    font-size: 11px; color: #6a90a8;
+  }
+  .spec-pill span { color: #c8a84b; font-weight: 600; }
+
+  /* ===== GRID ===== */
+  .cjm {
+    display: grid;
+    grid-template-columns: 110px repeat(8, 1fr);
+    gap: 0;
+    border: 1px solid #0e2a40;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .cell {
+    border-right: 1px solid #0e2a40;
+    border-bottom: 1px solid #0e2a40;
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.6;
+    vertical-align: top;
+    min-height: 60px;
+  }
+  .cell:last-child { border-right: none; }
+
+  .row-label {
+    background: #050d1a;
+    border-right: 1px solid #0e2a40;
+    border-bottom: 1px solid #0e2a40;
+    padding: 14px 12px;
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #2e4a5e;
+  }
+
+  .phase-header {
+    background: #071828;
+    border-bottom: 2px solid #0e2a40;
+    padding: 16px 14px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #d4e8f0;
+    letter-spacing: 0.03em;
+  }
+  .phase-header .phase-num {
+    font-size: 9px; color: #2e4a5e; letter-spacing: 0.12em; display: block; margin-bottom: 4px;
+  }
+  .phase-header .phase-sub {
+    font-size: 10px; color: #3e6078; font-weight: 400; margin-top: 4px; display: block;
+  }
+  .phase-header.highlight { border-bottom-color: #c8a84b; }
+  .phase-header.highlight .phase-sub { color: #8a7030; }
+
+  /* segment */
+  .seg-row { background: #071828; }
+  .seg-badge {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    padding: 2px 7px; border-radius: 4px; margin-right: 4px; margin-bottom: 3px;
+  }
+  .seg-anon   { background: #0a1a2a; color: #3e6078; }
+  .seg-free   { background: #0a1a18; color: #0d9488; }
+  .seg-plus   { background: #1a1508; color: #c8a84b; }
+
+  /* screen row */
+  .screen-row { background: #050d1a; }
+  .screen-card {
+    background: #071828; border: 1px solid #0e2a40;
+    border-radius: 6px; overflow: hidden;
+  }
+  .screen-bar {
+    height: 4px; background: linear-gradient(90deg, #0d9488, #c8a84b);
+  }
+  .screen-body {
+    padding: 10px 10px 12px;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 5px; text-align: center;
+  }
+  .screen-icon { font-size: 22px; opacity: 0.55; }
+  .screen-name { font-size: 10px; font-weight: 700; color: #6a90a8; }
+  .screen-desc { font-size: 9px; color: #2e4a5e; line-height: 1.5; }
+
+  /* emotion */
+  .emo-row { background: #050d14; }
+  .emo-bar {
+    display: flex; align-items: flex-end; gap: 3px; height: 36px; margin-bottom: 4px;
+  }
+  .emo-bar .bar { flex: 1; border-radius: 2px 2px 0 0; min-width: 4px; }
+  .emo-emoji { font-size: 14px; }
+  .emo-label { font-size: 10px; color: #2e4a5e; margin-top: 2px; }
+
+  /* barrier */
+  .barrier-row { background: #0d0e08; }
+  .barrier-item {
+    font-size: 11px; color: #6a4a20; padding: 2px 0; display: flex; gap: 6px;
+  }
+  .barrier-item::before { content: "⚠"; font-size: 10px; flex-shrink: 0; margin-top: 1px; }
+
+  /* touchpoint */
+  .tp-row { background: #050d18; }
+  .tp-chip {
+    display: inline-block; background: #071828; border: 1px solid #0e2a40;
+    border-radius: 5px; padding: 2px 8px; font-size: 10px; color: #6a90a8;
+    margin: 2px 2px 2px 0;
+  }
+  .tp-chip.key { border-color: #c8a84b44; color: #c8a84b; background: #0e0d05; }
+
+  /* action */
+  .action-row { background: #071828; }
+  .action-item {
+    font-size: 11px; color: #9ab8c8; padding: 2px 0; display: flex; gap: 6px;
+  }
+  .action-item::before { content: "→"; color: #2e4a5e; flex-shrink: 0; }
+
+  /* thought */
+  .thought-row { background: #050a12; }
+  .thought-text { font-size: 12px; color: #6a90a8; font-style: italic; line-height: 1.7; }
+  .thought-text em { color: #c8a84b; font-style: normal; }
+
+  /* kpi */
+  .kpi-row { background: #050d0d; }
+  .kpi-item {
+    font-size: 10px; color: #1e5a52; padding: 2px 0; display: flex; gap: 6px;
+  }
+  .kpi-item::before { content: "◆"; font-size: 8px; flex-shrink: 0; margin-top: 2px; color: #0d3a34; }
+  .kpi-item.gate { color: #c8a84b; }
+  .kpi-item.gate::before { color: #8a7030; }
+
+  .corner {
+    background: #050d1a;
+    border-right: 1px solid #0e2a40;
+    border-bottom: 2px solid #0e2a40;
+  }
+
+  /* spec section */
+  .spec-section { margin-top: 56px; }
+  .spec-section h2 {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #2e4a5e; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #0e2a40;
+  }
+  .spec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .spec-card {
+    background: #071828; border: 1px solid #0e2a40; border-radius: 10px; padding: 20px;
+  }
+  .spec-card h3 {
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #3e6078; margin-bottom: 14px;
+  }
+  .spec-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0; border-bottom: 1px solid #0a1a28; font-size: 12px;
+  }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-row .key { color: #3e6078; }
+  .spec-row .val { color: #d4e8f0; font-weight: 600; }
+  .spec-row .val.accent { color: #c8a84b; }
+  .spec-row .val.green { color: #4ade80; }
+  .spec-row .val.teal { color: #0d9488; }
+  .spec-row .val.muted { color: #3e6078; }
+  .spec-row .val.warn { color: #6a4a20; }
+
+  .api-list { display: flex; flex-direction: column; gap: 6px; }
+  .api-item { display: flex; gap: 10px; align-items: center; font-size: 11px; }
+  .api-method {
+    font-size: 9px; font-weight: 700; padding: 2px 6px;
+    border-radius: 3px; flex-shrink: 0; width: 36px; text-align: center;
+  }
+  .api-method.get  { background: #0a1f12; color: #4ade80; }
+  .api-method.post { background: #0a1218; color: #7dd3fc; }
+  .api-path { color: #6a90a8; font-family: monospace; }
+
+  .gate-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #0d2010; border: 1px solid #1a4020;
+    border-radius: 6px; padding: 4px 10px;
+    font-size: 10px; color: #4ade80; margin-top: 10px;
+  }
+  .gate-badge .dot { width: 5px; height: 5px; background: #4ade80; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<!-- CJM_META:{"entry":"X/SNSからbetaship.web.appへ流入","exit":"Plus課金ユーザーとして複数ツールを定期利用","screens":["screens/s01_lp.png","screens/s02_hero.png","screens/s03_tools.png","screens/s04_tool.png","screens/s05_feedback.png","screens/s06_checkout.png","screens/s07_credit.png","screens/s08_return.png"]} -->
+
+<div class="header">
+  <h1>Betaship — カスタマージャーニーマップ</h1>
+  <div class="meta">2026-05-29 現在仕様 / Phase 0 → Phase 1 / stack: Flask + Supabase + Stripe + Claude Proxy</div>
+  <div class="spec-pills">
+    <div class="spec-pill">Free <span>50cr/月</span></div>
+    <div class="spec-pill">Plus <span>¥680/月 · 600cr</span></div>
+    <div class="spec-pill">Pro <span>¥1,980/月 · 2,000cr</span></div>
+    <div class="spec-pill">トップアップ <span>¥300→300cr / ¥1,000→1,200cr</span></div>
+    <div class="spec-pill">Phase 0 ゲート <span>UU50/週×2 · 複数30% · 有料意向5人</span></div>
+    <div class="spec-pill">プロキシ <span>betaship-api / Cloud Run</span></div>
+  </div>
+</div>
+
+<div class="cjm">
+
+  <!-- ===== HEADER ===== -->
+  <div class="corner"></div>
+  <div class="phase-header">
+    <span class="phase-num">01</span>
+    発見・着地
+    <span class="phase-sub">X / SNS / 検索</span>
+  </div>
+  <div class="phase-header">
+    <span class="phase-num">02</span>
+    コンセプト把握
+    <span class="phase-sub">LP · ヒーローコピー</span>
+  </div>
+  <div class="phase-header">
+    <span class="phase-num">03</span>
+    ツール一覧閲覧
+    <span class="phase-sub">カード物色</span>
+  </div>
+  <div class="phase-header highlight">
+    <span class="phase-num">04</span>
+    初回ツール試用
+    <span class="phase-sub">外部プロダクトへ</span>
+  </div>
+  <div class="phase-header highlight">
+    <span class="phase-num">05</span>
+    フィードバック
+    <span class="phase-sub">感想モーダル</span>
+  </div>
+  <div class="phase-header highlight">
+    <span class="phase-num">06</span>
+    登録 &amp; 課金
+    <span class="phase-sub">Plus ¥680/月</span>
+  </div>
+  <div class="phase-header">
+    <span class="phase-num">07</span>
+    複数ツール活用
+    <span class="phase-sub">クレジット消費</span>
+  </div>
+  <div class="phase-header">
+    <span class="phase-num">08</span>
+    定着・拡散
+    <span class="phase-sub">ルーティン化</span>
+  </div>
+
+  <!-- ===== SEGMENT ===== -->
+  <div class="row-label seg-row">ユーザー状態</div>
+  <div class="cell seg-row"><span class="seg-badge seg-anon">匿名</span>未認識</div>
+  <div class="cell seg-row"><span class="seg-badge seg-anon">匿名</span>LP閲覧中</div>
+  <div class="cell seg-row"><span class="seg-badge seg-anon">匿名</span>ツール探し</div>
+  <div class="cell seg-row"><span class="seg-badge seg-anon">匿名</span>外部ツール試用</div>
+  <div class="cell seg-row"><span class="seg-badge seg-anon">匿名</span>→ <span class="seg-badge seg-free">意見保持</span></div>
+  <div class="cell seg-row"><span class="seg-badge seg-free">Free</span> → <span class="seg-badge seg-plus">Plus</span>課金</div>
+  <div class="cell seg-row"><span class="seg-badge seg-plus">Plus</span>クレジット活用中</div>
+  <div class="cell seg-row"><span class="seg-badge seg-plus">Plus</span>定着ユーザー</div>
+
+  <!-- ===== SCREENS ===== -->
+  <div class="row-label screen-row">実画面</div>
+  <div class="cell screen-row">
+    <div class="screen-card">
+      <div class="screen-bar"></div>
+      <div class="screen-body">
+        <div class="screen-icon">⚓</div>
+        <div class="screen-name">betaship.web.app</div>
+        <div class="screen-desc">LP · ヒーロー<br>「試せるAIツール」</div>
+      </div>
+    </div>
+  </div>
+  <div class="cell screen-row">
+    <div class="screen-card">
+      <div class="screen-bar"></div>
+      <div class="screen-body">
+        <div class="screen-icon">📋</div>
+        <div class="screen-name">コンセプト</div>
+        <div class="screen-desc">Beta=未完OK<br>× Ship=出す</div>
+      </div>
+    </div>
+  </div>
+  <div class="cell screen-row">
+    <div class="screen-card">
+      <div class="screen-bar"></div>
+      <div class="screen-body">
+        <div class="screen-icon">🗂</div>
+        <div class="screen-name">ツールカード一覧</div>
+        <div class="screen-desc">Moshimo / Wearld<br>/ Reverie ...</div>
+      </div>
+    </div>
+  </div>
+  <div class="cell screen-row">
+    <div class="screen-card">
+      <div class="screen-bar"></div>
+      <div class="screen-body">
+        <div class="screen-icon">🚀</div>
+        <div class="screen-name">個別ツール</div>
+        <div class="screen-desc">moshimo-ai.web.app<br>wearld.vercel.app</div>
+      </div>
+    </div>
+  </div>
+  <div class="cell screen-row">
+    <div class="screen-card">
+      <div class="screen-bar"></div>
+      <div class="screen-body">
+        <div class="screen-icon">💬</div>
+        <div class="screen-name">フィードバックモーダル</div>
+        <div class="screen-desc">カード直結<br>GAS送信</div>
+      </div>
+    </div>
+  </div>
+  <div class="cell screen-row">
+    <div class="screen-card">
+      <div class="screen-bar"></div>
+      <div class="screen-body">
+        <div class="screen-icon">💳</div>
+        <div class="screen-name">Stripe Checkout</div>
+        <div class="screen-desc">Plus ¥680/月<br>クレジット付与</div>
+      </div>
+    </div>
+  </div>
+  <div class="cell screen-row">
+    <div class="screen-card">
+      <div class="screen-bar"></div>
+      <div class="screen-body">
+        <div class="screen-icon">⚡</div>
+        <div class="screen-name">クレジット残高</div>
+        <div class="screen-desc">450/600cr 表示<br>トップアップUI</div>
+      </div>
+    </div>
+  </div>
+  <div class="cell screen-row">
+    <div class="screen-card">
+      <div class="screen-bar"></div>
+      <div class="screen-body">
+        <div class="screen-icon">🔁</div>
+        <div class="screen-name">LP → ツール一覧</div>
+        <div class="screen-desc">定期訪問<br>新ツール確認</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ACTION ===== -->
+  <div class="row-label action-row">行動</div>
+  <div class="cell action-row">
+    <div class="action-item">X投稿・リンクをタップ</div>
+    <div class="action-item">betaship.web.app に着地</div>
+  </div>
+  <div class="cell action-row">
+    <div class="action-item">ヒーローコピーを読む</div>
+    <div class="action-item">「Beta=未完OK × Ship=出す」を理解</div>
+    <div class="action-item">ツール一覧へスクロール</div>
+  </div>
+  <div class="cell action-row">
+    <div class="action-item">カードをスクロールして確認</div>
+    <div class="action-item">ステータス・説明を読む</div>
+    <div class="action-item">気になるカードを発見</div>
+  </div>
+  <div class="cell action-row">
+    <div class="action-item">カードをクリック → 外部URLへ</div>
+    <div class="action-item">ツールを実際に試す</div>
+    <div class="action-item">Betashipに戻る</div>
+  </div>
+  <div class="cell action-row">
+    <div class="action-item">「感想を送る」ボタンをクリック</div>
+    <div class="action-item">モーダルに感想を記入</div>
+    <div class="action-item">送信する</div>
+  </div>
+  <div class="cell action-row">
+    <div class="action-item">クレジットプランを確認</div>
+    <div class="action-item">Plusを選択</div>
+    <div class="action-item">Stripe決済（¥680/月）</div>
+  </div>
+  <div class="cell action-row">
+    <div class="action-item">クレジット残高を確認</div>
+    <div class="action-item">別のツールをクレジットで試す</div>
+    <div class="action-item">複数ツールを横断利用</div>
+  </div>
+  <div class="cell action-row">
+    <div class="action-item">新ツールを確認しに定期訪問</div>
+    <div class="action-item">気に入ったツールを固定利用</div>
+    <div class="action-item">SNSでシェア・紹介</div>
+  </div>
+
+  <!-- ===== THOUGHT ===== -->
+  <div class="row-label thought-row">思考・感情</div>
+  <div class="cell thought-row"><div class="thought-text">「<em>試せるAIツール</em>ってなんだ？」</div></div>
+  <div class="cell thought-row"><div class="thought-text">「クリエイターが作ったやつを<em>試せるのか</em>。面白い」</div></div>
+  <div class="cell thought-row"><div class="thought-text">「Moshimoとかここにある。<em>どれが面白そう？</em>」</div></div>
+  <div class="cell thought-row"><div class="thought-text">「<em>このツール結構いいな</em>。他にも試したい」</div></div>
+  <div class="cell thought-row"><div class="thought-text">「<em>感想くらい</em>送っておこうか。使ってみた感あるし」</div></div>
+  <div class="cell thought-row"><div class="thought-text">「¥680で複数使えるなら<em>得かも</em>」</div></div>
+  <div class="cell thought-row"><div class="thought-text">「クレジットで<em>別のツールも試せる</em>のは確かに便利」</div></div>
+  <div class="cell thought-row"><div class="thought-text">「<em>新しいツールが出たら</em>まずここに来ればいい」</div></div>
+
+  <!-- ===== EMOTION ===== -->
+  <div class="row-label emo-row">感情グラフ</div>
+  <div class="cell emo-row">
+    <div class="emo-bar"><div class="bar" style="height:35%; background:#2e4a5e;"></div></div>
+    <div class="emo-emoji">😐</div>
+    <div class="emo-label">様子見・初見</div>
+  </div>
+  <div class="cell emo-row">
+    <div class="emo-bar"><div class="bar" style="height:50%; background:#3a5e5a;"></div></div>
+    <div class="emo-emoji">🤔</div>
+    <div class="emo-label">理解しようとしている</div>
+  </div>
+  <div class="cell emo-row">
+    <div class="emo-bar"><div class="bar" style="height:65%; background:#5a7e5a;"></div></div>
+    <div class="emo-emoji">🎯</div>
+    <div class="emo-label">ワクワク・物色</div>
+  </div>
+  <div class="cell emo-row">
+    <div class="emo-bar"><div class="bar" style="height:85%; background:#0d9488;"></div></div>
+    <div class="emo-emoji">✨</div>
+    <div class="emo-label">没入・発見の喜び</div>
+  </div>
+  <div class="cell emo-row">
+    <div class="emo-bar"><div class="bar" style="height:60%; background:#8a7030;"></div></div>
+    <div class="emo-emoji">💬</div>
+    <div class="emo-label">意見を持った</div>
+  </div>
+  <div class="cell emo-row">
+    <div class="emo-bar"><div class="bar" style="height:50%; background:#7a5a20;"></div></div>
+    <div class="emo-emoji">💳</div>
+    <div class="emo-label">判断・摩擦</div>
+  </div>
+  <div class="cell emo-row">
+    <div class="emo-bar"><div class="bar" style="height:75%; background:#0d9488;"></div></div>
+    <div class="emo-emoji">😌</div>
+    <div class="emo-label">便利実感・安定</div>
+  </div>
+  <div class="cell emo-row">
+    <div class="emo-bar"><div class="bar" style="height:90%; background:#c8a84b;"></div></div>
+    <div class="emo-emoji">⚓</div>
+    <div class="emo-label">帰ってくる場所</div>
+  </div>
+
+  <!-- ===== TOUCHPOINT ===== -->
+  <div class="row-label tp-row">タッチポイント</div>
+  <div class="cell tp-row">
+    <span class="tp-chip">X/SNS投稿</span>
+    <span class="tp-chip key">OGP画像</span>
+    <span class="tp-chip">検索</span>
+  </div>
+  <div class="cell tp-row">
+    <span class="tp-chip key">betaship.web.app</span>
+    <span class="tp-chip">ヒーローコピー</span>
+    <span class="tp-chip">Beta=未完OK</span>
+  </div>
+  <div class="cell tp-row">
+    <span class="tp-chip key">ツールカード</span>
+    <span class="tp-chip">ステータスバッジ</span>
+    <span class="tp-chip">カテゴリタグ</span>
+  </div>
+  <div class="cell tp-row">
+    <span class="tp-chip key">各ツールURL</span>
+    <span class="tp-chip">Moshimo / Wearld</span>
+    <span class="tp-chip">外部プロダクト</span>
+  </div>
+  <div class="cell tp-row">
+    <span class="tp-chip key">フィードバックモーダル</span>
+    <span class="tp-chip">カード直結ボタン</span>
+    <span class="tp-chip">GAS Sheets</span>
+  </div>
+  <div class="cell tp-row">
+    <span class="tp-chip key">クレジットプランUI</span>
+    <span class="tp-chip">Stripe Checkout</span>
+    <span class="tp-chip">/api/stripe/*</span>
+  </div>
+  <div class="cell tp-row">
+    <span class="tp-chip key">クレジット残高表示</span>
+    <span class="tp-chip">ツールカード（cr消費量）</span>
+    <span class="tp-chip">/api/ai プロキシ</span>
+  </div>
+  <div class="cell tp-row">
+    <span class="tp-chip key">betaship.web.app LP</span>
+    <span class="tp-chip">新ツール追加告知</span>
+    <span class="tp-chip">X/SNSシェア</span>
+  </div>
+
+  <!-- ===== BARRIER ===== -->
+  <div class="row-label barrier-row">バリア / 離脱リスク</div>
+  <div class="cell barrier-row">
+    <div class="barrier-item">OGPが伝わらない</div>
+    <div class="barrier-item">コンセプトが刺さらない</div>
+  </div>
+  <div class="cell barrier-row">
+    <div class="barrier-item">「ただのリンク集に見える」</div>
+    <div class="barrier-item">差別化が不明瞭</div>
+  </div>
+  <div class="cell barrier-row">
+    <div class="barrier-item">ツール数が少ない（Phase 0）</div>
+    <div class="barrier-item">クオリティにばらつき</div>
+  </div>
+  <div class="cell barrier-row">
+    <div class="barrier-item">外部ツールのUXが合わない</div>
+    <div class="barrier-item">Betashipへ戻る動線が弱い</div>
+  </div>
+  <div class="cell barrier-row">
+    <div class="barrier-item">「送っても変わるか？」の疑念</div>
+    <div class="barrier-item">入力が面倒</div>
+  </div>
+  <div class="cell barrier-row">
+    <div class="barrier-item">¥680への躊躇</div>
+    <div class="barrier-item">クレジット概念が難しい</div>
+    <div class="barrier-item">カード入力の手間</div>
+  </div>
+  <div class="cell barrier-row">
+    <div class="barrier-item">クレジット消費が見えにくい</div>
+    <div class="barrier-item">使い切り不安</div>
+  </div>
+  <div class="cell barrier-row">
+    <div class="barrier-item">新ツールが来ない停滞感</div>
+    <div class="barrier-item">他PFへの流出</div>
+  </div>
+
+  <!-- ===== KPI ===== -->
+  <div class="row-label kpi-row">計測KPI</div>
+  <div class="cell kpi-row">
+    <div class="kpi-item">LP着地PV</div>
+    <div class="kpi-item">直帰率</div>
+    <div class="kpi-item">流入元比率</div>
+  </div>
+  <div class="cell kpi-row">
+    <div class="kpi-item">スクロール深度</div>
+    <div class="kpi-item">CTA到達率</div>
+  </div>
+  <div class="cell kpi-row">
+    <div class="kpi-item">ツールカードCTR</div>
+    <div class="kpi-item gate">週10クリック（Gate指標）</div>
+  </div>
+  <div class="cell kpi-row">
+    <div class="kpi-item">外部ツール滞在時間</div>
+    <div class="kpi-item">Betaship戻り率</div>
+    <div class="kpi-item gate">週間UU（50目標）</div>
+  </div>
+  <div class="cell kpi-row">
+    <div class="kpi-item">FB送信率</div>
+    <div class="kpi-item gate">有料意向数（5人目標）</div>
+    <div class="kpi-item gate">「載せたい」DM数</div>
+  </div>
+  <div class="cell kpi-row">
+    <div class="kpi-item">Plus転換率</div>
+    <div class="kpi-item">MRR</div>
+    <div class="kpi-item">チャーン率</div>
+  </div>
+  <div class="cell kpi-row">
+    <div class="kpi-item">cr消費量/月</div>
+    <div class="kpi-item gate">複数ツール使用率（30%目標）</div>
+  </div>
+  <div class="cell kpi-row">
+    <div class="kpi-item">月次継続率</div>
+    <div class="kpi-item">週次UU推移</div>
+    <div class="kpi-item">シェア率</div>
+  </div>
+
+</div>
+
+<!-- ===== SPEC SECTION ===== -->
+<div class="spec-section">
+  <h2>Current Spec — 2026-05-29</h2>
+  <div class="spec-grid">
+
+    <div class="spec-card">
+      <h3>クレジットプラン</h3>
+      <div class="spec-row"><span class="key">Free</span><span class="val teal">50cr / 月</span></div>
+      <div class="spec-row"><span class="key">Plus 月額</span><span class="val accent">¥680 / 月 · 600cr</span></div>
+      <div class="spec-row"><span class="key">Pro 月額</span><span class="val accent">¥1,980 / 月 · 2,000cr</span></div>
+      <div class="spec-row"><span class="key">トップアップ S</span><span class="val">¥300 → 300cr</span></div>
+      <div class="spec-row"><span class="key">トップアップ M</span><span class="val green">¥1,000 → 1,200cr（割安）</span></div>
+      <div class="spec-row"><span class="key">消費レート（目安）</span><span class="val">テキスト 5cr / 重め 20cr</span></div>
+    </div>
+
+    <div class="spec-card">
+      <h3>スタック</h3>
+      <div class="spec-row"><span class="key">LP / Frontend</span><span class="val">Single HTML (betaship.web.app)</span></div>
+      <div class="spec-row"><span class="key">API Proxy</span><span class="val">Flask / Cloud Run</span></div>
+      <div class="spec-row"><span class="key">DB / Auth</span><span class="val">Supabase (betaship schema)</span></div>
+      <div class="spec-row"><span class="key">決済</span><span class="val">Stripe</span></div>
+      <div class="spec-row"><span class="key">フィードバック収集</span><span class="val">Google Apps Script + Sheets</span></div>
+      <div class="spec-row"><span class="key">Hosting</span><span class="val">Firebase Hosting</span></div>
+    </div>
+
+    <div class="spec-card">
+      <h3>Supabase テーブル</h3>
+      <div class="spec-row"><span class="key">betaship.users</span><span class="val">認証ユーザー管理</span></div>
+      <div class="spec-row"><span class="key">betaship.credits</span><span class="val">cr残高 · 月次付与</span></div>
+      <div class="spec-row"><span class="key">betaship.usage_log</span><span class="val">APIログ · Token計測</span></div>
+      <div class="spec-row"><span class="key">betaship.plan_config</span><span class="val">プラン定義 · cr単価</span></div>
+      <div class="spec-row"><span class="key">betaship.product_config</span><span class="val">billing_active フラグ</span></div>
+    </div>
+
+    <div class="spec-card">
+      <h3>API エンドポイント</h3>
+      <div class="api-list">
+        <div class="api-item"><span class="api-method post">POST</span><span class="api-path">/api/ai</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/api/credits</span></div>
+        <div class="api-item"><span class="api-method post">POST</span><span class="api-path">/api/stripe/create-checkout-session</span></div>
+        <div class="api-item"><span class="api-method post">POST</span><span class="api-path">/api/stripe/create-topup-session</span></div>
+        <div class="api-item"><span class="api-method post">POST</span><span class="api-path">/api/stripe/webhook</span></div>
+        <div class="api-item"><span class="api-method post">POST</span><span class="api-path">/api/stripe/create-portal-session</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/health</span></div>
+        <div class="api-item"><span class="api-method get">GET</span><span class="api-path">/admin</span></div>
+      </div>
+    </div>
+
+    <div class="spec-card">
+      <h3>Phase 0 検証ゲート</h3>
+      <div class="spec-row"><span class="key">週間UU</span><span class="val accent">50以上 × 2週連続</span></div>
+      <div class="spec-row"><span class="key">複数ツール使用率</span><span class="val accent">30% 以上</span></div>
+      <div class="spec-row"><span class="key">有料意向</span><span class="val accent">5人 以上</span></div>
+      <div class="spec-row"><span class="key">「載せたい」DM</span><span class="val green">1件でも → Phase 2 検討</span></div>
+      <div class="spec-row"><span class="key">Phase 1 最低条件</span><span class="val">週10クリック + 支払意向1件</span></div>
+      <div><span class="gate-badge"><span class="dot"></span>現在：Phase 0 検証中</span></div>
+    </div>
+
+    <div class="spec-card">
+      <h3>接続プロダクト</h3>
+      <div class="spec-row"><span class="key">Moshimo</span><span class="val teal">稼働中（routing ON）</span></div>
+      <div class="spec-row"><span class="key">Await</span><span class="val teal">routing ON（billing OFF）</span></div>
+      <div class="spec-row"><span class="key">Wearld</span><span class="val muted">Vercel（未接続）</span></div>
+      <div class="spec-row"><span class="key">Reverie</span><span class="val muted">Vercel（未接続）</span></div>
+      <div class="spec-row"><span class="key">billing_active</span><span class="val warn">false（Gate 2 待ち）</span></div>
+      <div class="spec-row"><span class="key">A方式変換</span><span class="val">Moshimo Pro → Plus相当 600cr</span></div>
+    </div>
+
+  </div>
+</div>
+
+<div style="margin-top: 24px; font-size: 11px; color: #0e2a40; text-align: right;">
+  Betaship CJM — generated 2026-05-29
+</div>
+
+</body>
+</html>

@@ -19,7 +19,7 @@ TWITTER_ACCESS_TOKEN = os.getenv("TWITTER_ACCESS_TOKEN")
 TWITTER_ACCESS_SECRET= os.getenv("TWITTER_ACCESS_SECRET")
 ANTHROPIC_API_KEY    = os.getenv("ANTHROPIC_API_KEY")
 
-BETASHIP_URL = "https://betaship.web.app/"
+BETASHIP_URL = "https://okamone.github.io/betaship/"
 LOG_FILE     = BASE_DIR / "posted_log.json"
 
 # ローテーションする投稿角度（12種）

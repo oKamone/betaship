@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Betaship 課金設計 全体資料</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0d0d1a;
+    color: #e2e8f0;
+    line-height: 1.6;
+    padding: 40px 24px;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+
+  h1 { font-size: 26px; color: #f8fafc; margin-bottom: 4px; }
+  .meta { color: #64748b; font-size: 13px; margin-bottom: 40px; }
+
+  h2 {
+    font-size: 16px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #1e293b;
+  }
+
+  /* Plan cards */
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .plan {
+    background: #12182b;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .plan.free  { border-color: #334155; }
+  .plan.plus  { border-color: #3b82f6; }
+  .plan.pro   { border-color: #8b5cf6; }
+  .plan-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .plan.free  .plan-name { color: #94a3b8; }
+  .plan.plus  .plan-name { color: #60a5fa; }
+  .plan.pro   .plan-name { color: #a78bfa; }
+  .plan-price { font-size: 28px; font-weight: 800; margin-bottom: 12px; }
+  .plan-price span { font-size: 14px; font-weight: 400; color: #64748b; }
+  .plan-cr { font-size: 15px; color: #e2e8f0; }
+  .plan-cr strong { color: #f8fafc; }
+  .plan-note { font-size: 12px; color: #64748b; margin-top: 8px; }
+
+  /* Topup cards */
+  .topups { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .topup {
+    background: #12182b;
+    border: 1px solid #0f766e;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .topup-cr { font-size: 22px; font-weight: 700; color: #2dd4bf; }
+  .topup-price { font-size: 18px; color: #f8fafc; }
+  .topup-rate { font-size: 12px; color: #64748b; margin-top: 2px; text-align: right; }
+
+  /* Model rate table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #12182b;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  th {
+    background: #1e293b;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  td { padding: 12px 16px; font-size: 14px; border-top: 1px solid #1e293b; }
+  tr:last-child td { border-bottom: none; }
+  .model-name { font-weight: 600; color: #f8fafc; }
+  .rate-value { color: #60a5fa; font-weight: 600; }
+  .cost-low  { color: #4ade80; }
+  .cost-mid  { color: #facc15; }
+  .cost-high { color: #f87171; }
+  .formula-note { font-size: 12px; color: #64748b; }
+
+  /* Formula box */
+  .formula {
+    background: #0a1628;
+    border: 1px solid #1e3a5f;
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 14px;
+    color: #93c5fd;
+    margin: 12px 0;
+  }
+  .formula .comment { color: #475569; }
+
+  /* Credit flow */
+  .flow {
+    display: flex;
+    gap: 0;
+    background: #12182b;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .flow-step {
+    flex: 1;
+    padding: 16px 12px;
+    text-align: center;
+    border-right: 1px solid #1e293b;
+    position: relative;
+  }
+  .flow-step:last-child { border-right: none; }
+  .flow-num { font-size: 11px; color: #475569; margin-bottom: 6px; }
+  .flow-label { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+  .flow-sub { font-size: 11px; color: #64748b; margin-top: 4px; }
+
+  /* Stripe events */
+  .events { display: flex; flex-direction: column; gap: 8px; }
+  .event {
+    background: #12182b;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .event-name {
+    font-family: monospace;
+    font-size: 13px;
+    color: #f59e0b;
+    min-width: 280px;
+    flex-shrink: 0;
+  }
+  .event-action { font-size: 13px; color: #cbd5e1; }
+
+  /* Control flags */
+  .flags { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .flag {
+    background: #12182b;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .flag-name { font-family: monospace; font-size: 13px; color: #a78bfa; margin-bottom: 6px; }
+  .flag-states { display: flex; flex-direction: column; gap: 4px; }
+  .flag-state { font-size: 12px; }
+  .flag-state .val { font-family: monospace; color: #4ade80; }
+  .flag-state .val.off { color: #f87171; }
+  .flag-state .desc { color: #94a3b8; margin-left: 8px; }
+
+  /* Status badge */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+  .badge.live    { background: #14532d; color: #4ade80; }
+  .badge.inactive { background: #450a0a; color: #f87171; }
+  .badge.pending { background: #431407; color: #fb923c; }
+
+  /* Admin endpoints */
+  .endpoints { display: flex; flex-direction: column; gap: 6px; }
+  .endpoint {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 14px;
+    background: #12182b;
+    border: 1px solid #1e293b;
+    border-radius: 6px;
+  }
+  .method { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 3px; min-width: 40px; text-align: center; }
+  .method.get { background: #1e3a5f; color: #60a5fa; }
+  .method.post { background: #14532d; color: #4ade80; }
+  .method.patch { background: #4a1d96; color: #a78bfa; }
+  .endpoint-path { font-family: monospace; font-size: 13px; color: #e2e8f0; }
+  .endpoint-desc { font-size: 12px; color: #64748b; margin-left: auto; }
+
+  /* Current status section */
+  .status-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .status-item {
+    background: #12182b;
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 3px solid #334155;
+  }
+  .status-item.ok { border-left-color: #4ade80; }
+  .status-item.warn { border-left-color: #f59e0b; }
+  .status-item.ng  { border-left-color: #f87171; }
+  .status-product { font-size: 12px; color: #64748b; margin-bottom: 4px; }
+  .status-state { font-size: 14px; font-weight: 600; }
+
+  .divider { height: 1px; background: #1e293b; margin: 32px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Betaship 課金設計 全体資料</h1>
+  <p class="meta">最終更新: 2026-05-29 ／ ソース: proxy.py + schema_betaship.sql + brief.yaml</p>
+
+  <!-- 1. Plans -->
+  <h2>① サブスクリプションプラン</h2>
+  <div class="plans">
+    <div class="plan free">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">¥0<span>/月</span></div>
+      <div class="plan-cr"><strong>50 cr</strong>/月</div>
+      <div class="plan-note">IPベース 5回/日（未ログイン）<br>ログイン後は月50cr</div>
+    </div>
+    <div class="plan plus">
+      <div class="plan-name">Plus</div>
+      <div class="plan-price">¥680<span>/月</span></div>
+      <div class="plan-cr"><strong>600 cr</strong>/月</div>
+      <div class="plan-note">Stripe price_id: STRIPE_PRICE_PLUS</div>
+    </div>
+    <div class="plan pro">
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">¥1,980<span>/月</span></div>
+      <div class="plan-cr"><strong>2,000 cr</strong>/月</div>
+      <div class="plan-note">Stripe price_id: STRIPE_PRICE_PRO<br>※ schema_betaship.sql は 2,500cr と古い値。brief.yaml / proxy.py が正</div>
+    </div>
+  </div>
+
+  <!-- 2. Topup -->
+  <h2>② トップアップ（単発）</h2>
+  <div class="topups">
+    <div class="topup">
+      <div>
+        <div class="topup-cr">+300 cr</div>
+        <div class="plan-note" style="margin-top:4px">繰り越し可能</div>
+      </div>
+      <div>
+        <div class="topup-price">¥300</div>
+        <div class="topup-rate">1 cr = ¥1.0</div>
+      </div>
+    </div>
+    <div class="topup">
+      <div>
+        <div class="topup-cr">+1,200 cr</div>
+        <div class="plan-note" style="margin-top:4px">繰り越し可能</div>
+      </div>
+      <div>
+        <div class="topup-price">¥1,000</div>
+        <div class="topup-rate">1 cr = ¥0.83（割安）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Credit calc -->
+  <h2>③ クレジット換算方式（モデル別）</h2>
+  <div class="formula">
+    cr_used = max(1, (tokens_in + tokens_out × 3) ÷ tokens_per_cr(model))<br>
+    <span class="comment">※ output tokens を 3倍加重（生成コストを重く見る）</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>モデル</th>
+        <th>tokens/cr</th>
+        <th>Haikuとの比率</th>
+        <th>1 cr あたりの原価</th>
+        <th>プラン原価率（Plus 600cr）</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="model-name">claude-haiku-4-5</td>
+        <td class="rate-value">800 tok/cr</td>
+        <td>基準（1×）</td>
+        <td class="cost-low">≈ ¥0.10</td>
+        <td class="cost-low">原価 ¥60 / 収入 ¥680 → <strong>利益率 91%</strong></td>
+      </tr>
+      <tr>
+        <td class="model-name">claude-sonnet-4-6</td>
+        <td class="rate-value">200 tok/cr</td>
+        <td>4×高い</td>
+        <td class="cost-mid">≈ ¥0.13</td>
+        <td class="cost-mid">原価 ¥78 / 収入 ¥680 → <strong>利益率 89%</strong></td>
+      </tr>
+      <tr>
+        <td class="model-name">claude-opus-4</td>
+        <td class="rate-value">40 tok/cr</td>
+        <td>20×高い</td>
+        <td class="cost-high">≈ ¥0.20</td>
+        <td class="cost-high">原価 ¥120 / 収入 ¥680 → <strong>利益率 82%</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:#475569;margin-top:8px">※ モデル別レートにより、どのモデルを使っても 1 cr ≈ ¥0.10〜0.20 に正規化される設計</p>
+
+  <!-- 4. Consumption order -->
+  <h2>④ クレジット消費の優先順序</h2>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-num">STEP 1</div>
+      <div class="flow-label">monthly_cr を先に消費</div>
+      <div class="flow-sub">月次付与分<br>月末リセット</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">STEP 2</div>
+      <div class="flow-label">monthly_cr が足りなければ topup_cr</div>
+      <div class="flow-sub">トップアップ分<br>永久繰り越し</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">STEP 3</div>
+      <div class="flow-label">両方とも 0 なら</div>
+      <div class="flow-sub">402 insufficient_credits<br>を返す</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">BONUS</div>
+      <div class="flow-label">初回ログイン</div>
+      <div class="flow-sub">free プランを自動作成<br>50 cr を自動付与</div>
+    </div>
+  </div>
+
+  <!-- 5. Stripe events -->
+  <h2>⑤ Stripe Webhook イベント処理</h2>
+  <div class="events">
+    <div class="event">
+      <div class="event-name">checkout.session.completed<br><span style="color:#64748b;font-size:11px">mode: subscription</span></div>
+      <div class="event-action">プラン更新 + monthly_cr を即付与（grant_monthly_credits）</div>
+    </div>
+    <div class="event">
+      <div class="event-name">checkout.session.completed<br><span style="color:#64748b;font-size:11px">mode: payment（トップアップ）</span></div>
+      <div class="event-action">topup_cr を加算（add_topup_credits）</div>
+    </div>
+    <div class="event">
+      <div class="event-name">invoice.paid</div>
+      <div class="event-action">月次更新 → monthly_cr リセット＋再付与、current_period_end 更新</div>
+    </div>
+    <div class="event">
+      <div class="event-name">customer.subscription.updated</div>
+      <div class="event-action">プラン変更（アップ/ダウングレード）→ 新プランの monthly_cr に即変更</div>
+    </div>
+    <div class="event">
+      <div class="event-name">customer.subscription.deleted</div>
+      <div class="event-action">解約完了 → free に降格、monthly_cr を 50 にリセット</div>
+    </div>
+  </div>
+
+  <!-- 6. Control flags -->
+  <h2>⑥ 製品別コントロールフラグ（product_config テーブル）</h2>
+  <div class="flags">
+    <div class="flag">
+      <div class="flag-name">billing_active</div>
+      <div class="flag-states">
+        <div class="flag-state"><span class="val">true</span><span class="desc">クレジット消費が有効。本番モード</span></div>
+        <div class="flag-state"><span class="val off">false（現在）</span><span class="desc">APIは通るが消費しない。テスト中</span></div>
+      </div>
+    </div>
+    <div class="flag">
+      <div class="flag-name">free_mode</div>
+      <div class="flag-states">
+        <div class="flag-state"><span class="val">true</span><span class="desc">全ユーザー無料（クレジット無視）</span></div>
+        <div class="flag-state"><span class="val off">false（現在）</span><span class="desc">通常課金モード</span></div>
+      </div>
+    </div>
+    <div class="flag">
+      <div class="flag-name">free_daily_limit</div>
+      <div class="flag-states">
+        <div class="flag-state"><span class="val">5（デフォルト）</span><span class="desc">未ログインユーザーへの1日あたりIP制限</span></div>
+      </div>
+    </div>
+    <div class="flag">
+      <div class="flag-name">maintenance_mode</div>
+      <div class="flag-states">
+        <div class="flag-state"><span class="val">true</span><span class="desc">全アクセス遮断</span></div>
+        <div class="flag-state"><span class="val off">false（現在）</span><span class="desc">通常稼働</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Current status -->
+  <h2>⑦ 現在の接続状況</h2>
+  <div class="status-grid">
+    <div class="status-item ok">
+      <div class="status-product">Moshimo</div>
+      <div class="status-state">Betashipプロキシ経由 ✅<br><span style="font-size:12px;color:#64748b">billing_active = false（消費未開始）</span></div>
+    </div>
+    <div class="status-item ok">
+      <div class="status-product">Await</div>
+      <div class="status-state">Betashipプロキシ経由 ✅<br><span style="font-size:12px;color:#64748b">billing_active = false（消費未開始）</span></div>
+    </div>
+    <div class="status-item ng">
+      <div class="status-product">Wearld</div>
+      <div class="status-state">Betaship未接続 ❌<br><span style="font-size:12px;color:#64748b">IPベースのレート制限のみ（独自実装）</span></div>
+    </div>
+    <div class="status-item warn">
+      <div class="status-product">新サービス</div>
+      <div class="status-state">BETASHIP_API_URL を設定 →<br><span style="font-size:12px;color:#64748b">proxy.py が自動でクレジット管理</span></div>
+    </div>
+  </div>
+
+  <!-- 8. Admin endpoints -->
+  <h2>⑧ 管理エンドポイント（要 ADMIN_TOKEN）</h2>
+  <div class="endpoints">
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="endpoint-path">/api/admin/activate-billing</span>
+      <span class="endpoint-desc">製品の billing_active を true にする</span>
+    </div>
+    <div class="endpoint">
+      <span class="method get">GET</span>
+      <span class="endpoint-path">/api/admin/health-check?product=xxx</span>
+      <span class="endpoint-desc">ローンチ準備チェック（DB・Stripe・Webhook等）</span>
+    </div>
+    <div class="endpoint">
+      <span class="method get">GET</span>
+      <span class="endpoint-path">/api/admin/analytics?days=7</span>
+      <span class="endpoint-desc">サービス別・モデル別・プラン別の利用集計</span>
+    </div>
+    <div class="endpoint">
+      <span class="method get">GET</span>
+      <span class="endpoint-path">/api/admin/status</span>
+      <span class="endpoint-desc">全体状態（ユーザー数・プラン分布・Stripe疎通）</span>
+    </div>
+    <div class="endpoint">
+      <span class="method patch">PATCH</span>
+      <span class="endpoint-path">/api/admin/plan-config</span>
+      <span class="endpoint-desc">プランの monthly_cr / price_usd を変更</span>
+    </div>
+    <div class="endpoint">
+      <span class="method patch">PATCH</span>
+      <span class="endpoint-path">/api/admin/product-config</span>
+      <span class="endpoint-desc">製品設定の任意フィールドを変更</span>
+    </div>
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="endpoint-path">/api/admin/coupon</span>
+      <span class="endpoint-desc">Stripe クーポン発行</span>
+    </div>
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <span class="endpoint-path">/api/admin/reset-free-credits</span>
+      <span class="endpoint-desc">Freeプランの monthly_cr を月初リセット（Cloud Scheduler）</span>
+    </div>
+  </div>
+
+  <!-- 9. Onboarding flow -->
+  <h2>⑨ 新サービスの接続手順</h2>
+  <table>
+    <thead>
+      <tr><th>手順</th><th>作業</th><th>備考</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Cloud Run 環境変数に <code style="color:#f59e0b">BETASHIP_API_URL=https://betaship.web.app</code> を追加</td>
+        <td>これだけでプロキシ経由になる</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Supabase の <code style="color:#f59e0b">betaship.product_config</code> にエントリを INSERT</td>
+        <td>free_daily_limit / billing_active などを設定</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>フロントからの API 呼び出しに <code style="color:#f59e0b">service: "サービス名"</code> パラメータを追加</td>
+        <td>usage_log への記録に使う</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>テスト完了後、<code style="color:#f59e0b">POST /api/admin/activate-billing</code> で billing_active を ON</td>
+        <td>ここで初めてクレジット消費が始まる</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+</body>
+</html>

@@ -160,7 +160,7 @@
           <h3>APIを呼ぶ</h3>
           <p>Claude API の代わりに Betaship の proxy を叩く。<code style="font-family:monospace;color:var(--accent)">service</code> に自分の product_id を渡す。</p>
           <pre><span class="ck">const</span> res = <span class="ck">await</span> fetch(
-  <span class="cs">'https://betaship-api.onrender.com/api/ai'</span>,
+  <span class="cs">'https://betaship-api-767603267032.asia-northeast1.run.app/api/ai'</span>,
   {
     method: <span class="cs">'POST'</span>,
     headers: {
@@ -244,7 +244,7 @@
     <h2>残高取得（任意）</h2>
     <p>ユーザーのクレジット残高をUIに表示したい場合。</p>
     <pre><span class="ck">const</span> res = <span class="ck">await</span> fetch(
-  <span class="cs">'https://betaship-api.onrender.com/api/credits'</span>,
+  <span class="cs">'https://betaship-api-767603267032.asia-northeast1.run.app/api/credits'</span>,
   { headers: { <span class="cs">'Authorization'</span>: <span class="cs">`Bearer </span>${session?.access_token}<span class="cs">`</span> } }
 )
 <span class="ck">const</span> { total_cr, plan, plan_limit } = <span class="ck">await</span> res.json()</pre>

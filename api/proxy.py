@@ -14,7 +14,9 @@ from supabase import create_client, Client
 import stripe
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": os.environ.get("ALLOWED_ORIGINS", "*")}})
+_raw_origins = os.environ.get("ALLOWED_ORIGINS", "*")
+_origins = [o.strip() for o in _raw_origins.split(",")] if _raw_origins != "*" else "*"
+CORS(app, resources={r"/api/*": {"origins": _origins}})
 
 # --- クライアント初期化 ---
 _anthropic = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
@@ -39,15 +41,16 @@ def _tokens_per_cr(model: str) -> int:
     return TOKENS_PER_CR["claude-haiku"]
 
 STRIPE_PRICE_IDS = {
-    "plus": os.environ.get("STRIPE_PRICE_MAKER", ""),   # ¥680/月 / 600cr
-    "pro":   os.environ.get("STRIPE_PRICE_PRO", ""),     # ¥1,980/月 / 2,000cr
+    "plus": os.environ.get("STRIPE_PRICE_PLUS", ""),   # ¥680/月 / 600cr
+    "pro":   os.environ.get("STRIPE_PRICE_PRO", ""),    # ¥1,980/月 / 2,000cr
 }
 TOPUP_PRICE_IDS = {
     os.environ.get("STRIPE_PRICE_TOPUP_300", ""): 300,   # ¥300=300cr
     os.environ.get("STRIPE_PRICE_TOPUP_1200", ""): 1200, # ¥1,000=1200cr
 }
 
-ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "")
+ADMIN_TOKEN    = os.environ.get("ADMIN_TOKEN", "")
+SERVICE_KEY    = os.environ.get("BETASHIP_SERVICE_KEY", "")  # サービス間呼び出し用静的キー
 
 def _require_admin(f):
     @functools.wraps(f)
@@ -134,7 +137,11 @@ def get_credits():
 # --------------------------------------------------------
 @app.route("/api/ai", methods=["POST"])
 def ai_proxy():
-    uid = _get_user_id(request)
+    # サービス間呼び出し判定（X-Service-Key ヘッダー）
+    svc_key = request.headers.get("X-Service-Key", "")
+    is_service_call = bool(SERVICE_KEY and svc_key == SERVICE_KEY)
+
+    uid = None if is_service_call else _get_user_id(request)
 
     body = request.get_json(force=True)
     service    = body.get("service", "unknown")
@@ -160,7 +167,7 @@ def ai_proxy():
     free_mode       = cfg_data.get("free_mode", False)
     billing_active  = cfg_data.get("billing_active", False)
     free_daily_limit = int(cfg_data.get("free_daily_limit") or 10)
-    skip_credits    = free_mode or not billing_active
+    skip_credits    = is_service_call or free_mode or not billing_active
 
     # hosted tool: system_prompt を DB から自動注入（クライアントには渡さない）
     if not system and cfg_data.get("hosted") and cfg_data.get("system_prompt"):
@@ -170,7 +177,7 @@ def ai_proxy():
     if not body.get("model") and cfg_data.get("model"):
         model = cfg_data["model"]
 
-    if not uid:
+    if not uid and not is_service_call:
         # 非ログイン → IPレート制限
         ip = _get_client_ip(request)
         if not _anon_rate_ok(ip, service, free_daily_limit):
@@ -233,14 +240,14 @@ def ai_proxy():
     # 呼び出しログ（失敗しても無視）
     try:
         _sb.schema("betaship").table("ai_calls").insert({
-            "user_id":    uid,
+            "user_id":    f"svc:{service}" if is_service_call else uid,
             "service":    service,
             "tool":       tool,
             "model":      model,
             "tokens_in":  tokens_in,
             "tokens_out": tokens_out,
             "cr_used":    cr_used,
-            "plan":       current_plan,
+            "plan":       "service" if is_service_call else current_plan,
         }).execute()
     except Exception:
         pass
@@ -276,26 +283,37 @@ def stripe_webhook():
             return jsonify({"ok": True})
 
         if mode == "subscription":
-            # プラン購入 → プラン更新 + 月次cr付与
             price_id = session.get("metadata", {}).get("price_id", "")
             plan = next((p for p, pid in STRIPE_PRICE_IDS.items() if pid == price_id), "plus")
+            # current_period_end を Stripe から取得
+            period_end_dt = None
+            sub_stripe_id = session.get("subscription")
+            if sub_stripe_id:
+                try:
+                    stripe_sub = stripe.Subscription.retrieve(sub_stripe_id)
+                    pe = stripe_sub.get("current_period_end")
+                    if pe:
+                        period_end_dt = datetime.fromtimestamp(pe, tz=timezone.utc).isoformat()
+                except Exception:
+                    pass
             _sb.schema("betaship").table("subscriptions").upsert({
                 "user_id": uid,
                 "plan": plan,
                 "stripe_customer_id": session.get("customer"),
-                "stripe_subscription_id": session.get("subscription"),
+                "stripe_subscription_id": sub_stripe_id,
+                "current_period_end": period_end_dt,
+                "updated_at": datetime.now(timezone.utc).isoformat(),
             }).execute()
             _sb.schema("betaship").rpc("grant_monthly_credits", {"p_user_id": uid, "p_plan": plan}).execute()
 
         elif mode == "payment":
-            # トップアップ購入 → cr加算
             price_id = session.get("metadata", {}).get("price_id", "")
             amount = TOPUP_PRICE_IDS.get(price_id, 0)
             if amount:
                 _sb.schema("betaship").rpc("add_topup_credits", {"p_user_id": uid, "p_amount": amount}).execute()
 
     elif event["type"] == "invoice.paid":
-        # サブスクリプション更新 → 月次cr付与
+        # サブスクリプション更新 → 月次cr付与 + period_end 更新
         invoice = event["data"]["object"]
         sub_id  = invoice.get("subscription")
         if sub_id:
@@ -303,9 +321,66 @@ def stripe_webhook():
                 "stripe_subscription_id", sub_id
             ).maybe_single().execute()
             if sub_row.data:
+                uid  = sub_row.data["user_id"]
+                plan = sub_row.data["plan"]
+                # period_end を保存
+                pe = invoice.get("period_end")
+                if pe:
+                    period_end_dt = datetime.fromtimestamp(pe, tz=timezone.utc).isoformat()
+                    _sb.schema("betaship").table("subscriptions").update({
+                        "current_period_end": period_end_dt,
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                    }).eq("user_id", uid).execute()
                 _sb.schema("betaship").rpc("grant_monthly_credits", {
-                    "p_user_id": sub_row.data["user_id"],
-                    "p_plan":    sub_row.data["plan"],
+                    "p_user_id": uid, "p_plan": plan,
+                }).execute()
+
+    elif event["type"] == "customer.subscription.updated":
+        # プランアップグレード/ダウングレード（Stripe Portal経由）
+        stripe_sub = event["data"]["object"]
+        prev_attrs  = event["data"].get("previous_attributes", {})
+        if "items" in prev_attrs:
+            items = stripe_sub.get("items", {}).get("data", [])
+            if items:
+                new_price_id = items[0].get("price", {}).get("id", "")
+                new_plan = next((p for p, pid in STRIPE_PRICE_IDS.items() if pid == new_price_id), None)
+                sub_id = stripe_sub.get("id")
+                if new_plan and sub_id:
+                    sub_row = _sb.schema("betaship").table("subscriptions").select("user_id").eq(
+                        "stripe_subscription_id", sub_id
+                    ).maybe_single().execute()
+                    if sub_row.data:
+                        uid = sub_row.data["user_id"]
+                        pe = stripe_sub.get("current_period_end")
+                        period_end_dt = datetime.fromtimestamp(pe, tz=timezone.utc).isoformat() if pe else None
+                        _sb.schema("betaship").table("subscriptions").update({
+                            "plan": new_plan,
+                            "current_period_end": period_end_dt,
+                            "updated_at": datetime.now(timezone.utc).isoformat(),
+                        }).eq("user_id", uid).execute()
+                        _sb.schema("betaship").rpc("grant_monthly_credits", {
+                            "p_user_id": uid, "p_plan": new_plan,
+                        }).execute()
+
+    elif event["type"] == "customer.subscription.deleted":
+        # 解約完了（期末キャンセル含む）→ free に降格
+        stripe_sub = event["data"]["object"]
+        sub_id = stripe_sub.get("id")
+        if sub_id:
+            sub_row = _sb.schema("betaship").table("subscriptions").select("user_id").eq(
+                "stripe_subscription_id", sub_id
+            ).maybe_single().execute()
+            if sub_row.data:
+                uid = sub_row.data["user_id"]
+                _sb.schema("betaship").table("subscriptions").update({
+                    "plan": "free",
+                    "stripe_subscription_id": None,
+                    "current_period_end": None,
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                }).eq("user_id", uid).execute()
+                # monthly_cr を free 分（50cr）にリセット
+                _sb.schema("betaship").rpc("grant_monthly_credits", {
+                    "p_user_id": uid, "p_plan": "free",
                 }).execute()
 
     return jsonify({"ok": True})
@@ -643,6 +718,24 @@ def admin_page():
 # --------------------------------------------------------
 # GET /health  /api/ping
 # --------------------------------------------------------
+# --------------------------------------------------------
+# POST /api/admin/reset-free-credits  — Free月次crリセット（Cloud Scheduler から呼ぶ）
+# --------------------------------------------------------
+@app.route("/api/admin/reset-free-credits", methods=["POST"])
+def reset_free_credits():
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    if not ADMIN_TOKEN or token != ADMIN_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    rows = _sb.schema("betaship").table("subscriptions").select("user_id").eq("plan", "free").execute()
+    count = 0
+    for row in (rows.data or []):
+        _sb.schema("betaship").rpc("grant_monthly_credits", {
+            "p_user_id": row["user_id"], "p_plan": "free",
+        }).execute()
+        count += 1
+    return jsonify({"ok": True, "reset_count": count})
+
+
 @app.route("/health")
 @app.route("/api/ping")
 def health():
