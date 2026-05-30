@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プライバシーポリシー — Betaship</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0c0c0e; --surface: #111113; --border: #1e1e22;
+      --text: #e8e8ec; --muted: #5c5c6a; --muted2: #88889a;
+      --accent: #f0a500;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.8; }
+    header { padding: 24px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; }
+    header a { color: var(--muted2); text-decoration: none; font-size: 14px; }
+    header a:hover { color: var(--accent); }
+    .logo { font-size: 18px; font-weight: 700; color: var(--text); text-decoration: none; }
+    main { max-width: 720px; margin: 0 auto; padding: 60px 32px 100px; }
+    h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .updated { color: var(--muted2); font-size: 14px; margin-bottom: 48px; }
+    h2 { font-size: 17px; font-weight: 600; color: var(--accent); margin: 40px 0 12px; }
+    p { color: var(--muted2); margin-bottom: 12px; font-size: 15px; }
+    ul { color: var(--muted2); font-size: 15px; padding-left: 20px; margin-bottom: 12px; }
+    ul li { margin-bottom: 6px; }
+    .section { border-top: 1px solid var(--border); padding-top: 40px; margin-top: 40px; }
+    .section:first-of-type { border-top: none; padding-top: 0; }
+    .tool-supplement { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin-top: 16px; }
+    .tool-supplement h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+    footer { text-align: center; padding: 32px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); }
+    footer a { color: var(--muted2); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="/">Betaship</a>
+  <a href="/">← トップに戻る</a>
+</header>
+
+<main>
+  <h1>プライバシーポリシー</h1>
+  <p class="updated">最終更新: 2026年5月31日</p>
+
+  <div class="section">
+    <h2>1. 取得する情報</h2>
+    <p>Betaship（以下「本サービス」）は、サービス提供のために以下の情報を取得します。</p>
+    <ul>
+      <li><strong>アカウント情報</strong> — 会員登録時のメールアドレス</li>
+      <li><strong>決済情報</strong> — クレジットカード番号等の決済情報はStripe, Inc.が処理します。当社はカード番号を保持しません</li>
+      <li><strong>利用データ</strong> — クレジット消費量、利用日時、プランの種別</li>
+      <li><strong>各ツール固有のデータ</strong> — 下記「製品固有のデータ取り扱い」セクションを参照</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>2. 利用目的</h2>
+    <ul>
+      <li>本サービスの提供・維持・改善</li>
+      <li>課金処理・クレジット管理</li>
+      <li>利用状況の集計・分析（個人を特定しない形式）</li>
+      <li>重大な障害・セキュリティ上の問題の通知</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>3. 第三者提供</h2>
+    <p>当社は以下のデータ処理事業者にデータを提供します。いずれも法令に基づく場合を除き、第三者への販売・開示は行いません。</p>
+    <ul>
+      <li><strong>Supabase, Inc.</strong> — アカウント認証・データベース</li>
+      <li><strong>Stripe, Inc.</strong> — 決済処理</li>
+      <li><strong>Anthropic, PBC</strong> — AI機能（ユーザーの入力テキストを処理）</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>4. データの保存</h2>
+    <p>アカウントデータはSupabaseのサーバー（東京リージョン）に保存されます。</p>
+  </div>
+
+  <div class="section">
+    <h2>5. データの削除</h2>
+    <p>アカウントおよび関連データの削除を希望する場合は、X（@oKamone）へDMにてお申し付けください。合理的な期間内に対応します。</p>
+  </div>
+
+  <div class="section">
+    <h2>6. お問い合わせ</h2>
+    <p>プライバシーに関するご質問は X（<a href="https://twitter.com/oKamone" target="_blank" style="color:var(--accent)">@oKamone</a>）までご連絡ください。</p>
+  </div>
+
+  <div class="section">
+    <h2>製品固有のデータ取り扱い</h2>
+
+    <div class="tool-supplement">
+      <h3>WEARLD Chrome拡張機能</h3>
+      <p>WEARLD Chrome拡張機能は、認証トークンおよびテーマ設定をChromeのローカルストレージ（chrome.storage.local）に保存します。ログイン後はテーマデータをBetaship APIにも保存し、複数デバイス間での同期に使用します。AI変換機能を使用する場合、入力したテーマテキストをBetaship APIに送信します。閲覧したページのURLやコンテンツは収集・外部送信しません。</p>
+      <p style="margin-top:12px;font-size:13px;color:var(--muted)">English: The WEARLD Chrome extension stores authentication tokens and theme preferences locally in Chrome's storage (chrome.storage.local). After login, theme data is also synced to the Betaship API for cross-device access. When using the AI conversion feature, the theme text you enter is sent to the Betaship API. We do not collect or transmit the URLs or content of pages you visit.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>Betaship · <a href="/">トップ</a> · <a href="terms.html">利用規約</a></p>
+</footer>
+
+</body>
+</html>
