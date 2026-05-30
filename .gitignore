@@ -2,3 +2,7 @@ api/.env.render
 api/.env
 marketing/.env
 *.env
+
+# QAスクリプト（シークレットを含む）
+qa_*.py
+screens/
